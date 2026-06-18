@@ -1391,6 +1391,42 @@ async function startServer() {
 
   registerMeasureGuideRoutes(app, withDb, requireAdmin, clipStr);
 
+  app.get("/produkt/:slug", async (req, res, next) => {
+    if (process.env.NODE_ENV !== "production") return next();
+    await withDb(res, async (db) => {
+      try {
+        const { slug } = req.params;
+        const result = await db.query('SELECT * FROM "Product" WHERE slug = $1 AND hidden = false', [slug]);
+        const product = result.rows[0];
+        
+        const distPath = path.join(process.cwd(), "dist", "index.html");
+        if (!fs.existsSync(distPath)) return next();
+        
+        let html = fs.readFileSync(distPath, "utf-8");
+        
+        if (product) {
+          const ogTitle = `${product.title} | E-shop Qapi`;
+          const ogDesc = product.desc ? product.desc.replace(/<[^>]+>/g, '').substring(0, 150) + '...' : '';
+          const ogImage = product.img || '';
+          
+          const ogTags = `
+            <title>${ogTitle}</title>
+            <meta name="description" content="${ogDesc}" />
+            <meta property="og:title" content="${ogTitle}" />
+            <meta property="og:description" content="${ogDesc}" />
+            <meta property="og:image" content="${ogImage}" />
+            <meta property="og:type" content="product" />
+            <meta property="og:url" content="https://roleta-qapi.cz/produkt/${slug}" />
+          `;
+          html = html.replace('</head>', `${ogTags}</head>`);
+        }
+        res.send(html);
+      } catch (err) {
+        next();
+      }
+    });
+  });
+
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },

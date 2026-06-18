@@ -69,7 +69,15 @@ function StorefrontRoutes({ currentPath }: { currentPath: string }) {
 }
 
 export default function App() {
-  const [currentPath, setCurrentPath] = useState(window.location.hash || '#/');
+  const [currentPath, setCurrentPath] = useState(() => {
+    // If user lands on /produkt/:slug directly (e.g. from Facebook share), rewrite to hash route
+    if (window.location.pathname.startsWith('/produkt/')) {
+      const newHash = '#' + window.location.pathname;
+      window.history.replaceState(null, '', '/' + newHash);
+      return newHash;
+    }
+    return window.location.hash || '#/';
+  });
 
   useEffect(() => {
     const onHashChange = () => {

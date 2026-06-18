@@ -1,9 +1,12 @@
-import { Trash2 } from 'lucide-react';
+import { Trash2, Truck, CheckCircle2 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { formatCzk } from '../lib/money';
 
 export default function CartPage() {
   const { lines, subtotalCzk, updateQuantity, removeLine } = useCart();
+  const FREE_SHIPPING_THRESHOLD = 5000;
+  const remainingForFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotalCzk);
+  const progressPercent = Math.min(100, (subtotalCzk / FREE_SHIPPING_THRESHOLD) * 100);
 
   if (lines.length === 0) {
     return (
@@ -19,6 +22,35 @@ export default function CartPage() {
   return (
     <div className="flex-grow container mx-auto px-6 py-12 max-w-3xl">
       <h1 className="text-3xl font-extrabold text-[#132333] mb-8">Košík</h1>
+      
+      {/* Free Shipping Progress */}
+      <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm mb-8 relative overflow-hidden">
+        {remainingForFreeShipping === 0 && (
+          <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-bl-full -mr-10 -mt-10 blur-2xl pointer-events-none" />
+        )}
+        <div className="flex items-center gap-3 mb-4">
+          <div className={`p-2.5 rounded-xl shrink-0 ${remainingForFreeShipping === 0 ? 'bg-green-100 text-green-700' : 'bg-[#CCAD8A]/10 text-[#CCAD8A]'}`}>
+            {remainingForFreeShipping === 0 ? <CheckCircle2 size={24} /> : <Truck size={24} />}
+          </div>
+          <div>
+            <h3 className="font-bold text-[#132333]">
+              {remainingForFreeShipping === 0 
+                ? 'Gratulujeme, máte dopravu ZDARMA!' 
+                : `Nakupte ještě za ${formatCzk(remainingForFreeShipping)} Kč a dopravu platíme my`}
+            </h3>
+            {remainingForFreeShipping > 0 && (
+              <p className="text-xs text-gray-500 mt-0.5">Platí pro objednávky nad {formatCzk(FREE_SHIPPING_THRESHOLD)} Kč vč. DPH.</p>
+            )}
+          </div>
+        </div>
+        <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+          <div 
+            className={`h-full transition-all duration-700 ease-out ${remainingForFreeShipping === 0 ? 'bg-green-500' : 'bg-[#CCAD8A]'}`}
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+      </div>
+
       <div className="space-y-4 mb-8">
         {lines.map((line) => (
           <div

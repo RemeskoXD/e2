@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
-import { ArrowRight, ChevronRight, Grid3x3, LayoutGrid, Search, SlidersHorizontal } from 'lucide-react';
+import { ArrowRight, ChevronRight, Grid3x3, LayoutGrid, Search, SlidersHorizontal, Eye, X } from 'lucide-react';
 import { computeDisplayPriceCzk, formatCzk, toMoneyNumber } from '../lib/money';
 import { Helmet } from 'react-helmet-async';
 
@@ -87,6 +87,7 @@ export default function CategoryShop() {
   const [maxPrice, setMaxPrice] = useState<number | ''>(readParams().maxPrice);
   const [searchDraft, setSearchDraft] = useState(readParams().q);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
   const pageSize = 12;
 
@@ -560,12 +561,24 @@ export default function CategoryShop() {
                       {p.desc ? p.desc.replace(/<[^>]+>/g, '') : ''}
                     </p>
                     <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-50">
-                      <span className="text-lg font-black text-[#132333]">
-                        od {formatCzk(customerPrice(p))} Kč
-                      </span>
-                      <span className="text-[#CCAD8A] font-bold flex items-center gap-1 text-sm">
-                        Konfigurovat <ArrowRight size={16} />
-                      </span>
+                      <div>
+                        <span className="text-lg font-black text-[#132333]">
+                          od {formatCzk(customerPrice(p))} Kč
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={(e) => { e.preventDefault(); setQuickViewProduct(p); }}
+                          className="p-2 text-gray-400 hover:text-[#CCAD8A] hover:bg-[#CCAD8A]/10 rounded-full transition-colors"
+                          title="Rychlý náhled"
+                        >
+                          <Eye size={20} />
+                        </button>
+                        <span className="text-[#CCAD8A] font-bold flex items-center gap-1 text-sm group-hover:underline">
+                          Konfigurovat
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </a>
@@ -615,6 +628,47 @@ export default function CategoryShop() {
           </main>
         </div>
       </div>
+      {quickViewProduct && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl w-full max-w-4xl overflow-hidden shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+            <button
+              onClick={() => setQuickViewProduct(null)}
+              className="absolute top-4 right-4 z-10 w-10 h-10 bg-black/10 hover:bg-black/20 text-white rounded-full flex items-center justify-center transition-colors backdrop-blur-md"
+            >
+              <X size={20} />
+            </button>
+            <div className="flex flex-col md:flex-row max-h-[90vh]">
+              <div className="w-full md:w-1/2 h-64 md:h-auto bg-gray-100 relative">
+                <img src={quickViewProduct.img} alt={quickViewProduct.title} className="w-full h-full object-cover" />
+              </div>
+              <div className="w-full md:w-1/2 p-8 md:p-10 flex flex-col overflow-y-auto">
+                <span className="text-xs font-bold tracking-widest text-[#CCAD8A] uppercase mb-2">
+                  {quickViewProduct.category}
+                </span>
+                <h2 className="text-2xl md:text-3xl font-extrabold text-[#132333] mb-4">
+                  {quickViewProduct.title}
+                </h2>
+                <div 
+                  className="prose prose-sm text-gray-500 mb-8 flex-grow"
+                  dangerouslySetInnerHTML={{ __html: quickViewProduct.desc }}
+                />
+                <div className="mt-auto pt-6 border-t border-gray-100">
+                  <p className="text-sm text-gray-400 mb-1">Základní cena</p>
+                  <p className="text-3xl font-black text-[#132333] mb-6">
+                    od {formatCzk(customerPrice(quickViewProduct))} Kč
+                  </p>
+                  <a
+                    href={`#/produkt/${quickViewProduct.id}`}
+                    className="flex w-full justify-center items-center gap-2 bg-[#CCAD8A] text-[#132333] font-bold py-4 px-8 rounded-xl hover:bg-[#b5997a] transition-colors"
+                  >
+                    Přejít ke konfiguraci <ArrowRight size={20} />
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

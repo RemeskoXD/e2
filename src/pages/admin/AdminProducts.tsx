@@ -1,6 +1,23 @@
 import { useState, useEffect, type FormEvent } from 'react';
-import { Plus, Search, Edit2, Trash2, Terminal, ChevronDown, ChevronRight, X, ExternalLink, Table, Image as ImageIcon, Upload } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Terminal, ChevronDown, ChevronRight, X, ExternalLink, Table, Image as ImageIcon, Upload, GripVertical } from 'lucide-react';
 import toast from 'react-hot-toast';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { computeDisplayPriceCzk, formatCzk, toMoneyNumber } from '../../lib/money';
 import { CENIK_IMPORT_COMMANDS } from '../../lib/cenikImportCommands';
 import RichTextEditor from '../../components/RichTextEditor';
@@ -36,6 +53,10 @@ export interface ProductParameter {
   name: string;
   type: 'select' | 'color_array';
   options: ParameterOption[];
+  condition?: {
+    dependsOnParamId: string;
+    allowedValues: string[];
+  };
 }
 
 interface Product {
@@ -96,6 +117,44 @@ function formatDimsMm(p: Product): string {
     return `${p.width_mm_min}–${p.width_mm_max} × ${p.height_mm_min}–${p.height_mm_max} mm`;
   }
   return '—';
+}
+
+function SortableParameterItem(props: { id: string; children: React.ReactNode; onRemove: () => void }) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: props.id });
+  const style = { transform: CSS.Transform.toString(transform), transition };
+  return (
+    <div ref={setNodeRef} style={style} className="relative group border border-gray-200 rounded-xl p-4 bg-white shadow-sm">
+      <div {...attributes} {...listeners} className="absolute left-0 top-0 bottom-0 w-8 flex items-center justify-center cursor-grab active:cursor-grabbing text-gray-300 hover:text-[#CCAD8A] hover:bg-gray-50 rounded-l-xl transition-colors">
+        <GripVertical size={20} />
+      </div>
+      <button
+        type="button"
+        onClick={props.onRemove}
+        className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors z-10"
+        title="Odebrat parametr"
+      >
+        <Trash2 size={16} />
+      </button>
+      <div className="pl-6 pr-6">
+        {props.children}
+      </div>
+    </div>
+  );
+}
+
+function SortableOptionItem(props: { id: string; children: React.ReactNode }) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: props.id });
+  const style = { transform: CSS.Transform.toString(transform), transition };
+  return (
+    <div ref={setNodeRef} style={style} className="flex gap-2 items-center bg-gray-50 border border-gray-200 p-2 rounded-lg relative">
+      <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing text-gray-300 hover:text-[#CCAD8A] px-1 py-2">
+        <GripVertical size={16} />
+      </div>
+      <div className="flex-1 flex gap-2 items-center">
+        {props.children}
+      </div>
+    </div>
+  );
 }
 
 export default function AdminProducts() {
@@ -172,6 +231,37 @@ export default function AdminProducts() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const handleDragEndParams = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      setFormData(prev => {
+        if (!prev.parameters) return prev;
+        const oldIndex = prev.parameters.findIndex(p => p.id === active.id);
+        const newIndex = prev.parameters.findIndex(p => p.id === over.id);
+        return { ...prev, parameters: arrayMove(prev.parameters, oldIndex, newIndex) };
+      });
+    }
+  };
+
+  const handleDragEndOptions = (pIdx: number, event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      setFormData(prev => {
+        if (!prev.parameters) return prev;
+        const newParams = structuredClone(prev.parameters);
+        const oldIndex = newParams[pIdx].options.findIndex((o: any) => o.value === active.id);
+        const newIndex = newParams[pIdx].options.findIndex((o: any) => o.value === over.id);
+        newParams[pIdx].options = arrayMove(newParams[pIdx].options, oldIndex, newIndex);
+        return { ...prev, parameters: newParams };
+      });
+    }
+  };
 
   const customerPrice = (p: Product) =>
     p.display_price != null && Number.isFinite(p.display_price)
@@ -1487,22 +1577,15 @@ export default function AdminProducts() {
                   </button>
                 </div>
                 
-                <div className="space-y-6">
-                  {formData.parameters?.map((param, pIdx) => (
-                    <div key={param.id} className="border border-gray-200 rounded-xl p-4 bg-white shadow-sm relative">
-                      <button
-                        type="button"
-                        onClick={() => setFormData(prev => ({
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEndParams}>
+                  <SortableContext items={(formData.parameters || []).map(p => p.id)} strategy={verticalListSortingStrategy}>
+                    <div className="space-y-6">
+                      {formData.parameters?.map((param, pIdx) => (
+                        <SortableParameterItem key={param.id} id={param.id} onRemove={() => setFormData(prev => ({
                           ...prev,
                           parameters: (prev.parameters || []).filter(p => p.id !== param.id)
-                        }))}
-                        className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Odebrat parametr"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                      
-                      <div className="grid grid-cols-2 gap-4 mb-4 pr-10">
+                        }))}>
+                          <div className="grid grid-cols-2 gap-4 mb-4 pr-10">
                         <div>
                           <label className="block text-xs font-semibold text-gray-600 mb-1">Název parametru (např. Barva profilu)</label>
                           <input
@@ -1533,6 +1616,79 @@ export default function AdminProducts() {
                         </div>
                       </div>
 
+                      {/* Condition settings */}
+                      <div className="mt-4 border-t border-gray-100 pt-4">
+                        <label className="flex items-center gap-2 text-xs font-semibold text-gray-700 cursor-pointer mb-2">
+                          <input
+                            type="checkbox"
+                            checked={!!param.condition}
+                            onChange={(e) => {
+                              const newParams = structuredClone(formData.parameters || []);
+                              if (e.target.checked) {
+                                newParams[pIdx].condition = { dependsOnParamId: '', allowedValues: [] };
+                              } else {
+                                delete newParams[pIdx].condition;
+                              }
+                              setFormData(prev => ({ ...prev, parameters: newParams }));
+                            }}
+                            className="rounded border-gray-300 text-[#CCAD8A] focus:ring-[#CCAD8A]"
+                          />
+                          Zobrazit tento parametr POUZE při splnění podmínky
+                        </label>
+                        
+                        {param.condition && (
+                          <div className="grid grid-cols-2 gap-4 bg-gray-50 p-3 rounded-lg border border-gray-200 mt-2">
+                            <div>
+                              <label className="block text-xs text-gray-600 mb-1">Závisí na parametru:</label>
+                              <select
+                                value={param.condition.dependsOnParamId}
+                                onChange={(e) => {
+                                  const newParams = structuredClone(formData.parameters || []);
+                                  newParams[pIdx].condition!.dependsOnParamId = e.target.value;
+                                  newParams[pIdx].condition!.allowedValues = [];
+                                  setFormData(prev => ({ ...prev, parameters: newParams }));
+                                }}
+                                className="w-full px-2 py-1.5 text-xs text-gray-900 border border-gray-200 rounded focus:ring-[#CCAD8A]"
+                              >
+                                <option value="">-- Vyberte parametr --</option>
+                                {formData.parameters?.filter(p => p.id !== param.id).map(p => (
+                                  <option key={p.id} value={p.id}>{p.name || 'Nepojmenovaný parametr'}</option>
+                                ))}
+                              </select>
+                            </div>
+                            <div>
+                              <label className="block text-xs text-gray-600 mb-1">Při vybraných hodnotách:</label>
+                              {(() => {
+                                const parentParam = formData.parameters?.find(p => p.id === param.condition?.dependsOnParamId);
+                                if (!parentParam) return <p className="text-xs text-gray-400 italic">Nejprve vyberte nadřazený parametr.</p>;
+                                return (
+                                  <div className="flex flex-wrap gap-2">
+                                    {parentParam.options.map(opt => (
+                                      <label key={opt.value} className="flex items-center gap-1 text-[11px] bg-white border border-gray-200 px-2 py-1 rounded cursor-pointer hover:bg-gray-50">
+                                        <input
+                                          type="checkbox"
+                                          checked={param.condition!.allowedValues.includes(opt.value)}
+                                          onChange={(e) => {
+                                            const newParams = structuredClone(formData.parameters || []);
+                                            const currentValues = new Set(newParams[pIdx].condition!.allowedValues);
+                                            if (e.target.checked) currentValues.add(opt.value);
+                                            else currentValues.delete(opt.value);
+                                            newParams[pIdx].condition!.allowedValues = Array.from(currentValues);
+                                            setFormData(prev => ({ ...prev, parameters: newParams }));
+                                          }}
+                                          className="w-3 h-3 rounded-sm border-gray-300 text-[#CCAD8A] focus:ring-[#CCAD8A]"
+                                        />
+                                        {opt.label || 'Nová možnost'}
+                                      </label>
+                                    ))}
+                                  </div>
+                                );
+                              })()}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
                       {/* Options for this parameter */}
                       <div className="mt-4 border-t border-gray-100 pt-4">
                         <div className="flex items-center justify-between mb-2">
@@ -1553,117 +1709,123 @@ export default function AdminProducts() {
                             <Plus size={14} /> Přidat možnost
                           </button>
                         </div>
-                        <div className="space-y-2">
-                          {param.options.map((opt, oIdx) => (
-                            <div key={opt.value} className="flex gap-2 items-center bg-gray-50 border border-gray-200 p-2 rounded-lg">
-                              <div className="flex-1">
-                                <input
-                                  type="text"
-                                  placeholder="Název (např. Bílá)"
-                                  value={opt.label}
-                                  onChange={(e) => {
-                                    const newParams = structuredClone(formData.parameters || []);
-                                    newParams[pIdx].options[oIdx].label = e.target.value;
-                                    setFormData(prev => ({ ...prev, parameters: newParams }));
-                                  }}
-                                  className="w-full px-2 py-1.5 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-[#CCAD8A]"
-                                />
-                              </div>
-                              {param.type === 'color_array' && (
-                                <div className="flex items-center gap-2">
-                                  <input
-                                    type="color"
-                                    value={opt.colorCode || '#ffffff'}
-                                    onChange={(e) => {
-                                      const newParams = structuredClone(formData.parameters || []);
-                                      newParams[pIdx].options[oIdx].colorCode = e.target.value;
-                                      setFormData(prev => ({ ...prev, parameters: newParams }));
-                                    }}
-                                    className="w-8 h-8 rounded shrink-0 border border-gray-200 p-0.5 object-cover cursor-pointer"
-                                    title="Zvolit barvu (HEX)"
-                                  />
-                                  <label className="text-xs text-center border border-gray-200 bg-white rounded px-2 py-1.5 cursor-pointer hover:bg-gray-100 flex items-center justify-center min-w-[50px]">
-                                    {opt.img ? 'Změnit foto' : 'Nahrát foto'}
+                        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(e) => handleDragEndOptions(pIdx, e)}>
+                          <SortableContext items={param.options.map(o => o.value)} strategy={verticalListSortingStrategy}>
+                            <div className="space-y-2">
+                              {param.options.map((opt, oIdx) => (
+                                <SortableOptionItem key={opt.value} id={opt.value}>
+                                  <div className="flex-1">
                                     <input
-                                      type="file"
-                                      className="hidden"
-                                      accept="image/*"
-                                      onChange={async (e) => {
-                                        const file = e.target.files?.[0];
-                                        if (file) {
-                                          try {
-                                            const url = await uploadImage(file);
-                                            const newParams = structuredClone(formData.parameters || []);
-                                            newParams[pIdx].options[oIdx].img = url;
-                                            setFormData(prev => ({ ...prev, parameters: newParams }));
-                                          } catch (err) {
-                                            toast.error('Chyba při nahrávání');
-                                          }
-                                        }
-                                      }}
-                                    />
-                                  </label>
-                                  {opt.img && (
-                                    <button
-                                      type="button"
-                                      onClick={() => {
+                                      type="text"
+                                      placeholder="Název (např. Bílá)"
+                                      value={opt.label}
+                                      onChange={(e) => {
                                         const newParams = structuredClone(formData.parameters || []);
-                                        newParams[pIdx].options[oIdx].img = undefined;
+                                        newParams[pIdx].options[oIdx].label = e.target.value;
                                         setFormData(prev => ({ ...prev, parameters: newParams }));
                                       }}
-                                      className="text-red-500 hover:bg-red-50 p-1 rounded"
-                                      title="Odstranit foto"
-                                    >
-                                      <X size={14} />
-                                    </button>
+                                      className="w-full px-2 py-1.5 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-[#CCAD8A]"
+                                    />
+                                  </div>
+                                  {param.type === 'color_array' && (
+                                    <div className="flex items-center gap-2">
+                                      <input
+                                        type="color"
+                                        value={opt.colorCode || '#ffffff'}
+                                        onChange={(e) => {
+                                          const newParams = structuredClone(formData.parameters || []);
+                                          newParams[pIdx].options[oIdx].colorCode = e.target.value;
+                                          setFormData(prev => ({ ...prev, parameters: newParams }));
+                                        }}
+                                        className="w-8 h-8 rounded shrink-0 border border-gray-200 p-0.5 object-cover cursor-pointer"
+                                        title="Zvolit barvu (HEX)"
+                                      />
+                                      <label className="text-xs text-center border border-gray-200 bg-white rounded px-2 py-1.5 cursor-pointer hover:bg-gray-100 flex items-center justify-center min-w-[50px]">
+                                        {opt.img ? 'Změnit foto' : 'Nahrát foto'}
+                                        <input
+                                          type="file"
+                                          className="hidden"
+                                          accept="image/*"
+                                          onChange={async (e) => {
+                                            const file = e.target.files?.[0];
+                                            if (file) {
+                                              try {
+                                                const url = await uploadImage(file);
+                                                const newParams = structuredClone(formData.parameters || []);
+                                                newParams[pIdx].options[oIdx].img = url;
+                                                setFormData(prev => ({ ...prev, parameters: newParams }));
+                                              } catch (err) {
+                                                toast.error('Chyba při nahrávání');
+                                              }
+                                            }
+                                          }}
+                                        />
+                                      </label>
+                                      {opt.img && (
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            const newParams = structuredClone(formData.parameters || []);
+                                            newParams[pIdx].options[oIdx].img = undefined;
+                                            setFormData(prev => ({ ...prev, parameters: newParams }));
+                                          }}
+                                          className="text-red-500 hover:bg-red-50 p-1 rounded"
+                                          title="Odstranit foto"
+                                        >
+                                          <X size={14} />
+                                        </button>
+                                      )}
+                                    </div>
                                   )}
-                                </div>
-                              )}
-                              <div className="w-24">
-                                <div className="relative">
-                                  <input
-                                    type="number"
-                                    placeholder="Příplatek"
-                                    value={opt.priceVariant || 0}
-                                    onChange={(e) => {
+                                  <div className="w-24">
+                                    <div className="relative">
+                                      <input
+                                        type="number"
+                                        placeholder="Příplatek"
+                                        value={opt.priceVariant || 0}
+                                        onChange={(e) => {
+                                          const newParams = structuredClone(formData.parameters || []);
+                                          newParams[pIdx].options[oIdx].priceVariant = Number(e.target.value);
+                                          setFormData(prev => ({ ...prev, parameters: newParams }));
+                                        }}
+                                        className="w-full px-2 py-1.5 pl-2 pr-6 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-[#CCAD8A]"
+                                      />
+                                      <span className="absolute right-2 top-1.5 text-xs text-gray-500">Kč</span>
+                                    </div>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
                                       const newParams = structuredClone(formData.parameters || []);
-                                      newParams[pIdx].options[oIdx].priceVariant = Number(e.target.value);
+                                      newParams[pIdx].options = newParams[pIdx].options.filter((_, i) => i !== oIdx);
                                       setFormData(prev => ({ ...prev, parameters: newParams }));
                                     }}
-                                    className="w-full px-2 py-1.5 pl-2 pr-6 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-[#CCAD8A]"
-                                  />
-                                  <span className="absolute right-2 top-1.5 text-xs text-gray-500">Kč</span>
-                                </div>
-                              </div>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const newParams = structuredClone(formData.parameters || []);
-                                  newParams[pIdx].options = newParams[pIdx].options.filter((_, i) => i !== oIdx);
-                                  setFormData(prev => ({ ...prev, parameters: newParams }));
-                                }}
-                                className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded"
-                              >
-                                <Trash2 size={14} />
-                              </button>
+                                    className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                </SortableOptionItem>
+                              ))}
                             </div>
-                          ))}
-                          {param.options.length === 0 && (
-                            <p className="text-xs text-gray-400 italic">Zatím nejsou přidány žádné možnosti.</p>
-                          )}
-                        </div>
+                          </SortableContext>
+                        </DndContext>
+                        {param.options.length === 0 && (
+                          <p className="text-xs text-gray-400 italic mt-2">Zatím nejsou přidány žádné možnosti.</p>
+                        )}
                       </div>
-                    </div>
+                    </SortableParameterItem>
                   ))}
-                  {(!formData.parameters || formData.parameters.length === 0) && (
-                    <div className="text-sm text-gray-400 p-4 text-center bg-gray-50 rounded-xl border border-gray-100 border-dashed">
-                      Zatím nejsou nastaveny žádné vlastní parametry.
-                    </div>
-                  )}
                 </div>
+              </SortableContext>
+            </DndContext>
+            {(!formData.parameters || formData.parameters.length === 0) && (
+              <div className="text-sm text-gray-400 p-4 text-center bg-gray-50 rounded-xl border border-gray-100 border-dashed mt-6">
+                Zatím nejsou nastaveny žádné vlastní parametry.
               </div>
+            )}
+          </div>
 
-              <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500">
                 Zobrazená cena zákazníkovi: základ × (1 + navýšení/100) × (1 + provize/100), zaokrouhleno na celé Kč.
                 Výsledné částky jsou zobrazeny vč. DPH (konečná cena jako v matrixu, v závislosti na vašem ceníku).
               </p>

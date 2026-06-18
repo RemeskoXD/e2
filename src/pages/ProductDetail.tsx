@@ -35,6 +35,10 @@ type Product = {
     name: string;
     type: 'select' | 'color_array';
     options: { label: string; value: string; colorCode?: string; img?: string; priceVariant?: number }[];
+    condition?: {
+      dependsOnParamId: string;
+      allowedValues: string[];
+    };
   }[];
 };
 
@@ -168,6 +172,32 @@ export default function ProductDetail({ productId }: { productId: string }) {
       window.history.replaceState(null, '', newHash);
     }
   }, [widthMm, heightMm, color, fabric, pliseModel, lamela, polyscreen, bezLatky, selectedExtras, selectedFabricGroupConfigIndex, selectedParameters]);
+
+  const visibleParameters = React.useMemo(() => {
+    if (!product?.parameters) return [];
+    return product.parameters.filter(param => {
+      if (!param.condition) return true;
+      const parentVal = selectedParameters[param.condition.dependsOnParamId];
+      if (!parentVal) return false;
+      return param.condition.allowedValues.includes(parentVal);
+    });
+  }, [product?.parameters, selectedParameters]);
+
+  useEffect(() => {
+    if (!product?.parameters) return;
+    const visibleIds = visibleParameters.map(p => p.id);
+    let changed = false;
+    const newSelected = { ...selectedParameters };
+    Object.keys(newSelected).forEach(key => {
+      if (product.parameters!.some(p => p.id === key) && !visibleIds.includes(key)) {
+        delete newSelected[key];
+        changed = true;
+      }
+    });
+    if (changed) {
+      setSelectedParameters(newSelected);
+    }
+  }, [visibleParameters, selectedParameters, product?.parameters]);
 
   const [selectedFabricColorId, setSelectedFabricColorId] = useState<string | null>(null);
   const [selectedFabricGroupId, setSelectedFabricGroupId] = useState<number | null>(null);
@@ -551,10 +581,13 @@ export default function ProductDetail({ productId }: { productId: string }) {
                             const cName = typeof cNameOrObj === 'string' ? cNameOrObj : cNameOrObj.name;
                             const cImg = typeof cNameOrObj === 'string' ? undefined : cNameOrObj.img;
                             return (
-                              <button
-                                key={cName}
-                                onClick={() => setColor(cName)}
-                                className={`relative group overflow-hidden border-2 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#CCAD8A] ${
+                                <button
+                                  key={cName}
+                                  onClick={() => {
+                                    setColor(cName);
+                                    if (cImg) setMainImg(cImg);
+                                  }}
+                                  className={`relative group overflow-hidden border-2 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#CCAD8A] ${
                                   color === cName ? 'border-[#CCAD8A] shadow-md scale-105' : 'border-gray-200 hover:border-[#132333]'
                                 } ${cImg ? 'w-full aspect-square rounded-xl flex items-center justify-center bg-gray-50' : 'w-full px-2 py-3 text-sm font-medium rounded-xl text-gray-700 bg-white'}`}
                                 title={cName}
@@ -600,7 +633,10 @@ export default function ProductDetail({ productId }: { productId: string }) {
                       return (
                         <button
                           key={cName}
-                          onClick={() => setColor(cName)}
+                          onClick={() => {
+                            setColor(cName);
+                            if (cImg) setMainImg(cImg);
+                          }}
                           className={`relative group overflow-hidden border-2 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#CCAD8A] ${
                             color === cName ? 'border-[#CCAD8A] shadow-md scale-105' : 'border-gray-200 hover:border-[#132333]'
                           } ${cImg ? 'w-20 h-16 rounded-xl' : 'px-4 py-2 text-sm font-medium rounded-xl text-gray-700 bg-white'}`}
@@ -829,9 +865,9 @@ export default function ProductDetail({ productId }: { productId: string }) {
               )}
 
               {/* Vlastní Parametry */}
-              {product?.parameters && product.parameters.length > 0 && (
+              {visibleParameters.length > 0 && (
                 <div className="space-y-4">
-                  {product.parameters.map(param => (
+                  {visibleParameters.map(param => (
                     <div key={param.id}>
                       <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
                         <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs text-gray-500">•</span>
@@ -866,6 +902,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                                 onClick={() => {
                                   setSelectedParameters(prev => ({ ...prev, [param.id]: opt.value }));
                                   setQuote(null);
+                                  if (opt.img) setMainImg(opt.img);
                                 }}
                                 title={`${opt.label} ${opt.priceVariant ? `(+${opt.priceVariant} Kč)` : ''}`}
                                 className={`relative group overflow-hidden border-2 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#CCAD8A] ${
