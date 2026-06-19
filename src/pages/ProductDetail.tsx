@@ -348,21 +348,22 @@ export default function ProductDetail({ productId }: { productId: string }) {
   const plainDesc = product.desc.replace(/<[^>]+>/g, '').substring(0, 150) + '...';
 
   return (
-    <div className="flex-grow container mx-auto px-6 py-12">
-      <Helmet>
-        <title>{product.title} | E-shop Qapi</title>
-        <meta name="description" content={plainDesc} />
-      </Helmet>
-      
-      <a href="#/kategorie" className="text-sm text-gray-400 hover:text-[#CCAD8A] font-medium transition-colors mb-6 inline-flex items-center gap-2">
-        <span aria-hidden="true">←</span> Zpět do katalogu
-      </a>
+    <div className="flex-grow bg-gray-50 min-h-screen pb-32">
+      <div className="container mx-auto px-4 sm:px-6 py-8 lg:py-12">
+        <Helmet>
+          <title>{product.title} | E-shop Qapi</title>
+          <meta name="description" content={plainDesc} />
+        </Helmet>
+        
+        <a href="#/kategorie" className="text-sm text-gray-500 hover:text-[#CCAD8A] font-medium transition-colors mb-6 inline-flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 w-fit">
+          <span aria-hidden="true">←</span> Zpět do katalogu
+        </a>
 
-      <div className="flex flex-col lg:flex-row gap-12 items-start">
-        {/* Left Column: Images & Info */}
-        <div className="w-full lg:w-3/5 space-y-12">
-          {/* Images */}
-          <div>
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start relative">
+          {/* Left Column: Images & Info (Sticky) */}
+          <div className="w-full lg:w-[45%] space-y-8 lg:sticky lg:top-24">
+            {/* Images */}
+            <div className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100">
             <div 
               className="rounded-2xl overflow-hidden border border-gray-100 bg-white shadow-sm aspect-[4/3] mb-4 relative group cursor-zoom-in"
               onClick={() => {
@@ -449,13 +450,12 @@ export default function ProductDetail({ productId }: { productId: string }) {
               </div>
             )}
           </div>
-        </div>
 
-        {/* Right Column: Calculator Widget */}
-        <div className="w-full lg:w-2/5 lg:sticky lg:top-8">
-          <div className="bg-white border rounded-3xl p-8 shadow-xl shadow-gray-200/50 relative overflow-hidden">
-            {/* Decorative background element */}
-            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#132333] to-[#CCAD8A]"></div>
+          {/* Right Column: Calculator Widget */}
+          <div className="w-full lg:w-[55%]">
+            <div className="bg-white border border-gray-100 rounded-[2rem] p-6 lg:p-10 shadow-xl shadow-gray-200/40 relative overflow-hidden">
+              {/* Decorative background element */}
+              <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#132333] via-[#CCAD8A] to-[#132333]"></div>
             
             <div className="mb-8">
               <span className="text-[#CCAD8A] text-xs font-bold uppercase tracking-widest bg-[#CCAD8A]/10 px-3 py-1 rounded-full inline-block mb-3">
@@ -484,9 +484,9 @@ export default function ProductDetail({ productId }: { productId: string }) {
 
             <div className="space-y-6">
               {/* Dimensions */}
-              <div>
-                <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs text-gray-500">1</span>
+              <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100">
+                <h3 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-3">
+                  <span className="w-8 h-8 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center text-sm text-[#CCAD8A]">1</span>
                   Zadejte rozměry
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
@@ -531,9 +531,9 @@ export default function ProductDetail({ productId }: { productId: string }) {
 
               {/* Color Palette or Fabric Groups */}
               {product?.fabric_groups_config && product.fabric_groups_config.length > 0 ? (
-                <div>
-                  <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs text-gray-500">2</span>
+                <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100">
+                  <h3 className="text-base font-bold text-gray-900 mb-5 flex items-center gap-3">
+                    <span className="w-8 h-8 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center text-sm text-[#CCAD8A]">2</span>
                     {product.extras?.find((e: any) => e.key === 'colorSectionTitle')?.value || 'Vyberte látku'}
                   </h3>
                   
@@ -621,9 +621,9 @@ export default function ProductDetail({ productId }: { productId: string }) {
                   </p>
                 </div>
               ) : product?.colors && product.colors.length > 0 ? (
-                <div>
-                  <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs text-gray-500">2</span>
+                <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100">
+                  <h3 className="text-base font-bold text-gray-900 mb-5 flex items-center gap-3">
+                    <span className="w-8 h-8 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center text-sm text-[#CCAD8A]">2</span>
                     {product.extras?.find((e: any) => e.key === 'colorSectionTitle')?.value || 'Vyberte barvu profilu/látky'}
                   </h3>
                   <div className="flex flex-wrap gap-3">
@@ -838,8 +838,11 @@ export default function ProductDetail({ productId }: { productId: string }) {
 
               {/* Extras (Příplatkové položky) */}
               {product?.extras && product.extras.length > 0 && (
-                <div className="bg-gray-50 p-4 rounded-xl space-y-3 border border-gray-100/80">
-                  <h3 className="text-sm font-bold text-gray-900 mb-2">Příplatkové položky</h3>
+                <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100">
+                  <h3 className="text-base font-bold text-gray-900 mb-5 flex items-center gap-3">
+                    <span className="w-8 h-8 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center text-sm text-[#CCAD8A]">+</span>
+                    Příplatkové položky
+                  </h3>
                   {product.extras.map(extra => (
                     <label key={extra.id} className="flex items-center justify-between cursor-pointer group pt-2 first:pt-0 border-t first:border-0 border-gray-200/50">
                       <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">{extra.name}</span>
@@ -866,11 +869,11 @@ export default function ProductDetail({ productId }: { productId: string }) {
 
               {/* Vlastní Parametry */}
               {visibleParameters.length > 0 && (
-                <div className="space-y-4">
+                <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 space-y-6">
                   {visibleParameters.map(param => (
-                    <div key={param.id}>
+                    <div key={param.id} className="pt-4 first:pt-0 border-t first:border-0 border-gray-200/50">
                       <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs text-gray-500">•</span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#CCAD8A]"></span>
                         {param.name}
                       </h3>
                       
@@ -961,52 +964,21 @@ export default function ProductDetail({ productId }: { productId: string }) {
                 </div>
               )}
 
-              {/* Action */}
-              <div className="pt-4">
-                <button
-                  type="button"
-                  onClick={runQuote}
-                  disabled={quoting || !widthMm || !heightMm}
-                  className="w-full bg-[#132333] text-white font-bold py-4 rounded-xl hover:bg-[#1a3145] transition-all transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:transform-none disabled:shadow-none"
-                >
-                  {quoting ? 'Počítám…' : 'Spočítat cenu na míru'}
-                </button>
-              </div>
-
-              {quoteError && (
-                <div className="flex items-start gap-2 bg-red-50 text-red-700 p-3 rounded-xl text-sm border border-red-100">
-                  <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                  <p>{quoteError}</p>
-                </div>
-              )}
-
-              {quote && (
-                <div className="bg-green-50/50 border border-green-100 rounded-2xl p-6 mt-4 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-16 h-16 bg-green-100 rounded-bl-full -mr-8 -mt-8"></div>
-                  <p className="text-sm text-green-800 font-semibold mb-1">Předběžná kalkulace:</p>
-                  <p className="text-4xl font-black text-[#132333] tracking-tight">
-                    {formatCzk(quote.total_czk)} Kč{' '}
+              {/* Action Warnings (Only shown if there's a quote with notes) */}
+              {quote && (quote.vat_note || quote.catalog_warning || quote.catalog_note) && (
+                <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-6 mt-4">
+                  <p className="text-sm text-blue-800 font-semibold mb-3 flex items-center gap-2">
+                    <Info size={18} /> Doplňující informace ke kalkulaci
                   </p>
-                  <p className="text-sm text-gray-500 mt-1 mb-4">vč. DPH</p>
-                  
                   {quote.vat_note && <p className="text-xs text-gray-600 mb-2">{quote.vat_note}</p>}
                   {quote.catalog_warning && (
-                    <p className="text-xs text-amber-800 bg-amber-50 rounded-lg px-3 py-2 mb-2 border border-amber-100">
+                    <p className="text-xs text-amber-800 bg-amber-50 rounded-lg px-3 py-2 mb-2 border border-amber-200">
                       {quote.catalog_warning}
                     </p>
                   )}
                   {quote.catalog_note && (
-                    <p className="text-xs text-gray-600 mb-4">{quote.catalog_note}</p>
+                    <p className="text-xs text-gray-600">{quote.catalog_note}</p>
                   )}
-
-                  <button
-                    type="button"
-                    onClick={handleAddToCart}
-                    className="w-full mt-4 bg-[#CCAD8A] text-[#132333] font-bold py-4 rounded-xl hover:bg-[#b5997a] hover:text-white transition-all transform hover:-translate-y-0.5 shadow-lg flex items-center justify-center gap-2"
-                  >
-                    <ShoppingCart size={20} />
-                    Vložit parametry do košíku
-                  </button>
                 </div>
               )}
             </div>
@@ -1028,6 +1000,59 @@ export default function ProductDetail({ productId }: { productId: string }) {
                 <span className="text-[10px] text-gray-500 mt-1">Přímo od výrobce</span>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Sticky Bottom Bar */}
+      <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] z-40 px-4 py-4 sm:px-6 animate-in slide-in-from-bottom-full duration-500">
+        <div className="container mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="w-full sm:w-auto">
+            {quote ? (
+              <div className="flex flex-col">
+                <span className="text-[10px] text-green-600 font-bold uppercase tracking-wider mb-0.5">Výsledná cena vč. DPH</span>
+                <span className="text-3xl font-black text-[#132333] tracking-tight">{formatCzk(quote.total_czk)} Kč</span>
+              </div>
+            ) : quoteError ? (
+              <div className="text-red-600 font-medium text-sm flex items-center gap-2 bg-red-50 px-4 py-2 rounded-xl">
+                <AlertCircle size={18} /> {quoteError}
+              </div>
+            ) : (
+              <div className="text-gray-500 text-sm font-medium">Zadejte parametry pro zobrazení ceny</div>
+            )}
+          </div>
+          
+          <div className="w-full sm:w-auto flex gap-3">
+            {quote ? (
+              <>
+                <button
+                  type="button"
+                  onClick={runQuote}
+                  disabled={quoting}
+                  className="px-6 py-3.5 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+                >
+                  {quoting ? '...' : 'Přepočítat'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleAddToCart}
+                  className="flex-1 sm:flex-none px-8 py-3.5 bg-[#CCAD8A] text-[#132333] font-bold rounded-xl hover:bg-[#b5997a] hover:text-white transition-all shadow-md flex items-center justify-center gap-2 transform hover:-translate-y-0.5"
+                >
+                  <ShoppingCart size={20} />
+                  Vložit do košíku
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={runQuote}
+                disabled={quoting || !widthMm || !heightMm}
+                className="w-full sm:w-auto px-10 py-3.5 bg-[#132333] text-white font-bold rounded-xl hover:bg-[#1a3145] transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {quoting && <div className="animate-spin w-4 h-4 rounded-full border-2 border-white/30 border-t-white"></div>}
+                {quoting ? 'Počítám…' : 'Spočítat cenu na míru'}
+              </button>
+            )}
           </div>
         </div>
       </div>
