@@ -587,11 +587,21 @@ async function startServer() {
     await withDb(res, async (db) => {
       try {
         let result;
+        const baseQuery = `
+          SELECT p.*, COALESCE(r.review_count, 0) as review_count, r.avg_rating 
+          FROM "Product" p
+          LEFT JOIN (
+            SELECT product_id, COUNT(*) as review_count, AVG(rating)::numeric(10,1) as avg_rating
+            FROM "Review"
+            WHERE approved = true
+            GROUP BY product_id
+          ) r ON p.id = r.product_id
+        `;
         try {
-          result = await db.query('SELECT * FROM "Product" WHERE hidden IS NOT TRUE');
+          result = await db.query(baseQuery + ' WHERE p.hidden IS NOT TRUE');
         } catch (e: any) {
           if (e.code === '42703' || (e.message && e.message.includes('hidden'))) {
-            result = await db.query('SELECT * FROM "Product"');
+            result = await db.query(baseQuery);
           } else {
             throw e;
           }

@@ -93,6 +93,8 @@ export function mapProductRow(row: Record<string, unknown>) {
     parameters: Array.isArray(row.parameters) ? row.parameters : [],
     fabric_groups_config: Array.isArray(row.fabric_groups_config) ? row.fabric_groups_config : [],
     slug: optStrCol(row, "slug"),
+    review_count: optIntCol(row, "review_count") || 0,
+    avg_rating: row.avg_rating ? Number(row.avg_rating) : null,
   };
 }
 

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
-import { ArrowRight, ChevronRight, Grid3x3, LayoutGrid, Search, SlidersHorizontal, Eye, X } from 'lucide-react';
+import { ArrowRight, ChevronRight, Grid3x3, LayoutGrid, Search, SlidersHorizontal, Eye, X, Star } from 'lucide-react';
 import { computeDisplayPriceCzk, formatCzk, toMoneyNumber } from '../lib/money';
 import { Helmet } from 'react-helmet-async';
 
@@ -25,6 +25,8 @@ type Product = {
   commission_percent?: number;
   display_price?: number;
   old_display_price?: number;
+  review_count?: number;
+  avg_rating?: number;
 };
 
 function readParams(): { cat: string; q: string; sort: SortKey; page: number; minPrice: number | ''; maxPrice: number | '' } {
@@ -557,6 +559,19 @@ export default function CategoryShop() {
                     <h2 className="text-lg font-bold text-[#132333] mb-2 line-clamp-2 group-hover:text-[#CCAD8A] transition-colors">
                       {p.title}
                     </h2>
+                    
+                    {(p.review_count ?? 0) > 0 && (
+                      <div className="flex items-center gap-1.5 mb-2">
+                        <div className="flex text-yellow-400">
+                          <Star className="fill-current w-3.5 h-3.5" />
+                        </div>
+                        <span className="text-xs font-bold text-gray-900">
+                          {p.avg_rating ? p.avg_rating.toFixed(1) : '5.0'}
+                        </span>
+                        <span className="text-[10px] text-gray-500">({p.review_count})</span>
+                      </div>
+                    )}
+
                     <p className="text-sm text-gray-500 line-clamp-2 mb-4 flex-grow">
                       {p.desc ? p.desc.replace(/<[^>]+>/g, '') : ''}
                     </p>
