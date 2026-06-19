@@ -578,20 +578,30 @@ export async function computeProductQuote(
   if (matrixProfile === "dverni_sit") {
     const p = body?.selected_parameters || {};
     const typDveri = p.typ_dveri;
-    let basePriceM2 = 0;
     
-    // Limits checking
-    const lim = { maxW: 1000, maxH: 2500, maxArea: 2.50 };
-    if (typDveri === 'bez_ramu') {
-      basePriceM2 = 1474;
-    } else if (typDveri === 'ram_r3' || typDveri === 'ram_r4') {
-      basePriceM2 = 1782;
-    } else {
+    // Base prices
+    const prices: Record<string, number> = {
+      'bez_ramu_de50': 1474,
+      'bez_ramu_de40': 1494,
+      'bez_ramu_de40_dvou': 1608,
+      'ram_r3_de40': 1782,
+      'ram_r4_de40': 1782,
+      'ram_r3_de40_dvou': 1896,
+      'ram_r4_de40_dvou': 1896
+    };
+    const basePriceM2 = prices[typDveri];
+    if (!basePriceM2) {
       return { ok: false, status: 400, body: { error: `Není zvolen platný typ dveří.` } };
     }
 
+    const isDvou = typDveri.includes('_dvou');
+    const isRam = typDveri.includes('ram_');
+    const isDe50 = typDveri === 'bez_ramu_de50';
+
+    // Limits checking
+    const lim = { maxW: isDvou ? 2000 : 1000, maxH: 2500, maxArea: isDvou ? 5.00 : 2.50 };
     if (wR > lim.maxW || hR > lim.maxH) {
-      return { ok: false, status: 400, body: { error: `Tento profil lze vyrobit max do šířky ${lim.maxW} mm a výšky ${lim.maxH} mm.` } };
+      return { ok: false, status: 400, body: { error: `Zvolený profil lze vyrobit max do šířky ${lim.maxW} mm a výšky ${lim.maxH} mm.` } };
     }
     const actualAreaM2 = (wR * hR) / 1000000;
     if (actualAreaM2 > lim.maxArea) {
@@ -606,8 +616,8 @@ export async function computeProductQuote(
     if (sitovina === 'petscreen_cerna' && wR > 1500) {
       return { ok: false, status: 400, body: { error: `Pro černý Pet screen je maximální možná šířka 1500 mm.` } };
     }
-    if (sitovina === 'nano' && typDveri === 'bez_ramu') {
-      return { ok: false, status: 400, body: { error: `Síťovina s nanovláknem nelze použít pro sítě bez rámu (profil DE 50x20).` } };
+    if (sitovina === 'nano' && isDe50) {
+      return { ok: false, status: 400, body: { error: `Síťovina s nanovláknem nelze použít pro sítě bez rámu DE 50x20.` } };
     }
 
     const calcAreaM2 = Math.max(0.5, actualAreaM2);
@@ -617,10 +627,54 @@ export async function computeProductQuote(
 
     baseCatalogCzk = basePriceM2 * calcAreaM2;
 
+    // COLORS & ROHY (Al rohy jsou per kus, barvy per m2)
+    const barva = p.barva || '';
+    if (barva !== 'zaklad' && barva !== '') {
+      let colorPriceM2 = 0;
+      let min1m2 = false;
+
+      // Al rohy checks (fixed price per net)
+      if (barva.includes('al_rohy')) {
+        const rohyPrice = isDvou ? 813 : 407;
+        baseCatalogCzk += rohyPrice;
+        screenUnionCatalogNotes.push(`Provedení s Al rohy: ${rohyPrice} Kč.`);
+      }
+
+      if (barva.includes('ral_struktura')) {
+        colorPriceM2 = isRam ? 185 : 155;
+      } else if (barva.includes('ral_nestandard')) {
+        colorPriceM2 = 1035;
+        min1m2 = true;
+      } else if (barva.includes('imitace_dreva')) {
+        if (isDe50) return { ok: false, status: 400, body: { error: `Imitace dřeva není dostupná pro DE 50x20.` } };
+        colorPriceM2 = isRam ? 667 : 354;
+      } else if (barva.includes('renolit_jedno')) {
+        colorPriceM2 = isRam ? 885 : 478;
+      } else if (barva.includes('renolit_obou')) {
+        colorPriceM2 = isRam ? 1184 : 641;
+      }
+
+      if (colorPriceM2 > 0) {
+        const areaColor = min1m2 ? Math.max(1.0, calcAreaM2) : calcAreaM2;
+        const totalColor = colorPriceM2 * areaColor;
+        baseCatalogCzk += totalColor;
+        screenUnionCatalogNotes.push(`Příplatek barva: ${colorPriceM2} Kč/m² × ${areaColor.toFixed(2)} m² = ${Math.round(totalColor)} Kč.`);
+      }
+    }
+
     // Dynamic checks for okopova_pricka
     if (p.okopova_pricka === 'ano') {
-      const isRal = p.barva_bez_ramu === 'ral_nestandard' || p.barva_s_ramem?.includes('ral_nestandard');
-      const prickaPriceBm = isRal ? 354 : 169;
+      let prickaPriceBm = 169; // standard
+      if (barva.includes('ral_nestandard') || barva.includes('ral_struktura')) {
+        prickaPriceBm = 354;
+      } else if (barva.includes('renolit_jedno')) {
+        prickaPriceBm = 313;
+      } else if (barva.includes('renolit_obou')) {
+        prickaPriceBm = 461;
+      } else if (barva.includes('imitace_dreva')) {
+        prickaPriceBm = 280;
+      }
+
       const calcWidthM = wR / 1000;
       const extraPricka = prickaPriceBm * calcWidthM;
       baseCatalogCzk += extraPricka;
@@ -629,12 +683,44 @@ export async function computeProductQuote(
 
     // Dynamic checks for magnet
     if (p.magnet === 'cely_profil') {
-      const magnetPriceBm = typDveri === 'bez_ramu' ? 71 : 113.50;
-      const multiply = typDveri === 'bez_ramu' ? 1 : 2; // R3/R4 is x2
+      const magnetPriceBm = isRam ? 113.50 : 71;
+      const multiply = isRam ? 2 : 1;
       const calcHeightM = hR / 1000;
       const extraMagnet = magnetPriceBm * multiply * calcHeightM;
       baseCatalogCzk += extraMagnet;
       screenUnionCatalogNotes.push(`Magnet po celé výšce: ${magnetPriceBm} Kč/bm × ${multiply} (strany) × ${calcHeightM.toFixed(2)} bm = ${Math.round(extraMagnet)} Kč.`);
+    }
+
+    // Panty
+    if (p.panty && p.panty !== 'pvc_standard') {
+      let pantPrice = 0;
+      if (p.panty === 'pvc_samozaviraci') pantPrice = 56;
+      else if (p.panty === 'al_standard') pantPrice = 73;
+      else if (p.panty === 'al_samozaviraci') pantPrice = 84;
+
+      if (pantPrice > 0) {
+        const pantCount = isDvou ? 4 : 2; // 2 per wing
+        const extraPant = pantPrice * pantCount;
+        baseCatalogCzk += extraPant;
+        screenUnionCatalogNotes.push(`Příplatek za panty: ${pantPrice} Kč/ks × ${pantCount} ks = ${extraPant} Kč.`);
+      }
+    }
+
+    // Profil s kartáčkem (63 kč/m)
+    if (p.profil_s_kartackem === 'ano') {
+      // It's applied to width usually "vodorovně"
+      const calcWidthM = wR / 1000;
+      const extraKart = 63 * calcWidthM;
+      baseCatalogCzk += extraKart;
+      screenUnionCatalogNotes.push(`Profil s kartáčkem: 63 Kč/bm × ${calcWidthM.toFixed(2)} bm = ${Math.round(extraKart)} Kč.`);
+    }
+
+    // Madlo navíc (24 Kč/ks)
+    if (p.madlo_navic === 'ano') {
+      const madloCount = isDvou ? 2 : 1;
+      const extraMadlo = 24 * madloCount;
+      baseCatalogCzk += extraMadlo;
+      screenUnionCatalogNotes.push(`Madlo navíc: 24 Kč/ks × ${madloCount} ks = ${extraMadlo} Kč.`);
     }
   }
   // --- KONEC DVEŘNÍ SÍTĚ PROTI HMYZU ---
