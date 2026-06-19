@@ -970,6 +970,29 @@ export default function AdminProducts() {
                    </div>
                 </div>
 
+                <div className="md:col-span-2 border-b border-gray-100 pb-4 mb-4">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Vlastní název pro sekci barev/látek (zobrazí se zákazníkům)</label>
+                  <input
+                    type="text"
+                    value={formData.extras?.find(e => e.key === 'colorSectionTitle')?.value || ''}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      const newExtras = [...(formData.extras || [])];
+                      const idx = newExtras.findIndex(ex => ex.key === 'colorSectionTitle');
+                      if (idx > -1) {
+                        if (val) newExtras[idx].value = val;
+                        else newExtras.splice(idx, 1);
+                      } else if (val) {
+                        newExtras.push({ key: 'colorSectionTitle', value: val });
+                      }
+                      setFormData(p => ({ ...p, extras: newExtras }));
+                    }}
+                    placeholder={(!formData.fabric_groups_config || formData.fabric_groups_config.length === 0) ? 'Vyberte barvu profilu/látky' : 'Vyberte látku'}
+                    className="w-full sm:w-1/2 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-[#CCAD8A] focus:border-[#CCAD8A]"
+                  />
+                  <p className="text-xs text-gray-400 mt-1">Pokud nevyplníte, použije se výchozí název.</p>
+                </div>
+
                 {(!formData.fabric_groups_config || formData.fabric_groups_config.length === 0) ? (
                   <div className="md:col-span-2">
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Možnosti barev / dekorů (volitelně i s obrázkem)</label>

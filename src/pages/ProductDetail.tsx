@@ -534,7 +534,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                 <div>
                   <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
                     <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs text-gray-500">2</span>
-                    Vyberte látku
+                    {product.extras?.find((e: any) => e.key === 'colorSectionTitle')?.value || 'Vyberte látku'}
                   </h3>
                   
                   {/* Select group */}
@@ -624,7 +624,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                 <div>
                   <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
                     <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs text-gray-500">2</span>
-                    Vyberte barvu profilu/látky
+                    {product.extras?.find((e: any) => e.key === 'colorSectionTitle')?.value || 'Vyberte barvu profilu/látky'}
                   </h3>
                   <div className="flex flex-wrap gap-3">
                     {product.colors.map((c: any) => {
