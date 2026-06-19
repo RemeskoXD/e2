@@ -348,6 +348,19 @@ export default function ProductDetail({ productId }: { productId: string }) {
     if (!product || !quote?.total_czk) return;
     const w = Math.round(Number(widthMm));
     const h = Math.round(Number(heightMm));
+    
+    // Validace pro Isoline PRIM
+    if (product.title.toLowerCase().includes('isoline prim')) {
+      const area = (w * h) / 1000000;
+      if (area > 1.5) {
+        const ovladani = selectedParameters['ovladani_brzda'];
+        if (ovladani !== 'prevodovka') {
+          toast.error('Pro žaluzie nad 1.5 m² musíte zvolit "Převodovku s brzdou" (kvůli zachování záruky).', { duration: 5000 });
+          return;
+        }
+      }
+    }
+
     addLine({
       productId: product.id,
       title: product.title,
