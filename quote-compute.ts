@@ -127,13 +127,32 @@ export async function computeProductQuote(
   if (body?.selected_parameters && typeof body.selected_parameters === 'object') {
     const paramsObj = body.selected_parameters as Record<string, string>;
     const pParams = Array.isArray(product.parameters) ? product.parameters : [];
+    
+    const actualAreaM2 = (wR * hR) / 1_000_000;
+    // Speciální pravidlo pro Isoline: minimální účtovaná plocha pro příplatky je 0.5 m2
+    const isIsoline = productTitle.toLowerCase().includes('isoline');
+    const calcAreaM2 = isIsoline ? Math.max(0.5, actualAreaM2) : actualAreaM2;
+    const calcWidthM = wR / 1000;
+
     for (const p of pParams) {
       const val = paramsObj[p.id];
       if (val) {
         const opt = p.options?.find((o: any) => o.value === val);
         if (opt && opt.priceVariant) {
-          parametersSurcharge += Number(opt.priceVariant) || 0;
-          paramsNotes.push(`+ ${p.name}: ${opt.label} (${Number(opt.priceVariant)} Kč)`);
+          const rawPrice = Number(opt.priceVariant) || 0;
+          let calculatedPrice = rawPrice;
+          let calcNote = `${rawPrice} Kč`;
+          
+          if (opt.priceType === 'per_m2') {
+             calculatedPrice = rawPrice * calcAreaM2;
+             calcNote = `${rawPrice} Kč/m² × ${calcAreaM2.toFixed(2)} m²`;
+          } else if (opt.priceType === 'per_bm') {
+             calculatedPrice = rawPrice * calcWidthM;
+             calcNote = `${rawPrice} Kč/bm × ${calcWidthM.toFixed(2)} bm`;
+          }
+
+          parametersSurcharge += Math.round(calculatedPrice);
+          paramsNotes.push(`+ ${p.name}: ${opt.label} (${calcNote} = ${Math.round(calculatedPrice)} Kč)`);
         }
       }
     }

@@ -1545,27 +1545,23 @@ async function startServer() {
         
         const params = [
           {
-            id: "provedeni",
-            name: "Provedení",
+            id: "lamela_provedeni",
+            name: "Provedení a typ lamel",
             type: "select",
             options: [
-              { label: "Standardní", value: "standard", priceVariant: 0, priceType: "fixed" },
-              { label: "Domykatelné (Celostín)", value: "domykatelne", priceVariant: 33, priceType: "per_m2" }
-            ]
-          },
-          {
-            id: "lamela",
-            name: "Typ a barva lamel",
-            type: "select",
-            options: [
-              { label: "Základní barvy (lamela 25 x 0.18)", value: "zakladni", priceVariant: 0, priceType: "fixed" },
-              { label: "Lamela 16 mm (základní barvy)", value: "l16", priceVariant: 74, priceType: "per_m2" },
-              { label: "Barvy 780, 783, 1940, 8005, 8101, 8300, 8204, 8107", value: "color_group_1", priceVariant: 87, priceType: "per_m2" },
-              { label: "Perforované lamely", value: "perforovane", priceVariant: 76, priceType: "per_m2" },
-              { label: "Lamela 25x0.21 (vybrané barvy)", value: "l25_group1", priceVariant: 74, priceType: "per_m2" },
-              { label: "Lamela 25x0.21 (SR/SM skupina)", value: "l25_group2", priceVariant: 207, priceType: "per_m2" },
-              { label: "Imitace dřeva", value: "drevo", priceVariant: 169, priceType: "per_m2" },
-              { label: "Imitace dřeva (v domykatelném provedení)", value: "drevo_domykatelne", priceVariant: 267, priceType: "per_m2" }
+              { label: "Standardní provedení - Základní barvy (lamela 25x0.18)", value: "std_zaklad", priceVariant: 0, priceType: "per_m2" },
+              { label: "Domykatelné provedení (Celostín) - Základní barvy", value: "dom_zaklad", priceVariant: 33, priceType: "per_m2" },
+              { label: "Standardní provedení - Lamela 16 mm", value: "std_l16", priceVariant: 74, priceType: "per_m2" },
+              { label: "Standardní provedení - Lamela 25x0.21 (č. 101-155, 211-265, 311-371, 700 a 714)", value: "std_l25_g1", priceVariant: 74, priceType: "per_m2" },
+              { label: "Domykatelné provedení - Lamela 25x0.21 (č. 101-155, 211-265, 311-371, 700 a 714)", value: "dom_l25_g1", priceVariant: 107, priceType: "per_m2" },
+              { label: "Standardní provedení - Lamela 25x0.21 (SR 621-630, SM 801-869)", value: "std_l25_g2", priceVariant: 207, priceType: "per_m2" },
+              { label: "Domykatelné provedení - Lamela 25x0.21 (SR 621-630, SM 801-869)", value: "dom_l25_g2", priceVariant: 240, priceType: "per_m2" },
+              { label: "Standardní provedení - Barvy 780, 783, 1940, 8005, 8101, 8300, 8204, 8107", value: "std_barva_ex", priceVariant: 87, priceType: "per_m2" },
+              { label: "Domykatelné provedení - Barvy 780, 783, 1940, 8005, 8101, 8300, 8204, 8107", value: "dom_barva_ex", priceVariant: 120, priceType: "per_m2" },
+              { label: "Standardní provedení - Perforované lamely (PR1, PR58, PR61, PR103, PR285)", value: "std_perf", priceVariant: 76, priceType: "per_m2" },
+              { label: "Domykatelné provedení - Perforované lamely (PR1, PR58, PR61, PR103, PR285)", value: "dom_perf", priceVariant: 109, priceType: "per_m2" },
+              { label: "Standardní provedení - Imitace dřeva", value: "std_drevo", priceVariant: 169, priceType: "per_m2" },
+              { label: "Domykatelné provedení - Imitace dřeva", value: "dom_drevo", priceVariant: 267, priceType: "per_m2" }
             ]
           },
           {
@@ -1574,20 +1570,10 @@ async function startServer() {
             type: "select",
             options: [
               { label: "Základní sladění (RAL 9010, atd.)", value: "zakladni", priceVariant: 0, priceType: "fixed" },
-              { label: "Profily Al (pouze Isoline)", value: "al_isoline", priceVariant: 77, priceType: "per_m2" },
+              { label: "Horní + dolní profil Al (pouze Isoline)", value: "al_isoline", priceVariant: 77, priceType: "per_m2" },
               { label: "Profily Al v RAL", value: "al_ral", priceVariant: 147, priceType: "per_bm" },
-              { label: "Profily Al v imitaci dřeva", value: "al_drevo", priceVariant: 131, priceType: "per_bm" },
-              { label: "Profily Fe v imitaci dřeva", value: "fe_drevo", priceVariant: 131, priceType: "per_bm" }
-            ]
-          },
-          {
-            id: "typ_listy",
-            name: "Typ krycí lišty",
-            type: "select",
-            options: [
-              { label: "Isoline (standardní plochý profil)", value: "isoline", priceVariant: 0, priceType: "fixed" },
-              { label: "Isoline Loco (oblouková krycí lišta)", value: "loco", priceVariant: 0, priceType: "fixed" },
-              { label: "Isoline Loco v imitaci dřeva", value: "loco_drevo", priceVariant: 87, priceType: "per_bm" }
+              { label: "Profily Al v imitaci dřeva (dle renolitovníku)", value: "al_drevo", priceVariant: 131, priceType: "per_bm" },
+              { label: "Profily Fe v imitaci dřeva (dle renolitovníku)", value: "fe_drevo", priceVariant: 131, priceType: "per_bm" }
             ]
           },
           {
@@ -1597,7 +1583,9 @@ async function startServer() {
             options: [
               { label: "Bez podložky", value: "0", priceVariant: 0, priceType: "fixed" },
               { label: "1 pár podložek (< 14 mm zaskl. lišta)", value: "1", priceVariant: 12, priceType: "fixed" },
-              { label: "2 páry podložek (< 10 mm zaskl. lišta)", value: "2", priceVariant: 24, priceType: "fixed" }
+              { label: "2 páry podložek (< 10 mm zaskl. lišta)", value: "2", priceVariant: 24, priceType: "fixed" },
+              { label: "3 páry podložek", value: "3", priceVariant: 36, priceType: "fixed" },
+              { label: "4 páry podložek", value: "4", priceVariant: 48, priceType: "fixed" }
             ]
           },
           {
@@ -1647,7 +1635,7 @@ async function startServer() {
           263,
           "",
           "https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=600&auto=format&fit=crop",
-          "<p>Základní ceníková sestava: horní profil 42.5x25.6x25mm, válcovaný pozink plech. Sdružené řetízkové ovládání.</p>",
+          `<h3>Základní ceníková sestava</h3><ul><li><strong>Horní profil:</strong> 42,5 x 25,6 x 25 mm, válcovaný pozinkovaný plech</li><li><strong>Dolní profil:</strong> válcovaný pozinkovaný plech</li><li><strong>Ovládání:</strong> Sdružené řetízkové ovládání (naklápění i stahování lamel)</li><li><strong>Montáž:</strong> Interiérové provedení s čelním vývodem ovládání a s fixací silonovou strunou</li></ul><br /><h3>Technické detaily a provedení</h3><p><strong>Domykatelné provedení (Celostín):</strong> Domykatelná žaluzie, u které je po dovření lamel minimalizován prostup světla skrze lamely. Efektu je docíleno excentrickým umístěním otvorů v lamelách pro textilní pásku a fixační strunu (nelze pro lamelu 16 mm).</p><p><strong>Vyměření:</strong> Jako výrobní šířka a výška se uvádí rozměr mezi zasklívacími lištami. Při malé hloubce zasklívacích lišt (pod 14 mm) je nutno přidat distanční podložky pod koncovky.</p><p><em>Záruka se vztahuje na garantované rozměry dle technického katalogu (maximální plocha 2.4 m²).</em></p>`,
           JSON.stringify(params)
         ]);
 
