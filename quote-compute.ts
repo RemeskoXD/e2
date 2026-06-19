@@ -461,13 +461,45 @@ export async function computeProductQuote(
     if (lim) {
       if (wR < lim.minW || wR > lim.maxW || hR < lim.minH || hR > lim.maxH) {
          // Speciální výjimka u AP1 dle ceníku
-         if (model === 'AP1' && wR <= 1000 && hR <= 2000) {
+         if (model === 'AP1' && wR >= 200 && wR <= 1000 && hR >= 300 && hR <= 2000) {
             // ok
          } else {
             return { ok: false, status: 400, body: { error: `Model ${model} lze vyrobit pouze v šířce ${lim.minW}-${lim.maxW} mm a výšce ${lim.minH}-${lim.maxH} mm.` } };
          }
       }
     }
+
+    // Fabric-specific rules
+    const fabricS = String(body?.fabric ?? body?.latka ?? "").toLowerCase();
+    const isBlackoutOrBamboo = fabricS.includes("blackout") || fabricS.includes("bamboo");
+
+    if (model === 'AP1' && fabricS.includes("living blackout")) {
+      return { ok: false, status: 400, body: { error: `Model AP1 nelze vyrobit v provedení Living Blackout.` } };
+    }
+
+    if (isBlackoutOrBamboo) {
+      if (hR > 2100) {
+        return { ok: false, status: 400, body: { error: `Látky typu Blackout a Bamboo mají omezenou výšku na 2100 mm.` } };
+      }
+      const areaM2 = (wR * hR) / 1000000;
+      if (areaM2 > 2.8) {
+        return { ok: false, status: 400, body: { error: `Látky typu Blackout a Bamboo mají omezenou plochu na 2.8 m² (zadáno ${areaM2.toFixed(2)} m²).` } };
+      }
+      if ((model === 'PM4' || model === 'PM5') && hR > 1800) {
+        return { ok: false, status: 400, body: { error: `Pro modely ${model} mají látky Blackout a Bamboo omezenou výšku na 1800 mm.` } };
+      }
+      if (model === 'PM5') {
+        screenUnionCatalogNotes.push(`Upozornění výrobce: Látky typu Blackout a Bamboo Reflex doporučujeme u modelu PM5 používat pouze jako dolní látku vzhledem k vyšší gramáži.`);
+      }
+    }
+
+    // Dodatečné info z technických tabulek
+    if (model.startsWith('PM') || model.startsWith('AM') || model.startsWith('PS')) {
+      const madla = wR <= 700 ? 1 : 2;
+      screenUnionCatalogNotes.push(`Počet madel pro ovládání: ${madla} ks`);
+    }
+    const klipy = wR <= 600 ? 2 : wR <= 1000 ? 3 : wR <= 1500 ? 4 : 5;
+    screenUnionCatalogNotes.push(`Počet klipů / montážních patek: ${klipy} ks`);
 
     // 3. Počítat jako dvě samostatné žaluzie (PM4 a PM5)
     if (model === 'PM4' || model === 'PM5') {
