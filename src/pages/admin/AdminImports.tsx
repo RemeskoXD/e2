@@ -81,6 +81,7 @@ export default function AdminImports() {
               className="w-full bg-[#132333] hover:bg-[#1f3a53] disabled:opacity-50 text-white font-bold px-4 py-2.5 rounded-lg transition-colors flex justify-center items-center gap-2"
             >
               <Terminal size={18} />
+              Spustit import
             </button>
           </div>
 
@@ -95,6 +96,20 @@ export default function AdminImports() {
             >
               <Terminal size={18} />
               Spustit import
+            </button>
+          </div>
+
+          <div className="border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow">
+            <h3 className="font-bold text-lg text-gray-800 mb-2">Plisé žaluzie Lagarta</h3>
+            <p className="text-sm text-gray-600 mb-6">Naprostý gigant. Pět cenových matic pro 5 skupin látek, složitá logika a limity pro každý model z 12 dostupných.</p>
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => handleImport('/api/admin/import-plise-lagarta', 'Plisé žaluzie Lagarta')}
+              className="w-full bg-[#CCAD8A] hover:bg-[#b5997a] disabled:opacity-50 text-[#132333] font-bold px-4 py-2.5 rounded-lg transition-colors flex justify-center items-center gap-2"
+            >
+              <Terminal size={18} />
+              Spustit obří import
             </button>
           </div>
         </div>

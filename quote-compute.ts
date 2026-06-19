@@ -148,7 +148,11 @@ export async function computeProductQuote(
              calcNote = `${rawPrice} Kč/m² × ${calcAreaM2.toFixed(2)} m²`;
           } else if (opt.priceType === 'per_bm') {
              calculatedPrice = rawPrice * calcWidthM;
-             calcNote = `${rawPrice} Kč/bm × ${calcWidthM.toFixed(2)} bm`;
+             calcNote = `${rawPrice} Kč/bm × ${calcWidthM.toFixed(2)} bm šířky`;
+          } else if (opt.priceType === 'per_bm_height') {
+             const calcHeightM = hR / 1000;
+             calculatedPrice = rawPrice * calcHeightM;
+             calcNote = `${rawPrice} Kč/bm × ${calcHeightM.toFixed(2)} bm výšky`;
           }
 
           parametersSurcharge += Math.round(calculatedPrice);
@@ -407,10 +411,73 @@ export async function computeProductQuote(
   }
 
   let pliseNote: string | undefined;
-  if (matrixProfile === "plise") {
+  if (matrixProfile === "plise" || matrixProfile === "plise_lagarta") {
     const model = body?.model ? String(body.model) : "PM1";
     pliseNote = `Model ${model}`;
   }
+
+  // --- PLISÉ LAGARTA CUSTOM LOGIC ---
+  if (matrixProfile === "plise_lagarta") {
+    const model = String(body?.model || "PM1");
+    
+    // 1. Získání základní ceny z JSON matice uvnitř skupiny látek
+    let lagartaPrice = 0;
+    if (typeof body.fabric_group_config_index === 'number') {
+      const configs = Array.isArray(product.fabric_groups_config) ? product.fabric_groups_config : [];
+      const cfg = configs[body.fabric_group_config_index] as any;
+      if (cfg && cfg.matrix) {
+        // Find nearest width and height
+        const widths = [400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300];
+        const heights = [800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600];
+        const tW = widths.find(w => w >= wR);
+        const tH = heights.find(h => h >= hR);
+        if (tW && tH && cfg.matrix[`${tW}_${tH}`]) {
+          lagartaPrice = cfg.matrix[`${tW}_${tH}`];
+        } else {
+          return { ok: false, status: 400, body: { error: `Pro rozměr ${wR}x${hR} s touto látkou neexistuje cena v ceníku.` } };
+        }
+      }
+    }
+    if (!lagartaPrice) {
+      return { ok: false, status: 400, body: { error: "Nepodařilo se určit cenu látky z matice." } };
+    }
+
+    // 2. Kontrola limitů modelu
+    const limits: Record<string, { minW: number, maxW: number, minH: number, maxH: number }> = {
+      'PM1': { minW: 160, maxW: 1500, minH: 300, maxH: 2500 },
+      'PM2': { minW: 200, maxW: 1000, minH: 300, maxH: 2500 },
+      'PM3': { minW: 200, maxW: 1500, minH: 300, maxH: 2500 },
+      'PM3M': { minW: 200, maxW: 1500, minH: 300, maxH: 2500 },
+      'PM5': { minW: 200, maxW: 1500, minH: 300, maxH: 2500 },
+      'PM4': { minW: 200, maxW: 1500, minH: 300, maxH: 2200 },
+      'PP1': { minW: 160, maxW: 2300, minH: 300, maxH: 2600 },
+      'PP2': { minW: 160, maxW: 2300, minH: 300, maxH: 2600 },
+      'PS3': { minW: 200, maxW: 1500, minH: 300, maxH: 1500 },
+      'AM1': { minW: 200, maxW: 1500, minH: 300, maxH: 1500 },
+      'AM2': { minW: 200, maxW: 1500, minH: 300, maxH: 1500 },
+      'AP1': { minW: 200, maxW: 2000, minH: 300, maxH: 1000 },
+    };
+    const lim = limits[model];
+    if (lim) {
+      if (wR < lim.minW || wR > lim.maxW || hR < lim.minH || hR > lim.maxH) {
+         // Speciální výjimka u AP1 dle ceníku
+         if (model === 'AP1' && wR <= 1000 && hR <= 2000) {
+            // ok
+         } else {
+            return { ok: false, status: 400, body: { error: `Model ${model} lze vyrobit pouze v šířce ${lim.minW}-${lim.maxW} mm a výšce ${lim.minH}-${lim.maxH} mm.` } };
+         }
+      }
+    }
+
+    // 3. Počítat jako dvě samostatné žaluzie (PM4 a PM5)
+    if (model === 'PM4' || model === 'PM5') {
+      lagartaPrice = lagartaPrice * 2;
+      screenUnionCatalogNotes.push(`Model ${model} se počítá jako dvě samostatné žaluzie (základní cena x2).`);
+    }
+
+    baseCatalogCzk = lagartaPrice;
+  }
+  // --- KONEC PLISÉ LAGARTA ---
 
   if (matrixProfile === "screen_roleta_union_l" && screenUnionQuote) {
     if (screenUnionQuote.noFabric) {

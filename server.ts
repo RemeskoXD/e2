@@ -2281,6 +2281,137 @@ async function startServer() {
     });
   });
 
+  
+  app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
+    await withDb(res, async (db) => {
+      try {
+        const slug = 'plise-zaluzie-lagarta';
+        
+        const m = require('./scratch-matrices.js');
+
+        const fabricGroups = [
+          { name: "Cenová skupina 1 (Basic, Basic Reflex FR)", surcharge_percent: 0, matrix: m.g1, colors: [] },
+          { name: "Cenová skupina 2 (Basic Semi, Stripes, Wood, Press Reflex)", surcharge_percent: 0, matrix: m.g2, colors: [] },
+          { name: "Cenová skupina 3 (Bamboo, Bamboo Reflex, Living, Basic Blackout, Honeycomb)", surcharge_percent: 0, matrix: m.g3, colors: [] },
+          { name: "Cenová skupina 4 (Zebra, Grass, Parquet)", surcharge_percent: 0, matrix: m.g4, colors: [] },
+          { name: "Cenová skupina 5 (Bamboo Pearl, Shine, Wave, Binary, Living Blackout, Sparkle)", surcharge_percent: 0, matrix: m.g5, colors: [] }
+        ];
+
+        const params = [
+          {
+            id: "model",
+            name: "Model",
+            type: "select",
+            options: [
+              { label: "PM1", value: "PM1" },
+              { label: "PM2", value: "PM2" },
+              { label: "PM3", value: "PM3" },
+              { label: "PM3M", value: "PM3M", priceVariant: 200, priceType: "fixed" },
+              { label: "PM4", value: "PM4" },
+              { label: "PM5", value: "PM5" },
+              { label: "PP1", value: "PP1", priceVariant: 255, priceType: "fixed" },
+              { label: "PP2", value: "PP2", priceVariant: 425, priceType: "fixed" },
+              { label: "PS3", value: "PS3" },
+              { label: "AM1", value: "AM1", priceVariant: 1079, priceType: "fixed" },
+              { label: "AM2", value: "AM2", priceVariant: 1733, priceType: "fixed" },
+              { label: "AP1", value: "AP1", priceVariant: 1079, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "barva_profilu",
+            name: "Barva profilu",
+            type: "select",
+            options: [
+              { label: "Bílá", value: "bila" },
+              { label: "Krémová", value: "kremova" },
+              { label: "Hnědá", value: "hneda" },
+              { label: "Stříbrná", value: "stribrna" },
+              { label: "Antracit", value: "antracit" },
+              { label: "Černá", value: "cerna" },
+              { label: "Imitace dřeva (zlatý dub, ořech, winchester)", value: "imitace", priceVariant: 300, priceType: "fixed" },
+              { label: "RAL", value: "ral" }
+            ]
+          },
+          {
+            id: "lakovani_ral",
+            name: "Lakováni do RAL",
+            type: "select",
+            condition: {
+              dependsOnParamId: "barva_profilu",
+              allowedValues: ["ral"]
+            },
+            options: [
+              { label: "PM1, PM3, PP1, PP2, PS3", value: "lak_pm1", priceVariant: 157, priceType: "per_bm" },
+              { label: "PM2, PM5", value: "lak_pm2", priceVariant: 236, priceType: "per_bm" },
+              { label: "PM4", value: "lak_pm4", priceVariant: 315, priceType: "per_bm" }
+            ]
+          },
+          {
+            id: "vodici_lista_ps3",
+            name: "Vodící lišta pro model PS3",
+            type: "select",
+            options: [
+              { label: "Ne", value: "ne" },
+              { label: "Základní barva", value: "ano_zaklad", priceVariant: 311, priceType: "per_bm_height" },
+              { label: "RAL", value: "ano_ral", priceVariant: 638, priceType: "per_bm_height" } // 311 + 327
+            ]
+          },
+          {
+            id: "prodlouzeni_ovladani",
+            name: "Prodloužení ovládání",
+            type: "select",
+            options: [
+              { label: "Ne", value: "ne" },
+              { label: "1000 mm", value: "1000", priceVariant: 548, priceType: "fixed" },
+              { label: "1250 mm", value: "1250", priceVariant: 668, priceType: "fixed" },
+              { label: "1500 mm", value: "1500", priceVariant: 772, priceType: "fixed" }
+            ]
+          }
+        ];
+
+        // Ensure category
+        const catRes = await db.query(`INSERT INTO "Category" (name, slug) VALUES ($1, $2) ON CONFLICT (slug) DO NOTHING RETURNING id`, ['Plisé žaluzie', 'plise-zaluzie']);
+        let catId = catRes.rows[0]?.id;
+        if (!catId) {
+          const e = await db.query(`SELECT id FROM "Category" WHERE slug = $1`, ['plise-zaluzie']);
+          catId = e.rows[0].id;
+        }
+
+        const title = "Plisé žaluzie Lagarta";
+        const desc = "Plisé žaluzie Lagarta s dokonalým dynamickým výpočtem na milimetry dle 5 skupin látek.";
+        const img = "/img/placeholder.jpg"; // Use existing or placeholder
+
+        await db.query(
+          `INSERT INTO "Product" 
+            (title, slug, category_id, "desc", price, price_mode, validation_profile, img, parameters, supplier_markup_percent, commission_percent, fabric_groups_config, dimension_constraints) 
+          VALUES 
+            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+          ON CONFLICT (slug) DO UPDATE SET
+            title = EXCLUDED.title,
+            "desc" = EXCLUDED."desc",
+            price_mode = EXCLUDED.price_mode,
+            validation_profile = EXCLUDED.validation_profile,
+            parameters = EXCLUDED.parameters,
+            fabric_groups_config = EXCLUDED.fabric_groups_config,
+            dimension_constraints = EXCLUDED.dimension_constraints
+          `,
+          [
+            title, slug, catId, desc, 1000, 
+            'matrix_cell', 'plise_lagarta', img, 
+            JSON.stringify(params), 0, 0, 
+            JSON.stringify(fabricGroups), 
+            JSON.stringify({ width_mm_min: 160, width_mm_max: 2300, height_mm_min: 300, height_mm_max: 2600 })
+          ]
+        );
+
+        res.json({ success: true, message: 'Plisé Lagarta imporovány!' });
+      } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: e.message });
+      }
+    });
+  });
+
   app.post("/api/admin/categories", requireAdmin, async (req, res) => {
     await withDb(res, async (db) => {
       try {

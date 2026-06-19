@@ -46,7 +46,7 @@ type Product = {
     id: string;
     name: string;
     type: 'select' | 'color_array';
-    options: { label: string; value: string; colorCode?: string; img?: string; priceVariant?: number; priceType?: 'fixed' | 'per_m2' | 'per_bm' }[];
+    options: { label: string; value: string; colorCode?: string; img?: string; priceVariant?: number; priceType?: 'fixed' | 'per_m2' | 'per_bm' | 'per_bm_height' }[];
     condition?: {
       dependsOnParamId: string;
       allowedValues: string[];
@@ -1037,7 +1037,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                           >
                             <option value="" disabled>-- Vyberte --</option>
                             {param.options.map(opt => {
-                              const unit = opt.priceType === 'per_m2' ? ' Kč/m²' : opt.priceType === 'per_bm' ? ' Kč/bm' : ' Kč';
+                              const unit = opt.priceType === 'per_m2' ? ' Kč/m²' : opt.priceType === 'per_bm' ? ' Kč/bm šířky' : opt.priceType === 'per_bm_height' ? ' Kč/bm výšky' : ' Kč';
                               return (
                                 <option key={opt.value} value={opt.value}>
                                   {opt.label} {opt.priceVariant ? `(+${opt.priceVariant}${unit})` : ''}
@@ -1058,7 +1058,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                                   setQuote(null);
                                   if (opt.img) setMainImg(opt.img);
                                 }}
-                                title={`${opt.label} ${opt.priceVariant ? `(+${opt.priceVariant}${opt.priceType === 'per_m2' ? ' Kč/m²' : opt.priceType === 'per_bm' ? ' Kč/bm' : ' Kč'})` : ''}`}
+                                title={`${opt.label} ${opt.priceVariant ? `(+${opt.priceVariant}${opt.priceType === 'per_m2' ? ' Kč/m²' : opt.priceType === 'per_bm' ? ' Kč/bm šířky' : opt.priceType === 'per_bm_height' ? ' Kč/bm výšky' : ' Kč'})` : ''}`}
                                 className={`relative group overflow-hidden border-2 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#CCAD8A] ${
                                   isSelected ? 'border-[#CCAD8A] shadow-md scale-105' : 'border-gray-200 hover:border-[#132333]'
                                 } ${opt.img ? 'w-20 h-16 rounded-xl' : 'px-4 py-2 text-sm font-medium rounded-xl text-gray-700 bg-white'}`}
@@ -1104,7 +1104,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                       ) : null}
                       {selectedParameters[param.id] && param.options.find(o => o.value === selectedParameters[param.id])?.priceVariant ? (() => {
                          const opt = param.options.find(o => o.value === selectedParameters[param.id])!;
-                         const unit = opt.priceType === 'per_m2' ? ' Kč/m²' : opt.priceType === 'per_bm' ? ' Kč/bm' : ' Kč';
+                         const unit = opt.priceType === 'per_m2' ? ' Kč/m²' : opt.priceType === 'per_bm' ? ' Kč/bm šířky' : opt.priceType === 'per_bm_height' ? ' Kč/bm výšky' : ' Kč';
                          return (
                            <p className="text-xs text-gray-500 mt-2">
                              Příplatek za volbu: +{opt.priceVariant}{unit}
