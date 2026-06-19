@@ -764,42 +764,92 @@ export default function AdminProducts() {
                     type="number"
                     step="1"
                     value={formData.price}
-                    onChange={(e) =>
-                      setFormData({ ...formData, price: Number(e.target.value) })
-                    }
+                    onChange={(e) => {
+                      const newPrice = Number(e.target.value);
+                      setFormData(p => {
+                        const baseWithMarkup = newPrice * (1 + (p.supplier_markup_percent || 0) / 100);
+                        const oldP = p.oldPrice || 0;
+                        const vDiscountObj = p.extras?.find(ex => ex.key === 'visibleDiscount');
+                        const vDiscount = vDiscountObj ? Number(vDiscountObj.value) : 0;
+                        const targetSalePrice = oldP > 0 ? (oldP - vDiscount) : baseWithMarkup;
+                        const newComm = baseWithMarkup > 0 ? ((targetSalePrice / baseWithMarkup) - 1) * 100 : p.commission_percent;
+                        return { ...p, price: newPrice, commission_percent: Math.round(newComm * 100) / 100 };
+                      });
+                    }}
                     className="w-full px-4 py-2.5 bg-gray-50 text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#CCAD8A] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Původní cena základ (Kč) – volitelné</label>
-                  <input
-                    type="number"
-                    step="1"
-                    value={formData.oldPrice ?? ''}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        oldPrice: e.target.value === '' ? undefined : Number(e.target.value),
-                      })
-                    }
-                    className="w-full px-4 py-2.5 bg-gray-50 text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#CCAD8A] transition-all"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Navýšení dodavatele (%)
-                  </label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Navýšení dodavatele (%)</label>
                   <input
                     type="number"
                     step="0.1"
                     value={formData.supplier_markup_percent ?? 0}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        supplier_markup_percent: Number(e.target.value),
-                      })
-                    }
-                    placeholder="např. 4,9 u horizontálních žaluzií"
+                    onChange={(e) => {
+                      const newMarkup = Number(e.target.value);
+                      setFormData(p => {
+                        const baseWithMarkup = (p.price || 0) * (1 + newMarkup / 100);
+                        const oldP = p.oldPrice || 0;
+                        const vDiscountObj = p.extras?.find(ex => ex.key === 'visibleDiscount');
+                        const vDiscount = vDiscountObj ? Number(vDiscountObj.value) : 0;
+                        const targetSalePrice = oldP > 0 ? (oldP - vDiscount) : baseWithMarkup;
+                        const newComm = baseWithMarkup > 0 ? ((targetSalePrice / baseWithMarkup) - 1) * 100 : p.commission_percent;
+                        return { ...p, supplier_markup_percent: newMarkup, commission_percent: Math.round(newComm * 100) / 100 };
+                      });
+                    }}
+                    className="w-full px-4 py-2.5 bg-gray-50 text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#CCAD8A] transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Původní cena (přeškrtnutá, Kč)</label>
+                  <input
+                    type="number"
+                    step="1"
+                    value={formData.oldPrice ?? ''}
+                    onChange={(e) => {
+                      const newOldPrice = e.target.value === '' ? undefined : Number(e.target.value);
+                      setFormData(p => {
+                        const baseWithMarkup = (p.price || 0) * (1 + (p.supplier_markup_percent || 0) / 100);
+                        const salePrice = baseWithMarkup * (1 + (p.commission_percent || 0) / 100);
+                        const newDiscount = newOldPrice ? newOldPrice - salePrice : 0;
+                        
+                        const newExtras = [...(p.extras || [])];
+                        const dIdx = newExtras.findIndex(ex => ex.key === 'visibleDiscount');
+                        if (dIdx > -1) newExtras[dIdx].value = Math.round(newDiscount).toString();
+                        else newExtras.push({ key: 'visibleDiscount', value: Math.round(newDiscount).toString() });
+                        
+                        return { ...p, oldPrice: newOldPrice, extras: newExtras };
+                      });
+                    }}
+                    className="w-full px-4 py-2.5 bg-gray-50 text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#CCAD8A] transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Viditelná sleva (Kč)</label>
+                  <input
+                    type="number"
+                    step="1"
+                    value={formData.extras?.find(e => e.key === 'visibleDiscount')?.value || 0}
+                    onChange={(e) => {
+                      const newDiscount = Number(e.target.value);
+                      setFormData(p => {
+                        const newExtras = [...(p.extras || [])];
+                        const dIdx = newExtras.findIndex(ex => ex.key === 'visibleDiscount');
+                        if (dIdx > -1) newExtras[dIdx].value = newDiscount.toString();
+                        else newExtras.push({ key: 'visibleDiscount', value: newDiscount.toString() });
+                        
+                        const oldP = p.oldPrice || 0;
+                        const targetSalePrice = oldP > 0 ? (oldP - newDiscount) : 0;
+                        const baseWithMarkup = (p.price || 0) * (1 + (p.supplier_markup_percent || 0) / 100);
+                        
+                        let newComm = p.commission_percent;
+                        if (baseWithMarkup > 0 && oldP > 0) {
+                           newComm = ((targetSalePrice / baseWithMarkup) - 1) * 100;
+                        }
+                        
+                        return { ...p, extras: newExtras, commission_percent: Math.round(newComm * 100) / 100 };
+                      });
+                    }}
                     className="w-full px-4 py-2.5 bg-gray-50 text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#CCAD8A] transition-all"
                   />
                 </div>
@@ -809,12 +859,23 @@ export default function AdminProducts() {
                     type="number"
                     step="0.1"
                     value={formData.commission_percent ?? 0}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        commission_percent: Number(e.target.value),
-                      })
-                    }
+                    onChange={(e) => {
+                      const newComm = Number(e.target.value);
+                      setFormData(p => {
+                        const baseWithMarkup = (p.price || 0) * (1 + (p.supplier_markup_percent || 0) / 100);
+                        const salePrice = baseWithMarkup * (1 + newComm / 100);
+                        const oldP = p.oldPrice || 0;
+                        
+                        const newExtras = [...(p.extras || [])];
+                        if (oldP > 0) {
+                          const newDiscount = oldP - salePrice;
+                          const dIdx = newExtras.findIndex(ex => ex.key === 'visibleDiscount');
+                          if (dIdx > -1) newExtras[dIdx].value = Math.round(newDiscount).toString();
+                          else newExtras.push({ key: 'visibleDiscount', value: Math.round(newDiscount).toString() });
+                        }
+                        return { ...p, commission_percent: newComm, extras: newExtras };
+                      });
+                    }}
                     className="w-full px-4 py-2.5 bg-gray-50 text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#CCAD8A] transition-all"
                   />
                 </div>
@@ -828,7 +889,7 @@ export default function AdminProducts() {
                   <div className="text-right">
                     {formData.oldPrice ? (
                       <div className="text-sm text-gray-400 line-through mb-1">
-                        {formatCzk(Math.round(formData.oldPrice * (1 + (formData.supplier_markup_percent || 0)/100) * (1 + (formData.commission_percent || 0)/100)))} Kč
+                        {formatCzk(Math.round(formData.oldPrice))} Kč
                       </div>
                     ) : null}
                     <div className="text-3xl font-black text-[#CCAD8A]">

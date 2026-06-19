@@ -1,6 +1,21 @@
+import { useState, useEffect } from 'react';
 import { Wrench, Truck, Star, Phone, Mail, MapPin, CreditCard } from 'lucide-react';
 
 export default function Footer() {
+  const [phone, setPhone] = useState('+420 774 060 193');
+  const [email, setEmail] = useState('info@qapi.cz');
+  const [companyName, setCompanyName] = useState('Qapi.cz');
+
+  useEffect(() => {
+    fetch('/api/store-settings')
+      .then(res => res.json())
+      .then(data => {
+        if (data.phone) setPhone(data.phone);
+        if (data.email) setEmail(data.email);
+        if (data.companyName) setCompanyName(data.companyName);
+      })
+      .catch(() => {});
+  }, []);
   return (
     <footer className="bg-[#101924] text-white pt-16">
       <div className="container mx-auto px-6 mb-12">
@@ -119,11 +134,11 @@ export default function Footer() {
               <div className="space-y-4 text-sm text-gray-300">
                 <div className="flex items-center gap-3">
                   <Phone size={16} className="text-[#CCAD8A]" />
-                  <span className="font-semibold">+420 774 060 193</span>
+                  <span className="font-semibold">{phone}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Mail size={16} className="text-[#CCAD8A]" />
-                  <span className="font-semibold">info@qapi.cz</span>
+                  <span className="font-semibold">{email}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <MapPin size={16} className="text-[#CCAD8A]" />
@@ -167,7 +182,7 @@ export default function Footer() {
           </a>
         </div>
         <p>
-          © {new Date().getFullYear()} Qapi.cz — Všechna práva vyhrazena. Prémiová stínící technika na míru.
+          © {new Date().getFullYear()} {companyName} — Všechna práva vyhrazena. Prémiová stínící technika na míru.
         </p>
       </div>
     </footer>

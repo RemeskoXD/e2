@@ -10,6 +10,8 @@ import {
   X,
   Ruler,
   Palette,
+  Home,
+  Star,
 } from 'lucide-react';
 
 export default function AdminSidebar({
@@ -25,6 +27,8 @@ export default function AdminSidebar({
 }) {
   const navItems = [
     { path: '#/admin', icon: <LayoutDashboard size={20} />, label: 'Přehled a Analytika' },
+    { path: '#/admin/homepage', icon: <Home size={20} />, label: 'Úvodní stránka' },
+    { path: '#/admin/reviews', icon: <Star size={20} />, label: 'Reference' },
     { path: '#/admin/orders', icon: <ShoppingCart size={20} />, label: 'Objednávky' },
     { path: '#/admin/products', icon: <Package size={20} />, label: 'Produkty a Ceníky' },
     { path: '#/admin/brackets', icon: <Grid3x3 size={20} />, label: 'Mřížka ceníku' },

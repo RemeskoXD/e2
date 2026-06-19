@@ -29,6 +29,8 @@ import AdminBrackets from './pages/admin/AdminBrackets';
 import AdminMeasureGuide from './pages/admin/AdminMeasureGuide';
 import MeasureGuidePage from './pages/MeasureGuidePage';
 import AboutPage from './pages/AboutPage';
+import AdminHomepage from './pages/admin/AdminHomepage';
+import AdminReviews from './pages/admin/AdminReviews';
 
 function parseProductId(path: string): string | null {
   const m = path.match(/^#\/produkt\/([^?]+)/);
@@ -101,6 +103,8 @@ export default function App() {
           ) : (
             <>
               {currentPath === '#/admin' && <AdminDashboard />}
+              {currentPath === '#/admin/homepage' && <AdminHomepage />}
+              {currentPath === '#/admin/reviews' && <AdminReviews />}
               {currentPath === '#/admin/products' && <AdminProducts />}
               {currentPath === '#/admin/categories' && <AdminCategories />}
               {currentPath === '#/admin/fabric-groups' && <AdminFabricGroups />}

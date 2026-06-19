@@ -311,6 +311,63 @@ async function ensureSchema(db: Pool) {
     );
   `, "Image");
 
+  await runSafe(`
+    CREATE TABLE IF NOT EXISTS "StoreSettings" (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      data JSONB DEFAULT '{}'::jsonb
+    );
+  `, "StoreSettings");
+
+  await runSafe(`
+    CREATE TABLE IF NOT EXISTS "CustomerReview" (
+      id SERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      rating INTEGER NOT NULL DEFAULT 5,
+      city TEXT,
+      content TEXT NOT NULL,
+      image_url TEXT,
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `, "CustomerReview");
+
+  // Init StoreSettings if empty
+  const defaultBanners = JSON.stringify({
+    banners: [
+      {
+        id: "1",
+        image: "https://images.unsplash.com/photo-1615873968403-89e068629265?q=80&w=1600&auto=format&fit=crop",
+        title: "Doprava zdarma",
+        subtitle: "Při objednávce nad 5 000 Kč máte dopravu po celé ČR zcela zdarma.",
+        buttonText: "Zobrazit produkty",
+        link: "#/kategorie"
+      },
+      {
+        id: "2",
+        image: "https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=1600&auto=format&fit=crop",
+        title: "Sleva 10% na vybrané produkty",
+        subtitle: "Využijte časově omezené akce a nakupte prémiové stínění levněji.",
+        buttonText: "Zobrazit slevy",
+        link: "#/kategorie?cat=Promoakce"
+      },
+      {
+        id: "3",
+        image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1600&auto=format&fit=crop",
+        title: "Kvalitní stínění na míru",
+        subtitle: "Objevte naše moderní venkovní rolety, screeny a interiérové žaluzie pro váš domov.",
+        buttonText: "Začít konfigurovat",
+        link: "#/kategorie"
+      }
+    ],
+    recommendedProducts: []
+  });
+
+  await db.query(`
+    INSERT INTO "StoreSettings" (id, data)
+    VALUES (1, $1)
+    ON CONFLICT (id) DO NOTHING;
+  `, [defaultBanners]).catch(console.error);
+
   await db
     .query(
       `INSERT INTO "MeasureGuidePage" (id, eyebrow, title, intro, card_title, card_subtitle)
@@ -1501,6 +1558,97 @@ async function startServer() {
         res.json(result.rows[0]);
       } catch {
         res.status(500).json({ error: "Server error" });
+      }
+    });
+  });
+
+  // STORE SETTINGS API
+  app.get("/api/store-settings", async (req, res) => {
+    await withDb(res, async (db) => {
+      try {
+        const result = await db.query('SELECT data FROM "StoreSettings" WHERE id = 1');
+        if (result.rows.length > 0) {
+          res.json(result.rows[0].data);
+        } else {
+          res.json({ banners: [], recommendedProducts: [] });
+        }
+      } catch (e: any) {
+        res.status(500).json({ error: e.message });
+      }
+    });
+  });
+
+  app.post("/api/admin/store-settings", requireAdmin, async (req, res) => {
+    await withDb(res, async (db) => {
+      try {
+        const data = req.body;
+        await db.query(
+          'UPDATE "StoreSettings" SET data = $1 WHERE id = 1',
+          [JSON.stringify(data)]
+        );
+        res.json({ success: true });
+      } catch (e: any) {
+        res.status(500).json({ error: e.message });
+      }
+    });
+  });
+
+  // CUSTOMER REVIEWS API
+  app.get("/api/reviews", async (req, res) => {
+    await withDb(res, async (db) => {
+      try {
+        const result = await db.query('SELECT * FROM "CustomerReview" ORDER BY sort_order ASC, created_at DESC');
+        res.json(result.rows);
+      } catch (e: any) {
+        res.status(500).json({ error: e.message });
+      }
+    });
+  });
+
+  app.post("/api/admin/reviews", requireAdmin, async (req, res) => {
+    await withDb(res, async (db) => {
+      try {
+        const { name, rating, city, content, image_url, sort_order } = req.body;
+        const result = await db.query(
+          `INSERT INTO "CustomerReview" (name, rating, city, content, image_url, sort_order)
+           VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+          [name, rating, city, content, image_url, sort_order || 0]
+        );
+        res.json(result.rows[0]);
+      } catch (e: any) {
+        res.status(500).json({ error: e.message });
+      }
+    });
+  });
+
+  app.put("/api/admin/reviews/:id", requireAdmin, async (req, res) => {
+    await withDb(res, async (db) => {
+      try {
+        const { name, rating, city, content, image_url, sort_order } = req.body;
+        const result = await db.query(
+          `UPDATE "CustomerReview"
+           SET name = $1, rating = $2, city = $3, content = $4, image_url = $5, sort_order = $6
+           WHERE id = $7 RETURNING *`,
+          [name, rating, city, content, image_url, sort_order || 0, req.params.id]
+        );
+        if (result.rows.length === 0) {
+          res.status(404).json({ error: "Review not found" });
+          return;
+        }
+        res.json(result.rows[0]);
+      } catch (e: any) {
+        res.status(500).json({ error: e.message });
+      }
+    });
+  });
+
+  app.delete("/api/admin/reviews/:id", requireAdmin, async (req, res) => {
+    await withDb(res, async (db) => {
+      try {
+        await db.query('DELETE FROM "CustomerReview" WHERE id = $1', [req.params.id]);
+        res.json({ success: true });
+      } catch (e: any) {
+        res.status(500).json({ error: e.message });
       }
     });
   });

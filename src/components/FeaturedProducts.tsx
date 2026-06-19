@@ -25,14 +25,30 @@ export default function FeaturedProducts() {
   const fetchProducts = async () => {
     setFetchError(null);
     try {
-      const res = await fetch('/api/products');
-      const data = await res.json();
-      if (!res.ok) {
+      const [prodRes, setRes] = await Promise.all([
+        fetch('/api/products'),
+        fetch('/api/store-settings')
+      ]);
+      const data = await prodRes.json();
+      const settings = await setRes.json();
+      
+      if (!prodRes.ok) {
         setProducts([]);
         setFetchError(typeof data?.error === 'string' ? data.error : 'Produkty se nepodařilo načíst.');
         return;
       }
-      setProducts(Array.isArray(data) ? data.slice(0, 8) : []);
+      
+      let allProds: Product[] = Array.isArray(data) ? data : [];
+      if (settings.recommendedProducts && settings.recommendedProducts.length > 0) {
+        // filter and sort by recommendedProducts array of slugs
+        const recSlugs = settings.recommendedProducts;
+        allProds = recSlugs.map((slug: string) => allProds.find((p: any) => p.slug === slug || String(p.id) === slug)).filter(Boolean) as Product[];
+      } else {
+        // fallback
+        allProds = allProds.slice(0, 8);
+      }
+      
+      setProducts(allProds);
     } catch {
       setProducts([]);
       setFetchError('Nelze se spojit se serverem.');
