@@ -12,6 +12,8 @@ import { computeProductQuote } from "./quote-compute";
 import { sendOrderEmails } from "./order-email";
 import { registerMeasureGuideRoutes } from "./server-measure-guide";
 
+import { seedIsoline } from "./seed-isoline";
+
 const ADMIN_TOKEN =
   process.env.ADMIN_TOKEN?.trim() ||
   crypto.randomBytes(32).toString("hex");
@@ -513,9 +515,9 @@ async function startServer() {
         });
       }
 
-      schemaPromise = ensureSchema(pool).catch((err) =>
-        console.error("ensureSchema:", err)
-      );
+      schemaPromise = ensureSchema(pool)
+        .then(() => seedIsoline(pool as Pool))
+        .catch((err) => console.error("ensureSchema:", err));
     }
     return pool;
   };
