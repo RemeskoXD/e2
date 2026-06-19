@@ -22,7 +22,7 @@ export default function AdminSettings() {
   const [fixingDb, setFixingDb] = useState(false);
   const [fixResults, setFixResults] = useState<any>(null);
 
-  const checkDb = async () => {
+  const checkDb = async (clearResults = true) => {
     setCheckingDb(true);
     try {
       const res = await fetch('/api/admin/db-check', {
@@ -30,7 +30,7 @@ export default function AdminSettings() {
       });
       const data = await res.json();
       setDbStatus(data);
-      setFixResults(null);
+      if (clearResults) setFixResults(null);
     } catch (e: any) {
       toast.error('Nelze ověřit stav databáze');
     } finally {
@@ -49,7 +49,7 @@ export default function AdminSettings() {
       const data = await res.json();
       setFixResults(data);
       toast.success('Pokus o opravu databáze dokončen');
-      checkDb(); // Re-check after fix
+      checkDb(false); // Re-check after fix without clearing results
     } catch (e: any) {
       toast.error('Chyba při opravě databáze');
     } finally {
