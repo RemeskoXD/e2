@@ -306,6 +306,15 @@ export default function ProductDetail({ productId }: { productId: string }) {
     }
   };
 
+  useEffect(() => {
+    if (!widthMm || !heightMm || !product) return;
+    const timer = setTimeout(() => {
+      runQuote();
+    }, 500);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [widthMm, heightMm, color, fabric, pliseModel, lamela, polyscreen, bezLatky, ral, selectedFabricGroupId, selectedFabricGroupConfigIndex, selectedExtras, selectedParameters, product]);
+
   const handleAddToCart = () => {
     if (!product || !quote?.total_czk) return;
     const w = Math.round(Number(widthMm));
