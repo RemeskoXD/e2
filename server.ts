@@ -1562,6 +1562,109 @@ async function startServer() {
     });
   });
 
+  // DB DIAGNOSTICS & REPAIR API
+  app.get("/api/admin/db-check", requireAdmin, async (req, res) => {
+    await withDb(res, async (db) => {
+      try {
+        const missing = { tables: [] as string[], columns: [] as string[] };
+        
+        // Check tables
+        const requiredTables = ["Category", "FabricGroup", "Product", "ProductPriceBracket", "ProductHeightPriceTier", "Order", "OrderItem", "Customer", "MeasureGuideSection", "Image", "StoreSettings", "CustomerReview"];
+        for (const t of requiredTables) {
+          const tRes = await db.query('SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = $1)', [t]);
+          if (!tRes.rows[0].exists) missing.tables.push(t);
+        }
+
+        // Check columns in Product
+        const requiredProductColumns = [
+          "supplier_markup_percent", "commission_percent", "width_mm_min", "width_mm_max", "height_mm_min", "height_mm_max",
+          "max_area_m2", "price_mode", "fabric_group", "validation_profile", "hidden", "gallery", "colors", "fabric_groups_config",
+          "extras", "parameters", "slug"
+        ];
+        
+        const cRes = await db.query('SELECT column_name FROM information_schema.columns WHERE table_name = $1', ['Product']);
+        const existingColumns = cRes.rows.map(r => r.column_name);
+        
+        for (const c of requiredProductColumns) {
+          if (!existingColumns.includes(c)) missing.columns.push(`Product.${c}`);
+        }
+
+        res.json({
+          status: missing.tables.length === 0 && missing.columns.length === 0 ? "ok" : "issues_found",
+          missing
+        });
+      } catch (e: any) {
+        res.status(500).json({ error: e.message });
+      }
+    });
+  });
+
+  app.post("/api/admin/db-fix", requireAdmin, async (req, res) => {
+    await withDb(res, async (db) => {
+      try {
+        const results: string[] = [];
+        const errors: string[] = [];
+        
+        const executeQuery = async (sql: string, description: string) => {
+          try {
+            await db.query(sql);
+            results.push(`SUCCESS: ${description}`);
+          } catch (e: any) {
+            errors.push(`FAILED: ${description} - ${e.message}`);
+          }
+        };
+
+        await executeQuery(`CREATE TABLE IF NOT EXISTS "StoreSettings" (id INTEGER PRIMARY KEY CHECK (id = 1), data JSONB DEFAULT '{}'::jsonb)`, 'Create StoreSettings');
+        await executeQuery(`CREATE TABLE IF NOT EXISTS "CustomerReview" (id SERIAL PRIMARY KEY, name TEXT NOT NULL, rating INTEGER NOT NULL DEFAULT 5, city TEXT, content TEXT NOT NULL, image_url TEXT, sort_order INTEGER NOT NULL DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`, 'Create CustomerReview');
+        
+        // Init StoreSettings if empty
+        const defaultBanners = JSON.stringify({ banners: [], recommendedProducts: [] });
+        await executeQuery(`INSERT INTO "StoreSettings" (id, data) VALUES (1, '${defaultBanners}') ON CONFLICT DO NOTHING`, 'Init StoreSettings');
+
+        const alters = [
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS supplier_markup_percent NUMERIC(6,2) NOT NULL DEFAULT 0`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS commission_percent NUMERIC(6,2) NOT NULL DEFAULT 0`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS width_mm_min INTEGER`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS width_mm_max INTEGER`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS height_mm_min INTEGER`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS height_mm_max INTEGER`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS max_area_m2 NUMERIC(6,2)`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS price_mode VARCHAR(32) DEFAULT 'matrix_cell'`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS fabric_group INTEGER`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS validation_profile VARCHAR(32)`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS hidden BOOLEAN DEFAULT FALSE`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS gallery JSONB DEFAULT '[]'::jsonb`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS colors JSONB DEFAULT '[]'::jsonb`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS fabric_groups_config JSONB DEFAULT '[]'::jsonb`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS extras JSONB DEFAULT '[]'::jsonb`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS parameters JSONB DEFAULT '[]'::jsonb`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS slug VARCHAR(255) UNIQUE`
+        ];
+
+        for (const sql of alters) {
+          const colName = sql.split('EXISTS ')[1].split(' ')[0];
+          await executeQuery(sql, `Add column ${colName} to Product`);
+        }
+
+        // Indexes
+        await executeQuery(`CREATE INDEX IF NOT EXISTS "ProductHeightPriceTier_product_id_idx" ON "ProductHeightPriceTier" (product_id)`, 'Index ProductHeightPriceTier');
+        await executeQuery(`CREATE INDEX IF NOT EXISTS "ProductPriceBracket_product_id_idx" ON "ProductPriceBracket" (product_id)`, 'Index ProductPriceBracket');
+        await executeQuery(`CREATE INDEX IF NOT EXISTS "OrderItem_order_id_idx" ON "OrderItem" (order_id)`, 'Index OrderItem');
+
+        // Slugs fix
+        await executeQuery(`UPDATE "Product" SET slug = encode(gen_random_bytes(8), 'hex') WHERE slug IS NULL`, 'Fix empty slugs');
+
+        res.json({
+          status: errors.length === 0 ? "success" : "partial_success",
+          results,
+          errors
+        });
+      } catch (e: any) {
+        res.status(500).json({ error: e.message });
+      }
+    });
+  });
+
   // STORE SETTINGS API
   app.get("/api/store-settings", async (req, res) => {
     await withDb(res, async (db) => {
