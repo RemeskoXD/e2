@@ -450,9 +450,10 @@ export default function ProductDetail({ productId }: { productId: string }) {
               </div>
             )}
           </div>
+        </div>
 
-          {/* Right Column: Calculator Widget */}
-          <div className="w-full lg:w-[55%]">
+        {/* Right Column: Calculator Widget */}
+        <div className="w-full lg:w-[55%]">
             <div className="bg-white border border-gray-100 rounded-[2rem] p-6 lg:p-10 shadow-xl shadow-gray-200/40 relative overflow-hidden">
               {/* Decorative background element */}
               <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#132333] via-[#CCAD8A] to-[#132333]"></div>
@@ -1001,7 +1002,6 @@ export default function ProductDetail({ productId }: { productId: string }) {
               </div>
             </div>
           </div>
-        </div>
       </div>
       </div>
       </div>
