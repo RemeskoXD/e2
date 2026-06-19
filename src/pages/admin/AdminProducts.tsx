@@ -546,30 +546,6 @@ export default function AdminProducts() {
           </button>
           <button
             type="button"
-            onClick={async () => {
-              if (window.confirm("Spustit import produktu Isoline dle PDF ceníku?")) {
-                try {
-                  const token = localStorage.getItem('adminToken') || '';
-                  const res = await fetch('/api/admin/import-isoline', {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                  });
-                  if (res.ok) {
-                    alert('Import ISOLINE proběhl úspěšně!');
-                    fetchData();
-                  } else {
-                    alert('Chyba při importu.');
-                  }
-                } catch (e: any) { alert(e.message); }
-              }
-            }}
-            className="bg-[#132333] hover:bg-[#1f3a53] text-white font-bold px-4 py-2.5 rounded-lg transition-colors flex items-center gap-2"
-          >
-            <Terminal size={18} />
-            Import ISOLINE
-          </button>
-          <button
-            type="button"
             onClick={() => handleOpenModal()}
             className="bg-[#CCAD8A] hover:bg-[#b5997a] text-[#132333] font-bold px-4 py-2.5 rounded-lg transition-colors flex items-center gap-2"
           >

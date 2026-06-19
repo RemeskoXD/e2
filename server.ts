@@ -1674,6 +1674,178 @@ async function startServer() {
     });
   });
 
+  
+  app.post("/api/admin/import-isoline-prim", requireAdmin, async (req, res) => {
+    await withDb(res, async (db) => {
+      try {
+        const rawMatrix = `
+300 263 283 304 323 359 377 395 422 441 456 476 525 537 558 578 593 616 656 680 695
+400 277 297 316 335 381 397 422 448 469 487 518 558 582 599 621 641 660 713 738 759
+500 284 305 328 351 393 416 441 473 494 514 536 591 616 636 656 680 702 756 779 802
+600 301 323 341 369 416 437 464 499 528 550 575 634 658 660 704 732 753 814 859 872
+700 309 333 361 390 441 467 490 534 557 576 611 677 702 724 752 779 805 866 912 946
+800 324 359 376 407 456 486 512 557 585 605 637 706 736 763 794 819 844 915 962 1013
+900 333 365 393 422 476 509 537 585 619 646 678 747 778 810 839 870 897 970 1003 1083
+1000 346 377 411 445 499 531 564 619 646 680 713 789 821 855 886 915 949 1025 1065 1116
+1100 357 390 426 458 518 554 585 641 676 710 744 822 858 892 925 959 994 1071 1120 1171
+1200 372 407 442 476 539 578 612 678 708 744 809 863 900 939 975 1009 1045 1127 1171 1208
+1300 381 422 463 495 561 596 636 697 737 777 816 901 942 981 1021 1054 1096 1182 1228 1322
+1400 392 432 472 512 578 621 659 720 763 804 844 939 977 1018 1059 1096 1137 1228 1283 1390
+1500 404 447 487 531 599 641 683 749 797 838 883 977 1021 1064 1102 1157 1190 1282 1329 1446
+1600 416 463 509 553 621 662 710 778 826 870 918 1016 1063 1106 1152 1194 1239 1321 1397 1487
+1700 426 472 519 568 640 683 733 809 855 900 949 1050 1096 1140 1190 1236 1282 1386 1449 1538
+1800 441 486 536 584 660 718 759 836 885 935 983 1090 1138 1186 1233 1287 1333 1437 1508 1592
+1900 448 499 553 599 678 730 779 859 909 962 1012 1122 1177 1223 1256 1326 1376 1485 1565 1660
+2000 463 512 566 621 700 753 804 884 946 998 1045 1162 1219 1268 1316 1374 1427 1537 1623 1729
+2100 473 530 581 637 722 777 832 912 977 1028 1075 1205 1256 1310 1367 1422 1484 1594 1660 1796
+2200 483 537 597 652 737 795 852 946 1003 1058 1118 1238 1293 1350 1417 1462 1514 1639 1733 1862
+2300 494 552 616 666 753 812 872 979 1027 1088 1157 1273 1331 1392 1464 1507 1546 1684 1811 1929
+2400 505 559 633 680 768 833 896 1012 1051 1118 1197 1305 1370 1431 1514 1549 1578 1729 1882 1995
+`;
+
+        const widths = [300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200];
+        
+        const params = [
+          {
+            id: "lamela_provedeni",
+            name: "Provedení a typ lamel",
+            type: "select",
+            options: [
+              { label: "Standardní provedení - Základní barvy (lamela 25x0.18)", value: "std_zaklad", priceVariant: 0, priceType: "per_m2" },
+              { label: "Domykatelné provedení (Celostín) - Základní barvy", value: "dom_zaklad", priceVariant: 33, priceType: "per_m2" },
+              { label: "Standardní provedení - Lamela 16 mm", value: "std_l16", priceVariant: 74, priceType: "per_m2" },
+              { label: "Standardní provedení - Lamela 25x0.21 (č. 101-155, 211-265, 311-371, 700 a 714)", value: "std_l25_g1", priceVariant: 74, priceType: "per_m2" },
+              { label: "Domykatelné provedení - Lamela 25x0.21 (č. 101-155, 211-265, 311-371, 700 a 714)", value: "dom_l25_g1", priceVariant: 107, priceType: "per_m2" },
+              { label: "Standardní provedení - Lamela 25x0.21 (SR 621-630, SM 801-869)", value: "std_l25_g2", priceVariant: 207, priceType: "per_m2" },
+              { label: "Domykatelné provedení - Lamela 25x0.21 (SR 621-630, SM 801-869)", value: "dom_l25_g2", priceVariant: 240, priceType: "per_m2" },
+              { label: "Standardní provedení - Barvy 780, 783, 1940, 8005, 8101, 8300, 8204, 8107", value: "std_barva_ex", priceVariant: 87, priceType: "per_m2" },
+              { label: "Domykatelné provedení - Barvy 780, 783, 1940, 8005, 8101, 8300, 8204, 8107", value: "dom_barva_ex", priceVariant: 120, priceType: "per_m2" },
+              { label: "Standardní provedení - Perforované lamely (PR1, PR58, PR61, PR103, PR285)", value: "std_perf", priceVariant: 76, priceType: "per_m2" },
+              { label: "Domykatelné provedení - Perforované lamely (PR1, PR58, PR61, PR103, PR285)", value: "dom_perf", priceVariant: 109, priceType: "per_m2" },
+              { label: "Standardní provedení - Imitace dřeva", value: "std_drevo", priceVariant: 169, priceType: "per_m2" },
+              { label: "Domykatelné provedení - Imitace dřeva", value: "dom_drevo", priceVariant: 267, priceType: "per_m2" }
+            ]
+          },
+          {
+            id: "profil",
+            name: "Barva profilů (horní a dolní)",
+            type: "select",
+            options: [
+              { label: "Základní sladění (bílá atd.)", value: "zakladni", priceVariant: 0, priceType: "fixed" },
+              { label: "Prim imitace dřeva", value: "prim_drevo", priceVariant: 131, priceType: "per_bm" }
+            ]
+          },
+          {
+            id: "ovladani_brzda",
+            name: "Ovládání (Brzda a převodovka)",
+            type: "select",
+            options: [
+              { label: "Standardní provedení (bez brzdy)", value: "std", priceVariant: 0, priceType: "fixed" },
+              { label: "Brzda (poměr 1:1)", value: "brzda", priceVariant: 34, priceType: "fixed" },
+              { label: "Převodovka s brzdou (poměr 1:4)", value: "prevodovka", priceVariant: 82, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "podlozka",
+            name: "Distanční podložka",
+            type: "select",
+            options: [
+              { label: "Bez podložky", value: "0", priceVariant: 0, priceType: "fixed" },
+              { label: "1 pár podložek (< 14 mm zaskl. lišta)", value: "1", priceVariant: 12, priceType: "fixed" },
+              { label: "2 páry podložek (< 10 mm zaskl. lišta)", value: "2", priceVariant: 24, priceType: "fixed" },
+              { label: "3 páry podložek", value: "3", priceVariant: 36, priceType: "fixed" },
+              { label: "4 páry podložek", value: "4", priceVariant: 48, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "bezpecnost",
+            name: "Bezpečnostní prvek",
+            type: "select",
+            options: [
+              { label: "Ne", value: "ne", priceVariant: 0, priceType: "fixed" },
+              { label: "Ano", value: "ano", priceVariant: 12, priceType: "fixed" }
+            ]
+          }
+        ];
+
+        const catRes = await db.query(`SELECT name FROM "Category" WHERE name = 'Horizontální žaluzie'`);
+        let category = 'Horizontální žaluzie';
+        if (catRes.rows.length === 0) {
+            const catRes2 = await db.query(`SELECT name FROM "Category" WHERE name ILIKE '%žaluzie%' LIMIT 1`);
+            if (catRes2.rows.length > 0) category = catRes2.rows[0].name;
+            else {
+               await db.query(`INSERT INTO "Category" (name, count, img) VALUES ('Horizontální žaluzie', 1, '')`);
+            }
+        }
+
+        const pRes = await db.query(`
+          INSERT INTO "Product" (
+            title, slug, category, price, "oldPrice", badge, img, "desc", 
+            supplier_markup_percent, commission_percent, 
+            width_mm_min, width_mm_max, height_mm_min, height_mm_max, max_area_m2, 
+            parameters, gallery, colors, extras, fabric_groups_config, price_mode, hidden
+          ) VALUES (
+            $1, $2, $3, $4, null, $5, $6, $7,
+            4.9, 0,
+            240, 2200, 300, 2400, 5.28,
+            $8, '[]', '[]', '[]', '[]', 'matrix_cell', false
+          )
+          ON CONFLICT (slug) DO UPDATE SET
+            title = EXCLUDED.title,
+            price = EXCLUDED.price,
+            "desc" = EXCLUDED."desc",
+            parameters = EXCLUDED.parameters,
+            max_area_m2 = 5.28,
+            height_mm_max = 2400,
+            width_mm_min = 240,
+            price_mode = 'matrix_cell'
+          RETURNING id
+        `, [
+          "Horizontální žaluzie Isoline PRIM",
+          "horizontalni-zaluzie-isoline-prim",
+          category,
+          263,
+          "",
+          "https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=600&auto=format&fit=crop",
+          `<h3>Základní ceníková sestava</h3><ul><li><strong>Horní profil:</strong> 47,3 x 24 x 24,7 mm, materiál válcovaný pozinkovaný plech</li><li><strong>Dolní profil:</strong> materiál válcovaný pozinkovaný plech</li><li><strong>Ovládání:</strong> Sdružené řetízkové ovládání</li><li><strong>Montáž:</strong> Interiérové provedení s čelním vývodem ovládání a s fixací silonovou strunou</li></ul><br /><h3>Technické detaily a provedení</h3><p><strong>Domykatelné provedení (Celostín):</strong> Domykatelná žaluzie, u které je po dovření lamel minimalizován prostup světla skrze lamely. Efektu je docíleno excentrickým umístěním otvorů v lamelách (nelze pro lamelu 16 mm).</p><p><strong>Vyměření:</strong> Jako výrobní šířka a výška se uvádí rozměr mezi zasklívacími lištami. Při malé hloubce zasklívacích lišt je nutno přidat distanční podložky pod koncovky.</p><p><em>DŮLEŽITÉ UPOZORNĚNÍ: Standardní provedení má maximální plochu 1.5 m². Pro žaluzie s větší plochou (až do 5.28 m²) zvolte jako příplatek <strong>Převodovku s brzdou</strong> pro zachování záruky.</em></p>`,
+          JSON.stringify(params)
+        ]);
+
+        const productId = pRes.rows[0].id;
+
+        await db.query(`DELETE FROM "ProductPriceBracket" WHERE product_id = $1`, [productId]);
+
+        const lines = rawMatrix.trim().split('\n');
+        let brackets = [];
+        for (const line of lines) {
+          const parts = line.trim().split(/\s+/).map(Number);
+          if (parts.length < 21) continue;
+          
+          const height = parts[0];
+          for (let i = 0; i < widths.length; i++) {
+            const width = widths[i];
+            const price = parts[i + 1];
+            if (price) {
+              brackets.push(`(${productId}, ${width}, ${height}, ${price})`);
+            }
+          }
+        }
+
+        if (brackets.length > 0) {
+          await db.query(`
+            INSERT INTO "ProductPriceBracket" (product_id, width_mm_max, height_mm_max, base_price_czk)
+            VALUES ${brackets.join(', ')}
+          `);
+        }
+
+        res.json({ success: true, message: `Imported product ID: ${productId} with ${brackets.length} brackets.` });
+      } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: e.message });
+      }
+    });
+  });
+
   app.post("/api/admin/categories", requireAdmin, async (req, res) => {
     await withDb(res, async (db) => {
       try {

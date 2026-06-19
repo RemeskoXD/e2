@@ -24,6 +24,7 @@ import AdminFabricGroups from './pages/admin/AdminFabricGroups';
 import AdminOrders from './pages/admin/AdminOrders';
 import AdminOrderDetail from './pages/admin/AdminOrderDetail';
 import AdminCustomers from './pages/admin/AdminCustomers';
+import AdminImports from './pages/admin/AdminImports';
 import AdminSettings from './pages/admin/AdminSettings';
 import AdminBrackets from './pages/admin/AdminBrackets';
 import AdminMeasureGuide from './pages/admin/AdminMeasureGuide';
@@ -110,6 +111,7 @@ export default function App() {
               {currentPath === '#/admin/products' && <AdminProducts />}
               {currentPath === '#/admin/categories' && <AdminCategories />}
               {currentPath === '#/admin/fabric-groups' && <AdminFabricGroups />}
+              {currentPath === '#/admin/imports' && <AdminImports />}
               {currentPath === '#/admin/orders' && <AdminOrders />}
               {currentPath === '#/admin/customers' && <AdminCustomers />}
               {currentPath === '#/admin/settings' && <AdminSettings />}

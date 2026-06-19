@@ -12,6 +12,7 @@ import {
   Palette,
   Home,
   Star,
+  Terminal,
 } from 'lucide-react';
 
 export default function AdminSidebar({
@@ -32,6 +33,7 @@ export default function AdminSidebar({
     { path: '#/admin/product-reviews', icon: <Star size={20} />, label: 'Recenze produktů' },
     { path: '#/admin/orders', icon: <ShoppingCart size={20} />, label: 'Objednávky' },
     { path: '#/admin/products', icon: <Package size={20} />, label: 'Produkty a Ceníky' },
+    { path: '#/admin/imports', icon: <Terminal size={20} />, label: 'Hromadné importy' },
     { path: '#/admin/brackets', icon: <Grid3x3 size={20} />, label: 'Mřížka ceníku' },
     { path: '#/admin/categories', icon: <Folders size={20} />, label: 'Kategorie' },
     { path: '#/admin/fabric-groups', icon: <Palette size={20} />, label: 'Skupiny látek' },
