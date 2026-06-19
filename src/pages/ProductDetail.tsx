@@ -1075,9 +1075,16 @@ export default function ProductDetail({ productId }: { productId: string }) {
             </div>
           </div>
         </div>
+      </div>
 
-      {/* Reviews Section */}
-      <div className="mt-16 border-t border-gray-200 pt-12">
+      {/* Mobile Info (visible only on mobile) */}
+      <div className="block lg:hidden px-4 mt-8 mb-12">
+        {productInfoBlock}
+      </div>
+
+      {/* Reviews Section - Full Width */}
+      <div className="w-full bg-white border-t border-gray-200 py-16 mt-8">
+        <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">Hodnocení zákazníků</h2>
@@ -1155,12 +1162,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
             ))}
           </div>
         )}
-      </div>
-      </div>
-
-      {/* Mobile Info (visible only on mobile) */}
-      <div className="block lg:hidden mt-8 mb-12">
-        {productInfoBlock}
+        </div>
       </div>
       </div>
 
