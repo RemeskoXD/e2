@@ -370,6 +370,11 @@ export default function ProductDetail({ productId }: { productId: string }) {
         return;
       }
       
+      if (color && color.includes('12002') && h > 1100) {
+        toast.error('Látka Melisa BO 12002 má omezenou maximální výšku na 1100 mm.', { duration: 5000 });
+        return;
+      }
+
       if (selectedFabricGroupConfigIndex !== null && product.fabric_groups_config && product.fabric_groups_config[selectedFabricGroupConfigIndex]) {
         const groupConfig = product.fabric_groups_config[selectedFabricGroupConfigIndex];
         const maxW = groupConfig.max_width_mm;

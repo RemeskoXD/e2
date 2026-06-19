@@ -1889,7 +1889,7 @@ async function startServer() {
         const fabricGroups = [
           { name: "Skupina 1 (Adriana, Melisa)", surcharge_percent: 0, max_width_mm: 2000, max_height_mm: 2300, colors: [] },
           { name: "Skupina 2 (Melisa BO)", surcharge_percent: 10, max_width_mm: 2000, max_height_mm: 1200, colors: [] },
-          { name: "Skupina 3 (Stella BO, Melisa BO B/B, Melisa BO B/S)", surcharge_percent: 15, max_width_mm: 2000, max_height_mm: 1300, colors: [] },
+          { name: "Skupina 3 (Stella BO, Melisa BO B/S)", surcharge_percent: 15, max_width_mm: 2000, max_height_mm: 1300, colors: [] },
           { name: "Skupina 4 (Tropic)", surcharge_percent: 20, max_width_mm: 1950, max_height_mm: 1700, colors: [] },
           { name: "Skupina 5 (Screen nehořlavá)", surcharge_percent: 45, max_width_mm: 1950, max_height_mm: 1200, colors: [] },
         ];
