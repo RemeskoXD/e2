@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ShoppingCart, Ruler, Info, Check, AlertCircle } from 'lucide-react';
 import { useCart } from '../context/CartContext';
@@ -173,7 +173,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
     }
   }, [widthMm, heightMm, color, fabric, pliseModel, lamela, polyscreen, bezLatky, selectedExtras, selectedFabricGroupConfigIndex, selectedParameters]);
 
-  const visibleParameters = React.useMemo(() => {
+  const visibleParameters = useMemo(() => {
     if (!product?.parameters) return [];
     return product.parameters.filter(param => {
       if (!param.condition) return true;
