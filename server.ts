@@ -2415,6 +2415,194 @@ async function startServer() {
     });
   });
 
+  
+  app.post("/api/admin/import-site-hmyz", requireAdmin, async (req, res) => {
+    await withDb(res, async (db) => {
+      try {
+        const slug = 'site-proti-hmyzu-okenni';
+        
+        const params = [
+          {
+            id: "typ_okna",
+            name: "Typ okna (určuje profil sítě)",
+            type: "select",
+            options: [
+              { label: "Plastové okno (profil ISSO OE 19x8)", value: "pvc" },
+              { label: "Dřevěné EURO okno / plast s okapničkou (profil OE 24x24)", value: "euro" },
+              { label: "Hliníkové okno (profil OE 32x11 LUX)", value: "hlinik" }
+            ]
+          },
+          {
+            id: "barva_profilu_pvc",
+            name: "Barva rámu",
+            type: "select",
+            condition: { dependsOnParamId: "typ_okna", allowedValues: ["pvc"] },
+            options: [
+              { label: "Bílá RAL 9016 mat", value: "bila" },
+              { label: "Hnědá RAL 8019 mat", value: "hneda" },
+              { label: "RAL 7016 mat", value: "ral_7016" },
+              { label: "RAL 8003 mat", value: "ral_8003" },
+              { label: "RAL 9006 mat", value: "ral_9006" },
+              { label: "ELOX champagne", value: "elox", priceVariant: 71, priceType: "per_m2" },
+              { label: "RAL 7016 struktura / DB 703", value: "ral_struktura", priceVariant: 57, priceType: "per_m2" },
+              { label: "Nestandardní lakování RAL", value: "ral_nestandard", priceVariant: 382, priceType: "per_m2" },
+              { label: "Nástřik imitace dřeva (zlatý dub, přírodní dub, tmavý dub, třešeň, tmavý ořech, sapeli)", value: "imitace_nástrik", priceVariant: 162, priceType: "per_m2" },
+              { label: "Renolit jednostranně", value: "renolit_jedno", priceVariant: 301, priceType: "per_m2" },
+              { label: "Renolit oboustranně", value: "renolit_obou", priceVariant: 528, priceType: "per_m2" }
+            ]
+          },
+          {
+            id: "barva_profilu_euro",
+            name: "Barva rámu",
+            type: "select",
+            condition: { dependsOnParamId: "typ_okna", allowedValues: ["euro"] },
+            options: [
+              { label: "Bílá RAL 9016 mat", value: "bila" },
+              { label: "Hnědá RAL 8019 mat", value: "hneda" },
+              { label: "RAL 8003 mat", value: "ral_8003" },
+              { label: "Nestandardní lakování RAL", value: "ral_nestandard", priceVariant: 382, priceType: "per_m2" },
+              { label: "Renolit oboustranně", value: "renolit_obou", priceVariant: 282, priceType: "per_m2" }
+            ]
+          },
+          {
+            id: "barva_profilu_hlinik",
+            name: "Barva rámu",
+            type: "select",
+            condition: { dependsOnParamId: "typ_okna", allowedValues: ["hlinik"] },
+            options: [
+              { label: "Bílá RAL 9016 mat", value: "bila" },
+              { label: "Hnědá RAL 8019 mat", value: "hneda" },
+              { label: "RAL 7016 mat", value: "ral_7016" },
+              { label: "RAL 8003 mat", value: "ral_8003" },
+              { label: "RAL 9006 mat", value: "ral_9006" },
+              { label: "RAL 7016 struktura / DB 703", value: "ral_struktura", priceVariant: 117, priceType: "per_m2" },
+              { label: "Nestandardní lakování RAL", value: "ral_nestandard", priceVariant: 382, priceType: "per_m2" },
+              { label: "Lakování imitace dřeva (zlatý dub, třešeň amaretto, tmavý ořech)", value: "imitace_lak", priceVariant: 200, priceType: "per_m2" }
+            ]
+          },
+          {
+            id: "sitovina",
+            name: "Typ síťoviny",
+            type: "select",
+            options: [
+              { label: "Skelné vlákno - šedá", value: "zaklad_seda" },
+              { label: "Skelné vlákno - černá", value: "zaklad_cerna" },
+              { label: "Transparentní síťovina - černá", value: "transparentni", priceVariant: 142, priceType: "per_m2" },
+              { label: "Protipylová síťovina - černá", value: "protipylova", priceVariant: 431, priceType: "per_m2" },
+              { label: "Pet screen (odolná) - šedá", value: "petscreen_seda", priceVariant: 475, priceType: "per_m2" },
+              { label: "Pet screen (odolná) - černá", value: "petscreen_cerna", priceVariant: 475, priceType: "per_m2" },
+              { label: "Síťovina s nanovláknem - černá (jen pro EURO a Hliníková okna)", value: "nano", priceVariant: 1078, priceType: "per_m2" }
+            ]
+          },
+          {
+            id: "uchyceni_pvc",
+            name: "Výška otočného držáku",
+            type: "select",
+            condition: { dependsOnParamId: "typ_okna", allowedValues: ["pvc"] },
+            options: [
+              { label: "0 mm", value: "0" }, { label: "4 mm", value: "4" }, { label: "6 mm", value: "6" },
+              { label: "7 mm", value: "7" }, { label: "9 mm", value: "9" }, { label: "11 mm", value: "11" },
+              { label: "12 mm", value: "12" }, { label: "13 mm", value: "13" }, { label: "15 mm", value: "15" },
+              { label: "17 mm", value: "17" }, { label: "19 mm", value: "19" }, { label: "21 mm", value: "21" },
+              { label: "23 mm", value: "23" }, { label: "25 mm", value: "25" }, { label: "27 mm", value: "27" },
+              { label: "29 mm", value: "29" }, { label: "31 mm", value: "31" }
+            ]
+          },
+          {
+            id: "uchyceni_hlinik",
+            name: "Výška Z držáku nerez",
+            type: "select",
+            condition: { dependsOnParamId: "typ_okna", allowedValues: ["hlinik"] },
+            options: [
+              { label: "8 mm", value: "8" }, { label: "10 mm", value: "10" }, { label: "12 mm", value: "12" },
+              { label: "14 mm", value: "14" }, { label: "16 mm", value: "16" }, { label: "18 mm", value: "18" },
+              { label: "20 mm", value: "20" }, { label: "22 mm", value: "22" }, { label: "24 mm", value: "24" },
+              { label: "26 mm", value: "26" }, { label: "28 mm", value: "28" }, { label: "30 mm", value: "30" },
+              { label: "32 mm", value: "32" }, { label: "34 mm", value: "34" }
+            ]
+          },
+          {
+            id: "posuvny_z_drzak",
+            name: "Posuvný Z držák (pro hliníková okna)",
+            type: "select",
+            condition: { dependsOnParamId: "typ_okna", allowedValues: ["hlinik"] },
+            options: [
+              { label: "Ne", value: "ne" },
+              { label: "Ano (+68 Kč)", value: "ano", priceVariant: 68, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "provedeni_rohu_euro",
+            name: "Provedení rohů (pro EURO okna)",
+            type: "select",
+            condition: { dependsOnParamId: "typ_okna", allowedValues: ["euro"] },
+            options: [
+              { label: "Vnější rohy (standard)", value: "vnejsi" },
+              { label: "Vnitřní rohy", value: "vnitrni", priceVariant: 89, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "provedeni_sikmina",
+            name: "Provedení šikmina (pro plastová okna)",
+            type: "select",
+            condition: { dependsOnParamId: "typ_okna", allowedValues: ["pvc"] },
+            options: [
+              { label: "Ne", value: "ne" },
+              { label: "Ano (vyžaduje nákres)", value: "ano", priceVariant: 407, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "okenni_pricka",
+            name: "Okenní příčka (pro zpevnění nebo velká okna)",
+            type: "select",
+            options: [
+              { label: "Ne", value: "ne" },
+              { label: "Ano (v základní barvě)", value: "ano_zaklad", priceVariant: 69, priceType: "fixed" },
+              { label: "Ano (v barvě RAL)", value: "ano_ral", priceVariant: 85, priceType: "fixed" }
+            ]
+          }
+        ];
+
+        // Ensure category exists
+        const catRes = await db.query(`SELECT name FROM "Category" WHERE name = 'Sítě proti hmyzu'`);
+        if (catRes.rows.length === 0) {
+            await db.query(`INSERT INTO "Category" (name, count, img) VALUES ('Sítě proti hmyzu', 1, '')`);
+        }
+
+        const title = "Okenní sítě proti hmyzu";
+        const desc = "Univerzální okenní sítě proti hmyzu s profilací na míru pro plastová, dřevěná i hliníková okna. Obsahuje široký výběr síťovin včetně antialergických nebo extra odolných (Pet Screen).";
+        const img = "/img/placeholder.jpg"; 
+
+        await db.query(
+          `INSERT INTO "Product" 
+            (title, slug, category, "desc", price, price_mode, validation_profile, img, parameters, supplier_markup_percent, commission_percent, dimension_constraints) 
+          VALUES 
+            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+          ON CONFLICT (slug) DO UPDATE SET
+            title = EXCLUDED.title,
+            category = EXCLUDED.category,
+            "desc" = EXCLUDED."desc",
+            price_mode = EXCLUDED.price_mode,
+            validation_profile = EXCLUDED.validation_profile,
+            parameters = EXCLUDED.parameters,
+            dimension_constraints = EXCLUDED.dimension_constraints
+          `,
+          [
+            title, slug, 'Sítě proti hmyzu', desc, 562, 
+            'custom', 'sit_hmyz', img, 
+            JSON.stringify(params), 0, 0, 
+            JSON.stringify({ width_mm_min: 200, width_mm_max: 1800, height_mm_min: 200, height_mm_max: 1800 })
+          ]
+        );
+
+        res.json({ success: true, message: 'Sítě proti hmyzu naimportovány!' });
+      } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: e.message });
+      }
+    });
+  });
+
   app.post("/api/admin/categories", requireAdmin, async (req, res) => {
     await withDb(res, async (db) => {
       try {

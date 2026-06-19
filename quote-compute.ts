@@ -129,9 +129,9 @@ export async function computeProductQuote(
     const pParams = Array.isArray(product.parameters) ? product.parameters : [];
     
     const actualAreaM2 = (wR * hR) / 1_000_000;
-    // Speciální pravidlo pro Isoline: minimální účtovaná plocha pro příplatky je 0.5 m2
-    const isIsoline = productTitle.toLowerCase().includes('isoline');
-    const calcAreaM2 = isIsoline ? Math.max(0.5, actualAreaM2) : actualAreaM2;
+    // Speciální pravidlo pro Isoline a Sítě: minimální účtovaná plocha pro příplatky je 0.5 m2
+    const minArea05 = productTitle.toLowerCase().includes('isoline') || product.validation_profile === 'sit_hmyz';
+    const calcAreaM2 = minArea05 ? Math.max(0.5, actualAreaM2) : actualAreaM2;
     const calcWidthM = wR / 1000;
 
     for (const p of pParams) {
@@ -517,6 +517,62 @@ export async function computeProductQuote(
     baseCatalogCzk = lagartaPrice;
   }
   // --- KONEC PLISÉ LAGARTA ---
+
+  // --- SÍTĚ PROTI HMYZU ---
+  if (matrixProfile === "sit_hmyz") {
+    const p = body?.selected_parameters || {};
+    const typOkna = p.typ_okna;
+    let basePriceM2 = 0;
+    
+    // Limits checking
+    const lim = { maxW: 1800, maxH: 1800, maxArea: 3.30 }; // Defaults
+    if (typOkna === 'pvc') {
+      basePriceM2 = 562;
+      lim.maxW = 1500;
+      lim.maxH = 1800;
+      lim.maxArea = 2.70;
+    } else if (typOkna === 'euro') {
+      basePriceM2 = 697;
+      lim.maxW = 1800;
+      lim.maxH = 1800;
+      lim.maxArea = 3.30;
+    } else if (typOkna === 'hlinik') {
+      basePriceM2 = 1088;
+      lim.maxW = 1800;
+      lim.maxH = 1800;
+      lim.maxArea = 3.24;
+    } else {
+      return { ok: false, status: 400, body: { error: `Není zvolen platný typ okna.` } };
+    }
+
+    if (wR > lim.maxW || hR > lim.maxH) {
+      return { ok: false, status: 400, body: { error: `Tento profil lze vyrobit max do šířky ${lim.maxW} mm a výšky ${lim.maxH} mm.` } };
+    }
+    const actualAreaM2 = (wR * hR) / 1000000;
+    if (actualAreaM2 > lim.maxArea) {
+      return { ok: false, status: 400, body: { error: `Celková plocha nesmí překročit ${lim.maxArea} m² (zadáno ${actualAreaM2.toFixed(2)} m²).` } };
+    }
+
+    // Site checks
+    const sitovina = p.sitovina;
+    if (sitovina === 'transparentni' && (wR > 1400 && hR > 1400)) {
+      return { ok: false, status: 400, body: { error: `Pro transparentní síťovinu musí být alespoň jeden z rozměrů max 1400 mm.` } };
+    }
+    if (sitovina === 'petscreen_cerna' && wR > 1500) {
+      return { ok: false, status: 400, body: { error: `Pro černý Pet screen je maximální možná šířka 1500 mm.` } };
+    }
+    if (sitovina === 'nano' && typOkna === 'pvc') {
+      return { ok: false, status: 400, body: { error: `Síťovina s nanovláknem nelze použít pro PVC okenní sítě (profil ISSO OE 19x8).` } };
+    }
+
+    const calcAreaM2 = Math.max(0.5, actualAreaM2);
+    if (actualAreaM2 < 0.5) {
+      screenUnionCatalogNotes.push(`Minimální účtovaná plocha sítě je 0.5 m².`);
+    }
+
+    baseCatalogCzk = basePriceM2 * calcAreaM2;
+  }
+  // --- KONEC SÍTĚ PROTI HMYZU ---
 
   if (matrixProfile === "screen_roleta_union_l" && screenUnionQuote) {
     if (screenUnionQuote.noFabric) {

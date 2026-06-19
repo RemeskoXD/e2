@@ -112,6 +112,20 @@ export default function AdminImports() {
               Spustit obří import
             </button>
           </div>
+
+          <div className="border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow">
+            <h3 className="font-bold text-lg text-gray-800 mb-2">Okenní sítě proti hmyzu</h3>
+            <p className="text-sm text-gray-600 mb-6">Univerzální okenní sítě s výběrem profilu dle typu okna (PVC, EURO, Hliník) a širokým výběrem síťovin.</p>
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => handleImport('/api/admin/import-site-hmyz', 'Okenní sítě proti hmyzu')}
+              className="w-full bg-[#132333] hover:bg-[#1f3a53] disabled:opacity-50 text-white font-bold px-4 py-2.5 rounded-lg transition-colors flex justify-center items-center gap-2"
+            >
+              <Terminal size={18} />
+              Spustit import
+            </button>
+          </div>
         </div>
       </div>
     </div>
