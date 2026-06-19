@@ -2504,8 +2504,7 @@ async function startServer() {
               { label: "7 mm", value: "7" }, { label: "9 mm", value: "9" }, { label: "11 mm", value: "11" },
               { label: "12 mm", value: "12" }, { label: "13 mm", value: "13" }, { label: "15 mm", value: "15" },
               { label: "17 mm", value: "17" }, { label: "19 mm", value: "19" }, { label: "21 mm", value: "21" },
-              { label: "23 mm", value: "23" }, { label: "25 mm", value: "25" }, { label: "27 mm", value: "27" },
-              { label: "29 mm", value: "29" }, { label: "31 mm", value: "31" }
+              { label: "23 mm", value: "23" }
             ]
           },
           {
@@ -2555,6 +2554,7 @@ async function startServer() {
             id: "okenni_pricka",
             name: "Okenní příčka (pro zpevnění nebo velká okna)",
             type: "select",
+            condition: { dependsOnParamId: "typ_okna", allowedValues: ["pvc", "euro"] },
             options: [
               { label: "Ne", value: "ne" },
               { label: "Ano (v základní barvě)", value: "ano_zaklad", priceVariant: 69, priceType: "fixed" },
