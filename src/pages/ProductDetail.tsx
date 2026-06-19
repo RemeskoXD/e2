@@ -40,7 +40,7 @@ type Product = {
     surcharge_percent?: number; // legacy
     max_width_mm?: number;
     max_height_mm?: number;
-    colors: { name: string; img?: string }[];
+    colors: { name: string; img?: string; max_width_mm?: number; max_height_mm?: number }[];
   }[] | null;
   parameters?: {
     id: string;
@@ -377,8 +377,16 @@ export default function ProductDetail({ productId }: { productId: string }) {
 
       if (selectedFabricGroupConfigIndex !== null && product.fabric_groups_config && product.fabric_groups_config[selectedFabricGroupConfigIndex]) {
         const groupConfig = product.fabric_groups_config[selectedFabricGroupConfigIndex];
-        const maxW = groupConfig.max_width_mm;
-        const maxH = groupConfig.max_height_mm;
+        let maxW = groupConfig.max_width_mm;
+        let maxH = groupConfig.max_height_mm;
+        
+        if (color) {
+          const selectedColorObj = groupConfig.colors.find(c => c.name === color);
+          if (selectedColorObj) {
+            if (selectedColorObj.max_width_mm) maxW = selectedColorObj.max_width_mm;
+            if (selectedColorObj.max_height_mm) maxH = selectedColorObj.max_height_mm;
+          }
+        }
         
         if (maxW && w > maxW) {
            toast.error(`Vybraná látka se v této šířce nedá vyrobit (maximum je ${maxW} mm).`, { duration: 5000 });

@@ -1969,6 +1969,166 @@ async function startServer() {
     });
   });
 
+  
+  app.post("/api/admin/import-optima-den-noc", requireAdmin, async (req, res) => {
+    await withDb(res, async (db) => {
+      try {
+        const rawMatrix = `
+500 1370 1461 1554 1646 1736 1828 1922 2013 2104 2198 2288
+600 1422 1518 1613 1709 1806 1901 1996 2093 2187 2285 2380
+700 1476 1576 1675 1776 1874 1974 2074 2174 2271 2373 2471
+800 1528 1632 1735 1840 1944 2047 2150 2254 2357 2461 2565
+900 1582 1689 1796 1904 2013 2119 2227 2333 2441 2549 2656
+1000 1635 1746 1857 1969 2080 2191 2303 2414 2525 2637 2748
+1100 1688 1804 1919 2033 2149 2264 2380 2495 2610 2726 2841
+1200 1740 1862 1978 2098 2217 2338 2455 2574 2695 2814 2934
+1300 1794 1918 2041 2163 2287 2410 2532 2655 2778 2900 3024
+1400 1847 1974 2101 2229 2355 2481 2609 2736 2863 2990 3118
+1500 1901 2031 2162 2293 2423 2554 2685 2817 2947 3078 3209
+1600 1954 2088 2223 2357 2491 2628 2763 2896 3031 3166 3301
+1700 2007 2144 2283 2422 2560 2702 2840 2977 3114 3254 3394
+1800 2060 2201 2342 2487 2627 2775 2916 3057 3197 3343 3487
+1900 2114 2257 2402 2551 2695 2849 2994 3137 3281 3431 3579
+2000 2167 2314 2462 2616 2763 2923 3070 3217 3365 3519 3672
+2100 2220 2371 2522 2680 2830 2996 3148 3298 3449 3608 3765
+2200 2272 2427 2582 2744 2898 3069 3224 3378 3533 3696 3858
+2300 2326 2483 2642 2809 2967 3143 3301 3459 3616 3784 3951
+`;
+
+        const widths = [500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500];
+        
+        const params = [
+          {
+            id: "bezpecnost",
+            name: "Bezpečnostní prvek",
+            type: "select",
+            options: [
+              { label: "Ne", value: "ne", priceVariant: 0, priceType: "fixed" },
+              { label: "Ano", value: "ano", priceVariant: 12, priceType: "fixed" }
+            ]
+          }
+        ];
+
+        const fabricGroups = [
+          { 
+            name: "Skupina 1", surcharge_percent: 0, 
+            max_width_mm: 1500, max_height_mm: 2300, 
+            colors: [
+              { name: "Alyssia", max_height_mm: 1500 },
+              { name: "Grace", max_height_mm: 1500 },
+              { name: "Samantha", max_height_mm: 2300 }
+            ]
+          },
+          { 
+            name: "Skupina 2", surcharge_percent: 5, 
+            max_width_mm: 1500, max_height_mm: 1500, 
+            colors: [
+              { name: "Grace V", max_height_mm: 1500 },
+              { name: "Grace VIII", max_height_mm: 1500 }
+            ] 
+          },
+          { 
+            name: "Skupina 3", surcharge_percent: 15, 
+            max_width_mm: 1500, max_height_mm: 1500, 
+            colors: [
+              { name: "Alyssia II", max_height_mm: 1500 },
+              { name: "Grace II", max_height_mm: 1500 },
+              { name: "Grace IV", max_height_mm: 1500 }
+            ] 
+          },
+          { 
+            name: "Skupina 4", surcharge_percent: 30, 
+            max_width_mm: 1500, max_height_mm: 2300, 
+            colors: [
+              { name: "Alyssia III", max_height_mm: 1500 },
+              { name: "Grace III", max_height_mm: 2300 },
+              { name: "Grace VII", max_height_mm: 2300 }
+            ] 
+          },
+          { 
+            name: "Skupina 5", surcharge_percent: 50, 
+            max_width_mm: 1500, max_height_mm: 1300, 
+            colors: [
+              { name: "Grace VI", max_height_mm: 1300 }
+            ] 
+          },
+        ];
+
+        const catRes = await db.query(`SELECT name FROM "Category" WHERE name = 'Textilní roletky'`);
+        let category = 'Textilní roletky';
+        if (catRes.rows.length === 0) {
+            await db.query(`INSERT INTO "Category" (name, count, img) VALUES ('Textilní roletky', 1, '')`);
+        }
+
+        const pRes = await db.query(`
+          INSERT INTO "Product" (
+            title, slug, category, price, "oldPrice", badge, img, "desc", 
+            supplier_markup_percent, commission_percent, 
+            width_mm_min, width_mm_max, height_mm_min, height_mm_max, max_area_m2, 
+            parameters, gallery, colors, extras, fabric_groups_config, price_mode, hidden
+          ) VALUES (
+            $1, $2, $3, $4, null, $5, $6, $7,
+            4.9, 0,
+            330, 1500, 500, 2300, null,
+            $8, '[]', '[]', '[{"key":"colorSectionTitle","value":"Vyberte model látky"}]', $9, 'matrix_cell', false
+          )
+          ON CONFLICT (slug) DO UPDATE SET
+            title = EXCLUDED.title,
+            price = EXCLUDED.price,
+            "desc" = EXCLUDED."desc",
+            parameters = EXCLUDED.parameters,
+            fabric_groups_config = EXCLUDED.fabric_groups_config,
+            height_mm_max = 2300,
+            width_mm_max = 1500,
+            price_mode = 'matrix_cell'
+          RETURNING id
+        `, [
+          "Textilní roletka Optima Den a noc",
+          "textilni-roletka-optima-den-a-noc",
+          category,
+          1370,
+          "",
+          "https://images.unsplash.com/photo-1558211583-d26f610c1eb1?q=80&w=600&auto=format&fit=crop",
+          `<h3>Základní ceníková sestava</h3><ul><li><strong>Látka:</strong> 100% polyester, vzor dle výběru</li><li><strong>Box:</strong> hliníkový profil (bílá, hnědá, stříbrná)</li><li><strong>Hřídel:</strong> hliníkový profil, průměr 18 mm</li><li><strong>Vodící lišta:</strong> hliníková</li><li><strong>Závaží látky:</strong> hliníkové</li><li><strong>Ovládání:</strong> nekonečný řetízek se závažím</li><li><strong>Uchycení:</strong> křídlo okna</li></ul><br /><h3>Technické detaily a montáž</h3><p>Roletka je v provedení s krytem návinu látky a s vodícími lištami po stranách. Konstrukce roletky umožňuje různé nastavení výšky stažení látky.</p><p><strong>Neinvazivní montáž:</strong> Pomocí oboustranné lepící pásky na křídlo (nezmenšuje světlost).</p><p><em>Upozornění: Každá látka má z důvodu své tloušťky a typu odlišný limit pro maximální výšku návinu! E-shop Vás na tyto limity upozorní podle Vašeho výběru.</em></p>`,
+          JSON.stringify(params),
+          JSON.stringify(fabricGroups)
+        ]);
+
+        const productId = pRes.rows[0].id;
+
+        await db.query(`DELETE FROM "ProductPriceBracket" WHERE product_id = $1`, [productId]);
+
+        const lines = rawMatrix.trim().split('\n');
+        let brackets = [];
+        for (const line of lines) {
+          const parts = line.trim().split(/\s+/).map(Number);
+          if (parts.length < 12) continue;
+          
+          const height = parts[0];
+          for (let i = 0; i < widths.length; i++) {
+            const width = widths[i];
+            const price = parts[i + 1];
+            if (price) {
+              brackets.push(`(${productId}, ${width}, ${height}, ${price})`);
+            }
+          }
+        }
+
+        if (brackets.length > 0) {
+          await db.query(`
+            INSERT INTO "ProductPriceBracket" (product_id, width_mm_max, height_mm_max, base_price_czk)
+            VALUES ${brackets.join(', ')}
+          `);
+        }
+
+        res.json({ success: true, message: `Imported product ID: ${productId} with ${brackets.length} brackets.` });
+      } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: e.message });
+      }
+    });
+  });
+
   app.post("/api/admin/categories", requireAdmin, async (req, res) => {
     await withDb(res, async (db) => {
       try {
