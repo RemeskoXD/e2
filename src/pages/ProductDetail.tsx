@@ -361,7 +361,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
 
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start relative">
           {/* Left Column: Images & Info (Sticky) */}
-          <div className="w-full lg:w-[45%] space-y-8 lg:sticky lg:top-24">
+          <div className="w-full lg:w-[55%] space-y-8 lg:sticky lg:top-24">
             {/* Images */}
             <div className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100">
             <div 
@@ -453,7 +453,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
         </div>
 
         {/* Right Column: Calculator Widget */}
-        <div className="w-full lg:w-[55%]">
+        <div className="w-full lg:w-[45%]">
             <div className="bg-white border border-gray-100 rounded-[2rem] p-6 lg:p-10 shadow-xl shadow-gray-200/40 relative overflow-hidden">
               {/* Decorative background element */}
               <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#132333] via-[#CCAD8A] to-[#132333]"></div>
@@ -586,7 +586,6 @@ export default function ProductDetail({ productId }: { productId: string }) {
                                   key={cName}
                                   onClick={() => {
                                     setColor(cName);
-                                    if (cImg) setMainImg(cImg);
                                   }}
                                   className={`relative group overflow-hidden border-2 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#CCAD8A] ${
                                   color === cName ? 'border-[#CCAD8A] shadow-md scale-105' : 'border-gray-200 hover:border-[#132333]'
@@ -636,7 +635,6 @@ export default function ProductDetail({ productId }: { productId: string }) {
                           key={cName}
                           onClick={() => {
                             setColor(cName);
-                            if (cImg) setMainImg(cImg);
                           }}
                           className={`relative group overflow-hidden border-2 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#CCAD8A] ${
                             color === cName ? 'border-[#CCAD8A] shadow-md scale-105' : 'border-gray-200 hover:border-[#132333]'
