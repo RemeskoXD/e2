@@ -270,6 +270,9 @@ async function ensureSchema(db: Pool) {
     `ALTER TABLE "Order" ADD COLUMN IF NOT EXISTS customer_email VARCHAR(255)`,
     `ALTER TABLE "Order" ADD COLUMN IF NOT EXISTS customer_phone VARCHAR(50)`,
     `ALTER TABLE "Order" ADD COLUMN IF NOT EXISTS customer_note TEXT`,
+    `ALTER TABLE "OrderItem" ALTER COLUMN product_id DROP NOT NULL`,
+    `ALTER TABLE "OrderItem" DROP CONSTRAINT IF EXISTS "OrderItem_product_id_fkey"`,
+    `ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_product_id_fkey" FOREIGN KEY (product_id) REFERENCES "Product"(id) ON DELETE SET NULL`
   ]) {
     await db.query(sql).catch(() => {});
   }
@@ -278,7 +281,7 @@ async function ensureSchema(db: Pool) {
     CREATE TABLE IF NOT EXISTS "OrderItem" (
       id SERIAL PRIMARY KEY,
       order_id INTEGER NOT NULL REFERENCES "Order"(id) ON DELETE CASCADE,
-      product_id INTEGER NOT NULL REFERENCES "Product"(id),
+      product_id INTEGER REFERENCES "Product"(id) ON DELETE SET NULL,
       product_title VARCHAR(500),
       width_mm INTEGER NOT NULL,
       height_mm INTEGER NOT NULL,
@@ -2026,8 +2029,22 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
+    app.use(express.static(distPath, {
+      setHeaders: (res, filePath) => {
+        if (filePath.endsWith('index.html')) {
+          res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+          res.setHeader('Pragma', 'no-cache');
+          res.setHeader('Expires', '0');
+        } else {
+          // Cache static assets for 1 year since they have content hashes
+          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        }
+      }
+    }));
     app.get("*", (req, res) => {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
       res.sendFile(path.join(distPath, "index.html"));
     });
   }
