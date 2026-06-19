@@ -31,6 +31,7 @@ import MeasureGuidePage from './pages/MeasureGuidePage';
 import AboutPage from './pages/AboutPage';
 import AdminHomepage from './pages/admin/AdminHomepage';
 import AdminReviews from './pages/admin/AdminReviews';
+import ReviewsAdmin from './pages/admin/ReviewsAdmin';
 
 function parseProductId(path: string): string | null {
   const m = path.match(/^#\/produkt\/([^?]+)/);
@@ -105,6 +106,7 @@ export default function App() {
               {currentPath === '#/admin' && <AdminDashboard />}
               {currentPath === '#/admin/homepage' && <AdminHomepage />}
               {currentPath === '#/admin/reviews' && <AdminReviews />}
+              {currentPath === '#/admin/product-reviews' && <ReviewsAdmin />}
               {currentPath === '#/admin/products' && <AdminProducts />}
               {currentPath === '#/admin/categories' && <AdminCategories />}
               {currentPath === '#/admin/fabric-groups' && <AdminFabricGroups />}

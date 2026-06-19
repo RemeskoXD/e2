@@ -250,6 +250,19 @@ async function ensureSchema(db: Pool) {
     console.warn("Could not create index on ProductPriceBracket (maybe user is not owner):", err.message || err);
   });
 
+  await runSafe(`
+    CREATE TABLE IF NOT EXISTS "Review" (
+      id SERIAL PRIMARY KEY,
+      product_id INTEGER NOT NULL REFERENCES "Product"(id) ON DELETE CASCADE,
+      author_name VARCHAR(255) NOT NULL,
+      rating INTEGER NOT NULL,
+      text TEXT,
+      images JSONB DEFAULT '[]'::jsonb,
+      approved BOOLEAN DEFAULT FALSE,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `, "Review");
+
   for (const sql of [
     `ALTER TABLE "Order" ADD COLUMN IF NOT EXISTS customer_email VARCHAR(255)`,
     `ALTER TABLE "Order" ADD COLUMN IF NOT EXISTS customer_phone VARCHAR(50)`,
@@ -465,6 +478,14 @@ async function startServer() {
     message: { error: "Příliš mnoho výpočtů cen. Zkuste to za chvíli." },
   });
 
+  const reviewsLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: IS_PROD ? 20 : 10000,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: "Příliš mnoho požadavků. Zkuste to za chvíli." },
+  });
+
   app.use(express.json({ limit: "50mb" }));
 
   if (IS_PROD) {
@@ -623,6 +644,45 @@ async function startServer() {
     });
   });
 
+  app.get("/api/admin/reviews", requireAdmin, async (req, res) => {
+    await withDb(res, async (db) => {
+      try {
+        const result = await db.query(
+          'SELECT r.*, p.title as product_title FROM "Review" r JOIN "Product" p ON r.product_id = p.id ORDER BY r.created_at DESC'
+        );
+        res.json(result.rows);
+      } catch (err) {
+        console.error("Error fetching admin reviews:", err);
+        res.status(500).json({ error: "Server error" });
+      }
+    });
+  });
+
+  app.patch("/api/admin/reviews/:id/approve", requireAdmin, async (req, res) => {
+    const id = Number(req.params.id);
+    const { approved } = req.body;
+    await withDb(res, async (db) => {
+      try {
+        await db.query('UPDATE "Review" SET approved = $1 WHERE id = $2', [!!approved, id]);
+        res.json({ success: true });
+      } catch (err) {
+        res.status(500).json({ error: "Server error" });
+      }
+    });
+  });
+
+  app.delete("/api/admin/reviews/:id", requireAdmin, async (req, res) => {
+    const id = Number(req.params.id);
+    await withDb(res, async (db) => {
+      try {
+        await db.query('DELETE FROM "Review" WHERE id = $1', [id]);
+        res.json({ success: true });
+      } catch (err) {
+        res.status(500).json({ error: "Server error" });
+      }
+    });
+  });
+
   app.get("/api/admin/products", requireAdmin, async (req, res) => {
     await withDb(res, async (db) => {
       try {
@@ -673,6 +733,67 @@ async function startServer() {
       } catch (e) {
         console.error(e);
         res.status(500).json({ error: "Chyba výpočtu" });
+      }
+    });
+  });
+
+  // --- REVIEWS ---
+
+  app.get("/api/products/:id/reviews", async (req, res) => {
+    const productId = Number(req.params.id);
+    if (!Number.isFinite(productId)) return res.status(400).json({ error: "Invalid product ID" });
+    await withDb(res, async (db) => {
+      try {
+        const result = await db.query(
+          'SELECT id, author_name, rating, text, images, created_at FROM "Review" WHERE product_id = $1 AND approved = true ORDER BY created_at DESC',
+          [productId]
+        );
+        res.json(result.rows);
+      } catch (err) {
+        console.error("Error fetching reviews:", err);
+        res.status(500).json({ error: "Server error" });
+      }
+    });
+  });
+
+  app.post("/api/products/:id/reviews", reviewsLimiter, async (req, res) => {
+    const productId = Number(req.params.id);
+    if (!Number.isFinite(productId)) return res.status(400).json({ error: "Invalid product ID" });
+    const { author_name, rating, text, images } = req.body;
+    if (!author_name || !rating || typeof rating !== "number" || rating < 1 || rating > 5) {
+      return res.status(400).json({ error: "Vyplňte jméno a hodnocení (1-5 hvězdiček)." });
+    }
+    await withDb(res, async (db) => {
+      try {
+        await db.query(
+          'INSERT INTO "Review" (product_id, author_name, rating, text, images, approved) VALUES ($1, $2, $3, $4, $5, false)',
+          [productId, String(author_name), rating, text ? String(text) : null, JSON.stringify(Array.isArray(images) ? images : [])]
+        );
+        res.json({ success: true });
+      } catch (err) {
+        console.error("Error saving review:", err);
+        res.status(500).json({ error: "Chyba při ukládání recenze." });
+      }
+    });
+  });
+
+  app.post("/api/reviews/upload", reviewsLimiter, async (req, res) => {
+    await withDb(res, async (db) => {
+      try {
+        const { mimeType, data } = req.body;
+        if (!mimeType || !data) {
+          return res.status(400).json({ error: "Chybí mimeType nebo data." });
+        }
+        if (!mimeType.startsWith("image/")) {
+          return res.status(400).json({ error: "Nepovolený formát." });
+        }
+        const cryptoPath = await import("crypto");
+        const id = "rev_" + cryptoPath.default.randomBytes(8).toString("hex");
+        await db.query('INSERT INTO "Image" (id, mime_type, data) VALUES ($1, $2, $3)', [id, mimeType, data]);
+        res.json({ id, url: `/api/images/${id}` });
+      } catch (e: any) {
+        console.error("Upload error:", e);
+        res.status(500).json({ error: "Nastala chyba při ukládání obrázku." });
       }
     });
   });

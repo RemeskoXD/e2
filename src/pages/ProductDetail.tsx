@@ -1,9 +1,19 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { ShoppingCart, Ruler, Info, Check, AlertCircle } from 'lucide-react';
+import { ShoppingCart, Ruler, Info, Check, AlertCircle, Star } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { formatCzk } from '../lib/money';
 import { sanitizeGuideHtml } from '../lib/measureGuide';
+import ReviewModal from '../components/ReviewModal';
+
+type Review = {
+  id: number;
+  author_name: string;
+  rating: number;
+  text?: string;
+  images?: string[];
+  created_at: string;
+};
 
 type Product = {
   id: number;
@@ -86,10 +96,14 @@ export default function ProductDetail({ productId }: { productId: string }) {
   const [bezLatky, setBezLatky] = useState(initialParams.get('bezLatky') === '1');
   const [ral, setRal] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [lightboxImages, setLightboxImages] = useState<string[]>([]);
   const [quote, setQuote] = useState<QuoteRes | null>(null);
   const [quoteError, setQuoteError] = useState<string | null>(null);
   const [quoting, setQuoting] = useState(false);
   const [fabricGroups, setFabricGroups] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedExtras, setSelectedExtras] = useState<string[]>(() => {
     const ex = initialParams.get('extras');
     return ex ? ex.split(',') : [];
@@ -138,6 +152,21 @@ export default function ProductDetail({ productId }: { productId: string }) {
           setWidthMm(String(Math.round((d.width_mm_min + d.width_mm_max) / 2)));
           setHeightMm(String(Math.round((d.height_mm_min + d.height_mm_max) / 2)));
         }
+
+        // Fetch reviews
+        try {
+          setReviewsLoading(true);
+          const revRes = await fetch(`/api/products/${p.id}/reviews`);
+          if (revRes.ok) {
+            const revData = await revRes.json();
+            if (Array.isArray(revData)) setReviews(revData);
+          }
+        } catch (e) {
+          console.error("Error fetching reviews:", e);
+        } finally {
+          setReviewsLoading(false);
+        }
+
       } catch {
         setError('Chyba sítě.');
       } finally {
@@ -524,7 +553,10 @@ export default function ProductDetail({ productId }: { productId: string }) {
                   Zadejte rozměry
                   {measureImg && (
                     <button 
-                      onClick={() => setLightboxIndex(allImages.indexOf(measureImg))}
+                      onClick={() => {
+                        setLightboxImages(allImages);
+                        setLightboxIndex(allImages.indexOf(measureImg));
+                      }}
                       className="ml-auto flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors"
                       title="Jak zaměřit"
                     >
@@ -1042,6 +1074,87 @@ export default function ProductDetail({ productId }: { productId: string }) {
               </div>
             </div>
           </div>
+        </div>
+
+      {/* Reviews Section */}
+      <div className="mt-16 border-t border-gray-200 pt-12">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">Hodnocení zákazníků</h2>
+            {reviews.length > 0 && (
+              <div className="flex items-center gap-2 mt-2">
+                <div className="flex items-center text-yellow-400">
+                  <Star className="fill-current w-5 h-5" />
+                  <span className="ml-1.5 text-lg font-bold text-gray-900">
+                    {(reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)}
+                  </span>
+                </div>
+                <span className="text-gray-500 text-sm">({reviews.length} hodnocení)</span>
+              </div>
+            )}
+          </div>
+          <button
+            onClick={() => setShowReviewModal(true)}
+            className="px-6 py-2.5 bg-white border-2 border-gray-200 text-gray-700 font-bold rounded-xl hover:border-[#CCAD8A] hover:text-[#CCAD8A] transition-colors"
+          >
+            Napsat recenzi
+          </button>
+        </div>
+
+        {reviewsLoading ? (
+          <div className="animate-pulse flex space-x-4">
+            <div className="flex-1 space-y-4 py-1">
+              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+              <div className="space-y-2">
+                <div className="h-4 bg-gray-200 rounded"></div>
+                <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+              </div>
+            </div>
+          </div>
+        ) : reviews.length === 0 ? (
+          <div className="text-center py-12 bg-gray-50 rounded-2xl border border-gray-100">
+            <p className="text-gray-500 mb-4">Zatím nebylo přidáno žádné hodnocení.</p>
+            <p className="text-sm text-gray-400">Buďte první, kdo se podělí o zkušenost!</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {reviews.map(review => (
+              <div key={review.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <span className="font-bold text-gray-900">{review.author_name}</span>
+                    <span className="text-xs text-gray-400 block mt-0.5">
+                      {new Date(review.created_at).toLocaleDateString('cs-CZ')}
+                    </span>
+                  </div>
+                  <div className="flex text-yellow-400">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className={`w-4 h-4 ${i < review.rating ? 'fill-current' : 'text-gray-200'}`} />
+                    ))}
+                  </div>
+                </div>
+                {review.text && <p className="text-gray-600 text-sm mb-4 flex-grow">{review.text}</p>}
+                {review.images && review.images.length > 0 && (
+                  <div className="flex gap-2 mt-auto overflow-x-auto pb-1 scrollbar-hide">
+                    {review.images.map((imgUrl, i) => (
+                      <img 
+                        key={i} 
+                        src={imgUrl} 
+                        alt="Fotka od zákazníka" 
+                        className="w-16 h-16 object-cover rounded-lg cursor-zoom-in border border-gray-200 hover:border-[#CCAD8A] transition-colors flex-shrink-0"
+                        onClick={() => {
+                          const reviewImages = review.images!;
+                          setLightboxImages(reviewImages);
+                          setLightboxIndex(i);
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
       </div>
 
@@ -1104,10 +1217,10 @@ export default function ProductDetail({ productId }: { productId: string }) {
         </div>
       </div>
 
-      {/* Lightbox Modal */}
-      {lightboxIndex !== null && product && (
+      {/* Lightbox */}
+      {lightboxIndex !== null && lightboxImages.length > 0 && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-4"
+          className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4 backdrop-blur-sm"
           onClick={() => setLightboxIndex(null)}
         >
           <button 
@@ -1119,7 +1232,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
           
           {(() => {
             const hasPrev = lightboxIndex > 0;
-            const hasNext = lightboxIndex < allImages.length - 1;
+            const hasNext = lightboxIndex < lightboxImages.length - 1;
             return (
               <>
                 {hasPrev && (
@@ -1132,7 +1245,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                 )}
                 
                 <img 
-                  src={allImages[lightboxIndex]} 
+                  src={lightboxImages[lightboxIndex]} 
                   alt="Zvětšený náhled" 
                   className="max-w-full max-h-full object-contain filter drop-shadow-2xl select-none"
                   onClick={(e) => e.stopPropagation()}
@@ -1151,7 +1264,18 @@ export default function ProductDetail({ productId }: { productId: string }) {
           })()}
         </div>
       )}
+
+      {/* Review Modal */}
+      {showReviewModal && (
+        <ReviewModal
+          productId={product.id}
+          onClose={() => setShowReviewModal(false)}
+          onSuccess={() => {
+            setShowReviewModal(false);
+            alert('Děkujeme za recenzi. Po schválení se objeví na webu.');
+          }}
+        />
+      )}
     </div>
   );
 }
-
