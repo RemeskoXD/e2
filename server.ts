@@ -2374,11 +2374,9 @@ async function startServer() {
         ];
 
         // Ensure category
-        const catRes = await db.query(`INSERT INTO "Category" (name, slug) VALUES ($1, $2) ON CONFLICT (slug) DO NOTHING RETURNING id`, ['Plisé žaluzie', 'plise-zaluzie']);
-        let catId = catRes.rows[0]?.id;
-        if (!catId) {
-          const e = await db.query(`SELECT id FROM "Category" WHERE slug = $1`, ['plise-zaluzie']);
-          catId = e.rows[0].id;
+        const catRes = await db.query(`SELECT name FROM "Category" WHERE name = 'Plisé žaluzie'`);
+        if (catRes.rows.length === 0) {
+            await db.query(`INSERT INTO "Category" (name, count, img) VALUES ('Plisé žaluzie', 1, '')`);
         }
 
         const title = "Plisé žaluzie Lagarta";
@@ -2387,11 +2385,12 @@ async function startServer() {
 
         await db.query(
           `INSERT INTO "Product" 
-            (title, slug, category_id, "desc", price, price_mode, validation_profile, img, parameters, supplier_markup_percent, commission_percent, fabric_groups_config, dimension_constraints) 
+            (title, slug, category, "desc", price, price_mode, validation_profile, img, parameters, supplier_markup_percent, commission_percent, fabric_groups_config, dimension_constraints) 
           VALUES 
             ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
           ON CONFLICT (slug) DO UPDATE SET
             title = EXCLUDED.title,
+            category = EXCLUDED.category,
             "desc" = EXCLUDED."desc",
             price_mode = EXCLUDED.price_mode,
             validation_profile = EXCLUDED.validation_profile,
@@ -2400,7 +2399,7 @@ async function startServer() {
             dimension_constraints = EXCLUDED.dimension_constraints
           `,
           [
-            title, slug, catId, desc, 1000, 
+            title, slug, 'Plisé žaluzie', desc, 1000, 
             'matrix_cell', 'plise_lagarta', img, 
             JSON.stringify(params), 0, 0, 
             JSON.stringify(fabricGroups), 
