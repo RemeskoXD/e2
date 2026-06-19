@@ -346,6 +346,11 @@ export default function ProductDetail({ productId }: { productId: string }) {
   const dim = product.dimension_constraints;
   const prof = product.validation_profile;
   const plainDesc = product.desc.replace(/<[^>]+>/g, '').substring(0, 150) + '...';
+  const measureImg = product.extras?.find((e: any) => e.key === 'measure_guide_img')?.value;
+  const allImages = [product.img, ...(product.gallery || [])];
+  if (measureImg && !allImages.includes(measureImg)) {
+    allImages.push(measureImg);
+  }
 
   const productTitleBlock = (
     <>
@@ -453,7 +458,6 @@ export default function ProductDetail({ productId }: { productId: string }) {
             <div 
               className="rounded-2xl overflow-hidden border border-gray-100 bg-white shadow-sm aspect-[4/3] mb-4 relative group cursor-zoom-in"
               onClick={() => {
-                const allImages = [product.img, ...(product.gallery || [])];
                 const index = allImages.indexOf(mainImg || product.img);
                 setLightboxIndex(index >= 0 ? index : 0);
               }}
@@ -509,6 +513,15 @@ export default function ProductDetail({ productId }: { productId: string }) {
                 <h3 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-3">
                   <span className="w-8 h-8 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center text-sm text-[#CCAD8A]">1</span>
                   Zadejte rozměry
+                  {measureImg && (
+                    <button 
+                      onClick={() => setLightboxIndex(allImages.indexOf(measureImg))}
+                      className="ml-auto flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors"
+                      title="Jak zaměřit"
+                    >
+                      ?
+                    </button>
+                  )}
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="relative">
@@ -1096,7 +1109,6 @@ export default function ProductDetail({ productId }: { productId: string }) {
           </button>
           
           {(() => {
-            const allImages = [product.img, ...(product.gallery || [])];
             const hasPrev = lightboxIndex > 0;
             const hasNext = lightboxIndex < allImages.length - 1;
             return (
