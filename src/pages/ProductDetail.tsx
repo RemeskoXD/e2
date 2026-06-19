@@ -44,7 +44,7 @@ type Product = {
     id: string;
     name: string;
     type: 'select' | 'color_array';
-    options: { label: string; value: string; colorCode?: string; img?: string; priceVariant?: number }[];
+    options: { label: string; value: string; colorCode?: string; img?: string; priceVariant?: number; priceType?: 'fixed' | 'per_m2' | 'per_bm' }[];
     condition?: {
       dependsOnParamId: string;
       allowedValues: string[];
@@ -611,6 +611,14 @@ export default function ProductDetail({ productId }: { productId: string }) {
                     {dim && <p className="text-[10px] text-gray-400 absolute bottom-2 right-3">min: {dim.height_mm_min}, max: {dim.height_mm_max}</p>}
                   </div>
                 </div>
+                {widthMm && heightMm && (
+                  <div className="mt-3 text-sm text-gray-600 bg-gray-100 rounded-xl px-4 py-2 border border-gray-200">
+                    <strong>Plocha:</strong> {((Number(widthMm) * Number(heightMm)) / 1000000).toFixed(2)} m²
+                    {product?.title?.toLowerCase().includes('isoline') && ((Number(widthMm) * Number(heightMm)) / 1000000) < 0.5 && (
+                      <span className="text-[#CCAD8A] ml-2 font-medium">(účtováno 0.5 m²)</span>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Color Palette or Fabric Groups */}
@@ -973,11 +981,14 @@ export default function ProductDetail({ productId }: { productId: string }) {
                             className="w-full border border-gray-200 rounded-xl px-3 py-3 focus:ring-2 focus:ring-[#CCAD8A] focus:border-[#CCAD8A] outline-none transition-all font-medium text-sm text-gray-700 bg-white"
                           >
                             <option value="" disabled>-- Vyberte --</option>
-                            {param.options.map(opt => (
-                              <option key={opt.value} value={opt.value}>
-                                {opt.label} {opt.priceVariant ? `(+${opt.priceVariant} Kč)` : ''}
-                              </option>
-                            ))}
+                            {param.options.map(opt => {
+                              const unit = opt.priceType === 'per_m2' ? ' Kč/m²' : opt.priceType === 'per_bm' ? ' Kč/bm' : ' Kč';
+                              return (
+                                <option key={opt.value} value={opt.value}>
+                                  {opt.label} {opt.priceVariant ? `(+${opt.priceVariant}${unit})` : ''}
+                                </option>
+                              );
+                            })}
                           </select>
                         </div>
                       ) : param.type === 'color_array' ? (
@@ -992,7 +1003,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                                   setQuote(null);
                                   if (opt.img) setMainImg(opt.img);
                                 }}
-                                title={`${opt.label} ${opt.priceVariant ? `(+${opt.priceVariant} Kč)` : ''}`}
+                                title={`${opt.label} ${opt.priceVariant ? `(+${opt.priceVariant}${opt.priceType === 'per_m2' ? ' Kč/m²' : opt.priceType === 'per_bm' ? ' Kč/bm' : ' Kč'})` : ''}`}
                                 className={`relative group overflow-hidden border-2 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#CCAD8A] ${
                                   isSelected ? 'border-[#CCAD8A] shadow-md scale-105' : 'border-gray-200 hover:border-[#132333]'
                                 } ${opt.img ? 'w-20 h-16 rounded-xl' : 'px-4 py-2 text-sm font-medium rounded-xl text-gray-700 bg-white'}`}
@@ -1036,11 +1047,15 @@ export default function ProductDetail({ productId }: { productId: string }) {
                           )}
                         </div>
                       ) : null}
-                      {selectedParameters[param.id] && param.options.find(o => o.value === selectedParameters[param.id])?.priceVariant ? (
-                         <p className="text-xs text-gray-500 mt-2">
-                           Příplatek za volbu: +{param.options.find(o => o.value === selectedParameters[param.id])!.priceVariant} Kč
-                         </p>
-                      ) : null}
+                      {selectedParameters[param.id] && param.options.find(o => o.value === selectedParameters[param.id])?.priceVariant ? (() => {
+                         const opt = param.options.find(o => o.value === selectedParameters[param.id])!;
+                         const unit = opt.priceType === 'per_m2' ? ' Kč/m²' : opt.priceType === 'per_bm' ? ' Kč/bm' : ' Kč';
+                         return (
+                           <p className="text-xs text-gray-500 mt-2">
+                             Příplatek za volbu: +{opt.priceVariant}{unit}
+                           </p>
+                         );
+                      })() : null}
                     </div>
                   ))}
                 </div>
