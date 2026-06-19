@@ -807,53 +807,51 @@ export default function AdminProducts() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Původní cena (přeškrtnutá, Kč)</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Prodejní cena (Kč)</label>
                   <input
                     type="number"
                     step="1"
-                    value={formData.oldPrice ?? ''}
+                    value={Math.round((formData.price || 0) * (1 + (formData.supplier_markup_percent || 0) / 100) * (1 + (formData.commission_percent || 0) / 100)) || ''}
                     onChange={(e) => {
-                      const newOldPrice = e.target.value === '' ? undefined : Number(e.target.value);
+                      const newSalePrice = Number(e.target.value);
                       setFormData(p => {
                         const baseWithMarkup = (p.price || 0) * (1 + (p.supplier_markup_percent || 0) / 100);
-                        const salePrice = baseWithMarkup * (1 + (p.commission_percent || 0) / 100);
-                        const newDiscount = newOldPrice ? newOldPrice - salePrice : 0;
+                        let newComm = p.commission_percent || 0;
+                        if (baseWithMarkup > 0) {
+                           newComm = ((newSalePrice / baseWithMarkup) - 1) * 100;
+                        }
                         
-                        const newExtras = [...(p.extras || [])];
-                        const dIdx = newExtras.findIndex(ex => ex.key === 'visibleDiscount');
-                        if (dIdx > -1) newExtras[dIdx].value = Math.round(newDiscount).toString();
-                        else newExtras.push({ key: 'visibleDiscount', value: Math.round(newDiscount).toString() });
+                        const pctObj = p.extras?.find(ex => ex.key === 'visibleDiscountPercent');
+                        const pct = pctObj ? Number(pctObj.value) : 0;
+                        const newOldPrice = pct > 0 ? (newSalePrice / (1 - pct / 100)) : undefined;
                         
-                        return { ...p, oldPrice: newOldPrice, extras: newExtras };
+                        return { ...p, commission_percent: Math.round(newComm * 100) / 100, oldPrice: newOldPrice };
                       });
                     }}
                     className="w-full px-4 py-2.5 bg-gray-50 text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#CCAD8A] transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Viditelná sleva (Kč)</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Viditelná sleva (%)</label>
                   <input
                     type="number"
                     step="1"
-                    value={formData.extras?.find(e => e.key === 'visibleDiscount')?.value || 0}
+                    min="0"
+                    max="100"
+                    value={formData.extras?.find(e => e.key === 'visibleDiscountPercent')?.value || ''}
                     onChange={(e) => {
-                      const newDiscount = Number(e.target.value);
+                      const newPct = Number(e.target.value);
                       setFormData(p => {
-                        const newExtras = [...(p.extras || [])];
-                        const dIdx = newExtras.findIndex(ex => ex.key === 'visibleDiscount');
-                        if (dIdx > -1) newExtras[dIdx].value = newDiscount.toString();
-                        else newExtras.push({ key: 'visibleDiscount', value: newDiscount.toString() });
+                        const newExtras = [...(p.extras || [])].filter(ex => ex.key !== 'visibleDiscount');
+                        const dIdx = newExtras.findIndex(ex => ex.key === 'visibleDiscountPercent');
+                        if (dIdx > -1) newExtras[dIdx].value = newPct.toString();
+                        else newExtras.push({ key: 'visibleDiscountPercent', value: newPct.toString() });
                         
-                        const oldP = p.oldPrice || 0;
-                        const targetSalePrice = oldP > 0 ? (oldP - newDiscount) : 0;
                         const baseWithMarkup = (p.price || 0) * (1 + (p.supplier_markup_percent || 0) / 100);
+                        const salePrice = baseWithMarkup * (1 + (p.commission_percent || 0) / 100);
+                        const newOldPrice = newPct > 0 ? (salePrice / (1 - newPct / 100)) : undefined;
                         
-                        let newComm = p.commission_percent;
-                        if (baseWithMarkup > 0 && oldP > 0) {
-                           newComm = ((targetSalePrice / baseWithMarkup) - 1) * 100;
-                        }
-                        
-                        return { ...p, extras: newExtras, commission_percent: Math.round(newComm * 100) / 100 };
+                        return { ...p, extras: newExtras, oldPrice: newOldPrice };
                       });
                     }}
                     className="w-full px-4 py-2.5 bg-gray-50 text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#CCAD8A] transition-all"
@@ -870,16 +868,12 @@ export default function AdminProducts() {
                       setFormData(p => {
                         const baseWithMarkup = (p.price || 0) * (1 + (p.supplier_markup_percent || 0) / 100);
                         const salePrice = baseWithMarkup * (1 + newComm / 100);
-                        const oldP = p.oldPrice || 0;
                         
-                        const newExtras = [...(p.extras || [])];
-                        if (oldP > 0) {
-                          const newDiscount = oldP - salePrice;
-                          const dIdx = newExtras.findIndex(ex => ex.key === 'visibleDiscount');
-                          if (dIdx > -1) newExtras[dIdx].value = Math.round(newDiscount).toString();
-                          else newExtras.push({ key: 'visibleDiscount', value: Math.round(newDiscount).toString() });
-                        }
-                        return { ...p, commission_percent: newComm, extras: newExtras };
+                        const pctObj = p.extras?.find(ex => ex.key === 'visibleDiscountPercent');
+                        const pct = pctObj ? Number(pctObj.value) : 0;
+                        const newOldPrice = pct > 0 ? (salePrice / (1 - pct / 100)) : undefined;
+                        
+                        return { ...p, commission_percent: newComm, oldPrice: newOldPrice };
                       });
                     }}
                     className="w-full px-4 py-2.5 bg-gray-50 text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#CCAD8A] transition-all"
