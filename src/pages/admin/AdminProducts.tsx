@@ -548,6 +548,7 @@ export default function AdminProducts() {
             onClick={async () => {
               if (window.confirm("Spustit import produktu Isoline dle PDF ceníku?")) {
                 try {
+                  const token = localStorage.getItem('adminToken') || '';
                   const res = await fetch('/api/admin/import-isoline', {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}` }
