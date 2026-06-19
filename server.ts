@@ -1876,6 +1876,26 @@ async function startServer() {
         
         const params = [
           {
+            id: "barva_profilu",
+            name: "Barva boxu a vodících lišt",
+            type: "select",
+            options: [
+              { label: "Bílá", value: "bila", priceVariant: 0, priceType: "fixed" },
+              { label: "Hnědá", value: "hneda", priceVariant: 0, priceType: "fixed" },
+              { label: "Stříbrná", value: "stribrna", priceVariant: 0, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "barva_retizku",
+            name: "Barva řetízku",
+            type: "select",
+            options: [
+              { label: "Bílá", value: "bila", priceVariant: 0, priceType: "fixed" },
+              { label: "Hnědá", value: "hneda", priceVariant: 0, priceType: "fixed" },
+              { label: "Šedá", value: "seda", priceVariant: 0, priceType: "fixed" }
+            ]
+          },
+          {
             id: "bezpecnost",
             name: "Bezpečnostní prvek",
             type: "select",
@@ -1998,6 +2018,40 @@ async function startServer() {
         const widths = [500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500];
         
         const params = [
+          {
+            id: "barva_profilu",
+            name: "Barva boxu a vodících lišt",
+            type: "select",
+            options: [
+              { label: "Bílá", value: "bila", priceVariant: 0, priceType: "fixed" },
+              { label: "Hnědá", value: "hneda", priceVariant: 0, priceType: "fixed" },
+              { label: "Stříbrná", value: "stribrna", priceVariant: 0, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "delka_retizku",
+            name: "Délka řetízku",
+            type: "select",
+            options: [
+              { label: "30 cm", value: "30", priceVariant: 0, priceType: "fixed" },
+              { label: "50 cm", value: "50", priceVariant: 0, priceType: "fixed" },
+              { label: "75 cm", value: "75", priceVariant: 0, priceType: "fixed" },
+              { label: "100 cm", value: "100", priceVariant: 0, priceType: "fixed" },
+              { label: "125 cm", value: "125", priceVariant: 0, priceType: "fixed" },
+              { label: "150 cm", value: "150", priceVariant: 0, priceType: "fixed" },
+              { label: "175 cm", value: "175", priceVariant: 0, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "barva_retizku",
+            name: "Barva řetízku a závaží",
+            type: "select",
+            options: [
+              { label: "Bílá / transparentní", value: "bila", priceVariant: 0, priceType: "fixed" },
+              { label: "Hnědá / transparentní", value: "hneda", priceVariant: 0, priceType: "fixed" },
+              { label: "Šedá / transparentní", value: "seda", priceVariant: 0, priceType: "fixed" }
+            ]
+          },
           {
             id: "bezpecnost",
             name: "Bezpečnostní prvek",
@@ -2122,6 +2176,104 @@ async function startServer() {
         }
 
         res.json({ success: true, message: `Imported product ID: ${productId} with ${brackets.length} brackets.` });
+      } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: e.message });
+      }
+    });
+  });
+
+  
+  app.post("/api/admin/update-optima-params", requireAdmin, async (req, res) => {
+    await withDb(res, async (db) => {
+      try {
+        const optimaParams = [
+          {
+            id: "barva_profilu",
+            name: "Barva boxu a vodících lišt",
+            type: "select",
+            options: [
+              { label: "Bílá", value: "bila", priceVariant: 0, priceType: "fixed" },
+              { label: "Hnědá", value: "hneda", priceVariant: 0, priceType: "fixed" },
+              { label: "Stříbrná", value: "stribrna", priceVariant: 0, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "barva_retizku",
+            name: "Barva řetízku",
+            type: "select",
+            options: [
+              { label: "Bílá", value: "bila", priceVariant: 0, priceType: "fixed" },
+              { label: "Hnědá", value: "hneda", priceVariant: 0, priceType: "fixed" },
+              { label: "Šedá", value: "seda", priceVariant: 0, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "bezpecnost",
+            name: "Bezpečnostní prvek",
+            type: "select",
+            options: [
+              { label: "Ne", value: "ne", priceVariant: 0, priceType: "fixed" },
+              { label: "Ano", value: "ano", priceVariant: 12, priceType: "fixed" }
+            ]
+          }
+        ];
+
+        const optimaDenNocParams = [
+          {
+            id: "barva_profilu",
+            name: "Barva boxu a vodících lišt",
+            type: "select",
+            options: [
+              { label: "Bílá", value: "bila", priceVariant: 0, priceType: "fixed" },
+              { label: "Hnědá", value: "hneda", priceVariant: 0, priceType: "fixed" },
+              { label: "Stříbrná", value: "stribrna", priceVariant: 0, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "delka_retizku",
+            name: "Délka řetízku",
+            type: "select",
+            options: [
+              { label: "30 cm", value: "30", priceVariant: 0, priceType: "fixed" },
+              { label: "50 cm", value: "50", priceVariant: 0, priceType: "fixed" },
+              { label: "75 cm", value: "75", priceVariant: 0, priceType: "fixed" },
+              { label: "100 cm", value: "100", priceVariant: 0, priceType: "fixed" },
+              { label: "125 cm", value: "125", priceVariant: 0, priceType: "fixed" },
+              { label: "150 cm", value: "150", priceVariant: 0, priceType: "fixed" },
+              { label: "175 cm", value: "175", priceVariant: 0, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "barva_retizku",
+            name: "Barva řetízku a závaží",
+            type: "select",
+            options: [
+              { label: "Bílá / transparentní", value: "bila", priceVariant: 0, priceType: "fixed" },
+              { label: "Hnědá / transparentní", value: "hneda", priceVariant: 0, priceType: "fixed" },
+              { label: "Šedá / transparentní", value: "seda", priceVariant: 0, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "bezpecnost",
+            name: "Bezpečnostní prvek",
+            type: "select",
+            options: [
+              { label: "Ne", value: "ne", priceVariant: 0, priceType: "fixed" },
+              { label: "Ano", value: "ano", priceVariant: 12, priceType: "fixed" }
+            ]
+          }
+        ];
+
+        // Update Optima
+        await db.query(`UPDATE "Product" SET parameters = $1 WHERE slug = 'textilni-roletka-optima'`, [JSON.stringify(optimaParams)]);
+        
+        // Update Optima Den/Noc
+        await db.query(`UPDATE "Product" SET parameters = $1 WHERE slug = 'textilni-roletka-optima-den-a-noc'`, [JSON.stringify(optimaDenNocParams)]);
+
+        // Update the import script inside server.ts manually using regex later, 
+        // but this endpoint handles the DB right now for quick fix.
+        res.json({ success: true, message: 'Params updated' });
       } catch (e) {
         console.error(e);
         res.status(500).json({ error: e.message });
