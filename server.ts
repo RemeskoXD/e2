@@ -1846,6 +1846,129 @@ async function startServer() {
     });
   });
 
+  
+  app.post("/api/admin/import-optima", requireAdmin, async (req, res) => {
+    await withDb(res, async (db) => {
+      try {
+        const rawMatrix = `
+500 1050 1121 1192 1262 1334 1406 1477 1547 1619 1689 1760 1833 1902 1973 2045 2116
+600 1096 1171 1245 1319 1394 1469 1543 1618 1692 1765 1841 1917 1991 2065 2140 2213
+700 1141 1220 1298 1375 1454 1532 1610 1688 1765 1844 1923 2000 2078 2156 2234 2313
+800 1186 1268 1349 1431 1514 1596 1676 1758 1840 1922 2003 2085 2167 2249 2330 2412
+900 1233 1318 1403 1489 1574 1658 1743 1828 1913 1999 2084 2170 2255 2340 2424 2510
+1000 1280 1368 1456 1545 1633 1724 1812 1900 1989 2077 2165 2254 2342 2432 2520 2608
+1100 1323 1417 1508 1601 1693 1785 1877 1969 2061 2154 2246 2339 2432 2523 2616 2707
+1200 1370 1465 1561 1657 1754 1848 1945 2041 2136 2232 2328 2422 2519 2614 2710 2805
+1300 1417 1516 1614 1714 1814 1911 2012 2111 2209 2310 2409 2507 2607 2706 2805 2906
+1400 1462 1565 1667 1769 1872 1975 2078 2181 2285 2386 2490 2592 2695 2797 2899 3002
+1500 1507 1613 1720 1826 1933 2040 2146 2252 2357 2464 2570 2677 2783 2889 2996 3101
+1600 1554 1664 1774 1883 1992 2102 2211 2321 2433 2542 2652 2761 2870 2980 3091 3202
+1700 1600 1713 1824 1939 2052 2165 2281 2393 2505 2619 2733 2846 2959 3073 3185 3299
+1800 1645 1761 1879 1995 2113 2229 2346 2463 2579 2698 2814 2930 3046 3163 3280 3398
+1900 1690 1812 1932 2051 2172 2292 2413 2533 2653 2774 2894 3015 3134 3254 3375 3495
+2000 1736 1862 1985 2107 2232 2356 2479 2603 2728 2852 2975 3099 3223 3346 3471 3595
+2100 1783 1909 2037 2164 2292 2419 2547 2675 2802 2928 3056 3184 3311 3438 3567 3694
+2200 1827 1960 2091 2221 2352 2483 2614 2743 2875 3006 3137 3268 3399 3530 3661 3791
+2300 1874 2008 2143 2276 2412 2547 2680 2816 2950 3083 3217 3354 3488 3622 3755 3891
+`;
+
+        const widths = [500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000];
+        
+        const params = [
+          {
+            id: "bezpecnost",
+            name: "Bezpečnostní prvek",
+            type: "select",
+            options: [
+              { label: "Ne", value: "ne", priceVariant: 0, priceType: "fixed" },
+              { label: "Ano", value: "ano", priceVariant: 12, priceType: "fixed" }
+            ]
+          }
+        ];
+
+        const fabricGroups = [
+          { name: "Skupina 1 (Adriana, Melisa)", surcharge_percent: 0, max_width_mm: 2000, max_height_mm: 2300, colors: [] },
+          { name: "Skupina 2 (Melisa BO)", surcharge_percent: 10, max_width_mm: 2000, max_height_mm: 1200, colors: [] },
+          { name: "Skupina 3 (Stella BO, Melisa BO B/B, Melisa BO B/S)", surcharge_percent: 15, max_width_mm: 2000, max_height_mm: 1300, colors: [] },
+          { name: "Skupina 4 (Tropic)", surcharge_percent: 20, max_width_mm: 1950, max_height_mm: 1700, colors: [] },
+          { name: "Skupina 5 (Screen nehořlavá)", surcharge_percent: 45, max_width_mm: 1950, max_height_mm: 1200, colors: [] },
+        ];
+
+        const catRes = await db.query(`SELECT name FROM "Category" WHERE name = 'Textilní roletky'`);
+        let category = 'Textilní roletky';
+        if (catRes.rows.length === 0) {
+            await db.query(`INSERT INTO "Category" (name, count, img) VALUES ('Textilní roletky', 1, '')`);
+        }
+
+        const pRes = await db.query(`
+          INSERT INTO "Product" (
+            title, slug, category, price, "oldPrice", badge, img, "desc", 
+            supplier_markup_percent, commission_percent, 
+            width_mm_min, width_mm_max, height_mm_min, height_mm_max, max_area_m2, 
+            parameters, gallery, colors, extras, fabric_groups_config, price_mode, hidden
+          ) VALUES (
+            $1, $2, $3, $4, null, $5, $6, $7,
+            4.9, 0,
+            330, 2000, 500, 2300, null,
+            $8, '[]', '[]', '[]', $9, 'matrix_cell', false
+          )
+          ON CONFLICT (slug) DO UPDATE SET
+            title = EXCLUDED.title,
+            price = EXCLUDED.price,
+            "desc" = EXCLUDED."desc",
+            parameters = EXCLUDED.parameters,
+            fabric_groups_config = EXCLUDED.fabric_groups_config,
+            height_mm_max = 2300,
+            width_mm_max = 2000,
+            price_mode = 'matrix_cell'
+          RETURNING id
+        `, [
+          "Textilní roletka Optima",
+          "textilni-roletka-optima",
+          category,
+          1050,
+          "",
+          "https://images.unsplash.com/photo-1558211583-d26f610c1eb1?q=80&w=600&auto=format&fit=crop",
+          `<h3>Základní ceníková sestava</h3><ul><li><strong>Látka:</strong> 100% polyester, vzor dle výběru</li><li><strong>Box:</strong> hliníkový profil (bílá, hnědá, stříbrná)</li><li><strong>Hřídel:</strong> hliníkový profil, průměr 25 mm</li><li><strong>Vodící lišta:</strong> hliníková</li><li><strong>Závaží látky:</strong> hliníkové</li><li><strong>Ovládání:</strong> řetízkem</li><li><strong>Uchycení:</strong> křídlo okna</li></ul><br /><h3>Technické detaily a montáž</h3><p>Roletka je v provedení s krytem návinu látky a s vodícími lištami po stranách. Konstrukce roletky umožňuje různé nastavení výšky stažení látky.</p><p><strong>Neinvazivní montáž:</strong> Pomocí oboustranné lepící pásky na křídlo (nezmenšuje světlost). Vhodné pro pergoly.</p><p><em>Upozornění: Z důvodu výrobních rozměrů nelze vyrobit roletku s šířkou a výškou současně nad 1950 mm. Maximální rozměry jsou také limitovány zvolenou látkou!</em></p>`,
+          JSON.stringify(params),
+          JSON.stringify(fabricGroups)
+        ]);
+
+        const productId = pRes.rows[0].id;
+
+        await db.query(`DELETE FROM "ProductPriceBracket" WHERE product_id = $1`, [productId]);
+
+        const lines = rawMatrix.trim().split('\n');
+        let brackets = [];
+        for (const line of lines) {
+          const parts = line.trim().split(/\s+/).map(Number);
+          if (parts.length < 17) continue;
+          
+          const height = parts[0];
+          for (let i = 0; i < widths.length; i++) {
+            const width = widths[i];
+            const price = parts[i + 1];
+            if (price) {
+              brackets.push(`(${productId}, ${width}, ${height}, ${price})`);
+            }
+          }
+        }
+
+        if (brackets.length > 0) {
+          await db.query(`
+            INSERT INTO "ProductPriceBracket" (product_id, width_mm_max, height_mm_max, base_price_czk)
+            VALUES ${brackets.join(', ')}
+          `);
+        }
+
+        res.json({ success: true, message: `Imported product ID: ${productId} with ${brackets.length} brackets.` });
+      } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: e.message });
+      }
+    });
+  });
+
   app.post("/api/admin/categories", requireAdmin, async (req, res) => {
     await withDb(res, async (db) => {
       try {

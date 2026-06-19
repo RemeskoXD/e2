@@ -38,6 +38,8 @@ type Product = {
     name: string;
     surcharge?: number;
     surcharge_percent?: number; // legacy
+    max_width_mm?: number;
+    max_height_mm?: number;
     colors: { name: string; img?: string }[];
   }[] | null;
   parameters?: {
@@ -357,6 +359,29 @@ export default function ProductDetail({ productId }: { productId: string }) {
         if (ovladani !== 'prevodovka') {
           toast.error('Pro žaluzie nad 1.5 m² musíte zvolit "Převodovku s brzdou" (kvůli zachování záruky).', { duration: 5000 });
           return;
+        }
+      }
+    }
+
+    // Validace pro Optima
+    if (product.title.toLowerCase().includes('optima')) {
+      if (w > 1950 && h > 1850) {
+        toast.error('Z důvodu výrobních rozměrů nelze vyrobit roletku, kde šířka i výška současně přesahují 1950 mm. U šířky > 1950 mm je výška limitována na 1850 mm.', { duration: 6000 });
+        return;
+      }
+      
+      if (selectedFabricGroupConfigIndex !== null && product.fabric_groups_config && product.fabric_groups_config[selectedFabricGroupConfigIndex]) {
+        const groupConfig = product.fabric_groups_config[selectedFabricGroupConfigIndex];
+        const maxW = groupConfig.max_width_mm;
+        const maxH = groupConfig.max_height_mm;
+        
+        if (maxW && w > maxW) {
+           toast.error(`Vybraná látka se v této šířce nedá vyrobit (maximum je ${maxW} mm).`, { duration: 5000 });
+           return;
+        }
+        if (maxH && h > maxH) {
+           toast.error(`Vybraná látka se v této výšce nedá vyrobit (maximum je ${maxH} mm).`, { duration: 5000 });
+           return;
         }
       }
     }
