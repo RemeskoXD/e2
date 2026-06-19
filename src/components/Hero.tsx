@@ -44,7 +44,7 @@ export default function Hero() {
   return (
     <section className="relative overflow-hidden bg-[#132333]">
       {/* Banner Display */}
-      <div className="relative h-[400px] md:h-[500px] lg:h-[600px] w-full">
+      <div className="relative h-[300px] md:h-[380px] lg:h-[450px] w-full">
         {banners.map((banner, idx) => (
           <div
             key={banner.id || idx}
