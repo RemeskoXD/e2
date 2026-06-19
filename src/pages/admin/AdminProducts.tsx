@@ -46,6 +46,7 @@ export interface ParameterOption {
   colorCode?: string;
   img?: string;
   priceVariant?: number;
+  priceType?: 'fixed' | 'per_m2' | 'per_bm';
 }
 
 export interface ProductParameter {
@@ -1947,6 +1948,21 @@ export default function AdminProducts() {
                                       />
                                       <span className="absolute right-2 top-1.5 text-xs text-gray-500">Kč</span>
                                     </div>
+                                  </div>
+                                  <div className="w-24">
+                                    <select
+                                      value={opt.priceType || 'fixed'}
+                                      onChange={(e) => {
+                                        const newParams = structuredClone(formData.parameters || []);
+                                        newParams[pIdx].options[oIdx].priceType = e.target.value as any;
+                                        setFormData(prev => ({ ...prev, parameters: newParams }));
+                                      }}
+                                      className="w-full px-2 py-1.5 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-[#CCAD8A] bg-white"
+                                    >
+                                      <option value="fixed">Fixně</option>
+                                      <option value="per_m2">Za m²</option>
+                                      <option value="per_bm">Za bm</option>
+                                    </select>
                                   </div>
                                   <button
                                     type="button"
