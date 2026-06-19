@@ -1003,6 +1003,8 @@ export default function ProductDetail({ productId }: { productId: string }) {
           </div>
         </div>
       </div>
+      </div>
+      </div>
 
       {/* Sticky Bottom Bar */}
       <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] z-40 px-4 py-4 sm:px-6 animate-in slide-in-from-bottom-full duration-500">
