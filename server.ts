@@ -2603,6 +2603,183 @@ async function startServer() {
     });
   });
 
+  
+  app.post("/api/admin/import-dverni-site", requireAdmin, async (req, res) => {
+    await withDb(res, async (db) => {
+      try {
+        const slug = 'dverni-site-proti-hmyzu';
+        
+        const params = [
+          {
+            id: "typ_dveri",
+            name: "Typ dveřní sítě",
+            type: "select",
+            options: [
+              { label: "Bez rámu (profil DE 50x20)", value: "bez_ramu" },
+              { label: "S rámem R3 (profil DE 40x20 Lux + rám R3)", value: "ram_r3" },
+              { label: "S rámem R4 (profil DE 40x20 Lux + rám R4)", value: "ram_r4" }
+            ]
+          },
+          {
+            id: "barva_bez_ramu",
+            name: "Barva profilu",
+            type: "select",
+            condition: { dependsOnParamId: "typ_dveri", allowedValues: ["bez_ramu"] },
+            options: [
+              { label: "Bílá mat", value: "bila" },
+              { label: "Hnědá mat", value: "hneda" },
+              { label: "RAL 7016 mat", value: "ral_7016" },
+              { label: "RAL 8003 mat", value: "ral_8003" },
+              { label: "RAL 9006 mat", value: "ral_9006" },
+              { label: "Nestandardní lakování RAL (min. účtováno 1 m²)", value: "ral_nestandard" },
+              { label: "Lakování imitace dřeva", value: "imitace_dreva" },
+              { label: "Renolit jednostranně na bílý profil", value: "renolit_jedno" },
+              { label: "Renolit oboustranně", value: "renolit_obou" }
+            ]
+          },
+          {
+            id: "barva_s_ramem",
+            name: "Barva profilu a provedení rohů",
+            type: "select",
+            condition: { dependsOnParamId: "typ_dveri", allowedValues: ["ram_r3", "ram_r4"] },
+            options: [
+              { label: "Základní (bílá, hnědá, RAL 7016, 8003, 9006)", value: "zaklad" },
+              { label: "Základní s hliníkovými rohy", value: "zaklad_al_rohy", priceVariant: 407, priceType: "fixed" },
+              { label: "RAL 7016 struktura / DB 703", value: "ral_struktura" },
+              { label: "RAL 7016 struktura / DB 703 s hliníkovými rohy", value: "ral_struktura_al_rohy", priceVariant: 407, priceType: "fixed" },
+              { label: "Nestandardní lakování RAL (min. účtováno 1 m²)", value: "ral_nestandard" },
+              { label: "Nestandardní lakování RAL s hliníkovými rohy", value: "ral_nestandard_al_rohy", priceVariant: 407, priceType: "fixed" },
+              { label: "Lakování imitace dřeva", value: "imitace_dreva" },
+              { label: "Lakování imitace dřeva s hliníkovými rohy", value: "imitace_dreva_al_rohy", priceVariant: 407, priceType: "fixed" },
+              { label: "Renolit jednostranně na bílý profil", value: "renolit_jedno" },
+              { label: "Renolit jednostranně s hliníkovými rohy", value: "renolit_jedno_al_rohy", priceVariant: 407, priceType: "fixed" },
+              { label: "Renolit oboustranně", value: "renolit_obou" },
+              { label: "Renolit oboustranně s hliníkovými rohy", value: "renolit_obou_al_rohy", priceVariant: 407, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "sitovina",
+            name: "Typ síťoviny",
+            type: "select",
+            options: [
+              { label: "Skelné vlákno - šedá", value: "zaklad_seda" },
+              { label: "Skelné vlákno - černá", value: "zaklad_cerna" },
+              { label: "Transparentní síťovina - černá (jeden rozměr max 1400 mm)", value: "transparentni", priceVariant: 142, priceType: "per_m2" },
+              { label: "Protipylová síťovina - černá", value: "protipylova", priceVariant: 431, priceType: "per_m2" },
+              { label: "Pet screen (odolná) - šedá", value: "petscreen_seda", priceVariant: 475, priceType: "per_m2" },
+              { label: "Pet screen (odolná) - černá (max šířka 1500 mm)", value: "petscreen_cerna", priceVariant: 475, priceType: "per_m2" },
+              { label: "Síťovina s nanovláknem - černá (pouze pro sítě s rámem)", value: "nano", priceVariant: 1078, priceType: "per_m2" }
+            ]
+          },
+          {
+            id: "panty_bez_ramu",
+            name: "Panty",
+            type: "select",
+            condition: { dependsOnParamId: "typ_dveri", allowedValues: ["bez_ramu"] },
+            options: [
+              { label: "PVC Standard panty (v ceně)", value: "pvc_standard" },
+              { label: "PVC Samozavírací panty (+56 Kč)", value: "pvc_samozaviraci", priceVariant: 56, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "panty_s_ramem",
+            name: "Panty",
+            type: "select",
+            condition: { dependsOnParamId: "typ_dveri", allowedValues: ["ram_r3", "ram_r4"] },
+            options: [
+              { label: "PVC Standard panty (v ceně)", value: "pvc_standard" },
+              { label: "PVC Samozavírací panty (+56 Kč)", value: "pvc_samozaviraci", priceVariant: 56, priceType: "fixed" },
+              { label: "Al Standard panty (+73 Kč)", value: "al_standard", priceVariant: 73, priceType: "fixed" },
+              { label: "Al Samozavírací panty (+84 Kč)", value: "al_samozaviraci", priceVariant: 84, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "magnet",
+            name: "Magnet",
+            type: "select",
+            options: [
+              { label: "Standardní magnet (v ceně)", value: "standard" },
+              { label: "Magnetická guma / pásek po celé výšce", value: "cely_profil" }
+            ]
+          },
+          {
+            id: "madlo_navic",
+            name: "Madlo navíc",
+            type: "select",
+            options: [
+              { label: "Ne", value: "ne" },
+              { label: "Ano (+24 Kč)", value: "ano", priceVariant: 24, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "okopova_pricka",
+            name: "Okopová příčka ve spodní části",
+            type: "select",
+            options: [
+              { label: "Ne", value: "ne" },
+              { label: "Ano (počítá se dle barvy profilu)", value: "ano" }
+            ]
+          },
+          {
+            id: "prulez_kocka",
+            name: "Průlez pro kočku (černá)",
+            type: "select",
+            options: [
+              { label: "Ne", value: "ne" },
+              { label: "Ano (+1199 Kč)", value: "ano", priceVariant: 1199, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "prulez_pes",
+            name: "Průlez pro psa (černá)",
+            type: "select",
+            options: [
+              { label: "Ne", value: "ne" },
+              { label: "Ano (+1332 Kč)", value: "ano", priceVariant: 1332, priceType: "fixed" }
+            ]
+          }
+        ];
+
+        // Ensure category exists
+        const catRes = await db.query(`SELECT name FROM "Category" WHERE name = 'Sítě proti hmyzu'`);
+        if (catRes.rows.length === 0) {
+            await db.query(`INSERT INTO "Category" (name, count, img) VALUES ('Sítě proti hmyzu', 1, '')`);
+        }
+
+        const title = "Dveřní sítě proti hmyzu";
+        const desc = "Otevíravé dveřní sítě proti hmyzu ve variantách bez rámu (DE 50x20) nebo v pevném rámu R3/R4 (DE 40x20 Lux). Široká škála lakování, polepů a možnost prémiových sítí jako Pet Screen či Nanovlákno.";
+        const img = "/img/placeholder.jpg"; 
+
+        await db.query(
+          `INSERT INTO "Product" 
+            (title, slug, category, "desc", price, price_mode, validation_profile, img, parameters, supplier_markup_percent, commission_percent, dimension_constraints) 
+          VALUES 
+            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+          ON CONFLICT (slug) DO UPDATE SET
+            title = EXCLUDED.title,
+            category = EXCLUDED.category,
+            "desc" = EXCLUDED."desc",
+            price_mode = EXCLUDED.price_mode,
+            validation_profile = EXCLUDED.validation_profile,
+            parameters = EXCLUDED.parameters,
+            dimension_constraints = EXCLUDED.dimension_constraints
+          `,
+          [
+            title, slug, 'Sítě proti hmyzu', desc, 1474, 
+            'custom', 'dverni_sit', img, 
+            JSON.stringify(params), 0, 0, 
+            JSON.stringify({ width_mm_min: 200, width_mm_max: 1000, height_mm_min: 200, height_mm_max: 2500 })
+          ]
+        );
+
+        res.json({ success: true, message: 'Dveřní sítě naimportovány!' });
+      } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: e.message });
+      }
+    });
+  });
+
   app.post("/api/admin/categories", requireAdmin, async (req, res) => {
     await withDb(res, async (db) => {
       try {

@@ -130,7 +130,7 @@ export async function computeProductQuote(
     
     const actualAreaM2 = (wR * hR) / 1_000_000;
     // Speciální pravidlo pro Isoline a Sítě: minimální účtovaná plocha pro příplatky je 0.5 m2
-    const minArea05 = productTitle.toLowerCase().includes('isoline') || product.validation_profile === 'sit_hmyz';
+    const minArea05 = productTitle.toLowerCase().includes('isoline') || product.validation_profile === 'sit_hmyz' || product.validation_profile === 'dverni_sit';
     const calcAreaM2 = minArea05 ? Math.max(0.5, actualAreaM2) : actualAreaM2;
     const calcWidthM = wR / 1000;
 
@@ -573,6 +573,71 @@ export async function computeProductQuote(
     baseCatalogCzk = basePriceM2 * calcAreaM2;
   }
   // --- KONEC SÍTĚ PROTI HMYZU ---
+
+  // --- DVEŘNÍ SÍTĚ PROTI HMYZU ---
+  if (matrixProfile === "dverni_sit") {
+    const p = body?.selected_parameters || {};
+    const typDveri = p.typ_dveri;
+    let basePriceM2 = 0;
+    
+    // Limits checking
+    const lim = { maxW: 1000, maxH: 2500, maxArea: 2.50 };
+    if (typDveri === 'bez_ramu') {
+      basePriceM2 = 1474;
+    } else if (typDveri === 'ram_r3' || typDveri === 'ram_r4') {
+      basePriceM2 = 1782;
+    } else {
+      return { ok: false, status: 400, body: { error: `Není zvolen platný typ dveří.` } };
+    }
+
+    if (wR > lim.maxW || hR > lim.maxH) {
+      return { ok: false, status: 400, body: { error: `Tento profil lze vyrobit max do šířky ${lim.maxW} mm a výšky ${lim.maxH} mm.` } };
+    }
+    const actualAreaM2 = (wR * hR) / 1000000;
+    if (actualAreaM2 > lim.maxArea) {
+      return { ok: false, status: 400, body: { error: `Celková plocha nesmí překročit ${lim.maxArea} m² (zadáno ${actualAreaM2.toFixed(2)} m²).` } };
+    }
+
+    // Site checks
+    const sitovina = p.sitovina;
+    if (sitovina === 'transparentni' && (wR > 1400 && hR > 1400)) {
+      return { ok: false, status: 400, body: { error: `Pro transparentní síťovinu musí být alespoň jeden z rozměrů max 1400 mm.` } };
+    }
+    if (sitovina === 'petscreen_cerna' && wR > 1500) {
+      return { ok: false, status: 400, body: { error: `Pro černý Pet screen je maximální možná šířka 1500 mm.` } };
+    }
+    if (sitovina === 'nano' && typDveri === 'bez_ramu') {
+      return { ok: false, status: 400, body: { error: `Síťovina s nanovláknem nelze použít pro sítě bez rámu (profil DE 50x20).` } };
+    }
+
+    const calcAreaM2 = Math.max(0.5, actualAreaM2);
+    if (actualAreaM2 < 0.5) {
+      screenUnionCatalogNotes.push(`Minimální účtovaná plocha sítě je 0.5 m².`);
+    }
+
+    baseCatalogCzk = basePriceM2 * calcAreaM2;
+
+    // Dynamic checks for okopova_pricka
+    if (p.okopova_pricka === 'ano') {
+      const isRal = p.barva_bez_ramu === 'ral_nestandard' || p.barva_s_ramem?.includes('ral_nestandard');
+      const prickaPriceBm = isRal ? 354 : 169;
+      const calcWidthM = wR / 1000;
+      const extraPricka = prickaPriceBm * calcWidthM;
+      baseCatalogCzk += extraPricka;
+      screenUnionCatalogNotes.push(`Okopová příčka: ${prickaPriceBm} Kč/bm × ${calcWidthM.toFixed(2)} bm = ${Math.round(extraPricka)} Kč.`);
+    }
+
+    // Dynamic checks for magnet
+    if (p.magnet === 'cely_profil') {
+      const magnetPriceBm = typDveri === 'bez_ramu' ? 71 : 113.50;
+      const multiply = typDveri === 'bez_ramu' ? 1 : 2; // R3/R4 is x2
+      const calcHeightM = hR / 1000;
+      const extraMagnet = magnetPriceBm * multiply * calcHeightM;
+      baseCatalogCzk += extraMagnet;
+      screenUnionCatalogNotes.push(`Magnet po celé výšce: ${magnetPriceBm} Kč/bm × ${multiply} (strany) × ${calcHeightM.toFixed(2)} bm = ${Math.round(extraMagnet)} Kč.`);
+    }
+  }
+  // --- KONEC DVEŘNÍ SÍTĚ PROTI HMYZU ---
 
   if (matrixProfile === "screen_roleta_union_l" && screenUnionQuote) {
     if (screenUnionQuote.noFabric) {
