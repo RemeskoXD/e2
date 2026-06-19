@@ -1283,7 +1283,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
           onClose={() => setShowReviewModal(false)}
           onSuccess={() => {
             setShowReviewModal(false);
-            alert('Děkujeme za vaši recenzi.');
+            alert('Děkujeme za zpětnou vazbu.');
           }}
         />
       )}

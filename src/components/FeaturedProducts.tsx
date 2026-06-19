@@ -88,7 +88,7 @@ export default function FeaturedProducts() {
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <div className="max-w-2xl">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-[#132333] mb-4 tracking-tight">Doporučujeme z naší nabídky</h2>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-[#132333] mb-4 tracking-tight">Lidé nejčastěji nakupují</h2>
             <p className="text-lg text-gray-500">Nejčastěji konfigurované produkty našimi zákazníky. Ideální poměr ceny a kvality.</p>
           </div>
           <a href="#/kategorie" className="inline-flex items-center text-[#CCAD8A] font-bold hover:text-[#132333] transition-colors text-lg whitespace-nowrap">
