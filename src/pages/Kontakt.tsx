@@ -162,29 +162,33 @@ export default function Kontakt() {
 
           {/* Mapa ČR - Info */}
           <div className="bg-[#CCAD8A]/5 rounded-2xl p-8 md:p-10 border border-[#CCAD8A]/20 flex flex-col justify-center items-center text-center relative overflow-hidden">
-            <div className="absolute inset-0 opacity-5 pointer-events-none flex items-center justify-center">
-               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="w-96 h-96 text-[#132333] -rotate-12 transform translate-x-12"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="18"></line><line x1="15" y1="6" x2="15" y2="21"></line></svg>
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none flex items-center justify-center p-8">
+               <img src="/cz-map.svg" alt="" className="w-full h-full object-contain scale-125" />
             </div>
             <div className="relative z-10">
               <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-lg mx-auto mb-6">
                 <MapPin className="text-[#CCAD8A] w-10 h-10" />
               </div>
-              <h2 className="text-2xl md:text-3xl font-extrabold text-[#132333] mb-4">Doručíme po celé ČR</h2>
-              <p className="text-base text-gray-600 mb-8 max-w-sm mx-auto leading-relaxed">
-                Nemáme kamennou pobočku, ale naše stínicí technika míří ke spokojeným zákazníkům do všech koutů České republiky.
-              </p>
-              <div className="flex flex-col gap-4 max-w-xs mx-auto text-left bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <div className="flex items-center gap-3">
-                  <CheckCircle2 className="text-green-500 shrink-0" size={20} />
-                  <span className="font-semibold text-sm text-[#132333]">Rychlé doručení kurýrem</span>
+              <h2 className="text-2xl md:text-3xl font-extrabold text-[#132333] mb-6">Doručíme po celé ČR</h2>
+              
+              <div className="flex flex-col gap-5 max-w-sm mx-auto text-left bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-gray-100">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="text-green-500 shrink-0 mt-0.5" size={20} />
+                  <span className="font-medium text-sm text-gray-700 leading-relaxed">
+                    Nemáme kamennou pobočku, ale naše stínicí technika míří ke spokojeným zákazníkům do všech koutů České republiky.
+                  </span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle2 className="text-green-500 shrink-0" size={20} />
-                  <span className="font-semibold text-sm text-[#132333]">Pečlivé zabalení produktů</span>
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="text-green-500 shrink-0 mt-0.5" size={20} />
+                  <span className="font-semibold text-sm text-[#132333] leading-snug mt-0.5">Rychlé doručení kurýrem</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle2 className="text-green-500 shrink-0" size={20} />
-                  <span className="font-semibold text-sm text-[#132333]">Doprava zdarma nad 5 000 Kč</span>
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="text-green-500 shrink-0 mt-0.5" size={20} />
+                  <span className="font-semibold text-sm text-[#132333] leading-snug mt-0.5">Pečlivé zabalení produktů</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="text-green-500 shrink-0 mt-0.5" size={20} />
+                  <span className="font-semibold text-sm text-[#132333] leading-snug mt-0.5">Doprava zdarma nad 5 000 Kč</span>
                 </div>
               </div>
             </div>
