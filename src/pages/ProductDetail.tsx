@@ -347,6 +347,86 @@ export default function ProductDetail({ productId }: { productId: string }) {
   const prof = product.validation_profile;
   const plainDesc = product.desc.replace(/<[^>]+>/g, '').substring(0, 150) + '...';
 
+  const productTitleBlock = (
+    <>
+      <span className="text-[#CCAD8A] text-xs font-bold uppercase tracking-widest bg-[#CCAD8A]/10 px-3 py-1 rounded-full inline-block mb-3">
+        {product.category}
+      </span>
+      <h1 className="text-3xl sm:text-4xl font-extrabold text-[#132333] leading-tight">{product.title}</h1>
+      <p className="text-sm text-gray-500 mt-4 leading-relaxed font-light">
+        {product.desc ? (product.desc.replace(/<[^>]+>/g, '').split(/(?<=\.)\s+/)[0] + (product.desc.replace(/<[^>]+>/g, '').split(/(?<=\.)\s+/)[0].endsWith('.') ? '' : '.')) : "Kvalitní a elegantní řešení pro vaše okna."} Užívejte si dokonalou regulaci světla a soukromí s produkty přesně na míru.
+      </p>
+      
+      <ul className="mt-5 space-y-2">
+        <li className="flex items-center gap-2 text-sm text-gray-700">
+          <Check size={16} className="text-green-500 flex-shrink-0" />
+          <span>Výroba přesně na míru vašemu oknu</span>
+        </li>
+        <li className="flex items-center gap-2 text-sm text-gray-700">
+          <Check size={16} className="text-green-500 flex-shrink-0" />
+          <span>Kvalitní materiály a precizní zpracování</span>
+        </li>
+        <li className="flex items-center gap-2 text-sm text-gray-700">
+          <Check size={16} className="text-green-500 flex-shrink-0" />
+          <span>Dlouhá životnost a snadná údržba</span>
+        </li>
+      </ul>
+    </>
+  );
+
+  const productInfoBlock = (
+    <div className="space-y-8 max-w-3xl">
+      <div className="border-b border-gray-100 pb-8">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-[#CCAD8A]/10 text-[#CCAD8A] rounded-lg">
+            <Info size={24} />
+          </div>
+          <h2 className="text-2xl font-bold text-[#132333]">Informace k produktu</h2>
+        </div>
+        <div 
+          className="prose prose-lg prose-gray max-w-none text-gray-600 leading-relaxed font-light [&>ul]:list-disc [&>ul]:ml-5 [&>ul]:mt-4 [&>ul>li]:mb-2 [&>p]:mb-4"
+          dangerouslySetInnerHTML={{ __html: sanitizeGuideHtml(product.desc || '<p>Popis není k dispozici.</p>') }}
+        />
+      </div>
+
+      {dim && (
+        <div className="bg-gray-50 rounded-2xl p-8 border border-gray-100">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+              <Ruler size={24} />
+            </div>
+            <h3 className="text-xl font-bold text-[#132333]">Parametry a specifikace</h3>
+          </div>
+          
+          <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+            <div className="flex justify-between items-center py-2 border-b border-gray-200">
+              <dt className="text-gray-500">Minimální šířka</dt>
+              <dd className="font-medium text-gray-900">{dim.width_mm_min} mm</dd>
+            </div>
+            <div className="flex justify-between items-center py-2 border-b border-gray-200">
+              <dt className="text-gray-500">Maximální šířka</dt>
+              <dd className="font-medium text-gray-900">{dim.width_mm_max} mm</dd>
+            </div>
+            <div className="flex justify-between items-center py-2 border-b border-gray-200">
+              <dt className="text-gray-500">Minimální výška</dt>
+              <dd className="font-medium text-gray-900">{dim.height_mm_min} mm</dd>
+            </div>
+            <div className="flex justify-between items-center py-2 border-b border-gray-200">
+              <dt className="text-gray-500">Maximální výška</dt>
+              <dd className="font-medium text-gray-900">{dim.height_mm_max} mm</dd>
+            </div>
+            {dim.max_area_m2 && (
+              <div className="flex justify-between items-center py-2 border-b border-gray-200 sm:col-span-2">
+                <dt className="text-gray-500">Maximální plocha</dt>
+                <dd className="font-medium text-gray-900">{dim.max_area_m2} m²</dd>
+              </div>
+            )}
+          </dl>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div className="flex-grow bg-gray-50 min-h-screen pb-32">
       <div className="container mx-auto px-4 sm:px-6 py-8 lg:py-12">
@@ -362,6 +442,12 @@ export default function ProductDetail({ productId }: { productId: string }) {
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start relative">
           {/* Left Column: Images & Info (Sticky) */}
           <div className="w-full lg:w-[55%] space-y-8 lg:sticky lg:top-24">
+            
+            {/* Mobile Title (visible only on mobile) */}
+            <div className="block lg:hidden mb-2">
+              {productTitleBlock}
+            </div>
+
             {/* Images */}
             <div className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100">
             <div 
@@ -399,56 +485,10 @@ export default function ProductDetail({ productId }: { productId: string }) {
             )}
           </div>
 
-          {/* Product Info */}
-          <div className="space-y-8 max-w-3xl">
-            <div className="border-b border-gray-100 pb-8">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-[#CCAD8A]/10 text-[#CCAD8A] rounded-lg">
-                  <Info size={24} />
-                </div>
-                <h2 className="text-2xl font-bold text-[#132333]">Informace k produktu</h2>
-              </div>
-              <div 
-                className="prose prose-lg prose-gray max-w-none text-gray-600 leading-relaxed font-light [&>ul]:list-disc [&>ul]:ml-5 [&>ul]:mt-4 [&>ul>li]:mb-2 [&>p]:mb-4"
-                dangerouslySetInnerHTML={{ __html: sanitizeGuideHtml(product.desc || '<p>Popis není k dispozici.</p>') }}
-              />
-            </div>
 
-            {dim && (
-              <div className="bg-gray-50 rounded-2xl p-8 border border-gray-100">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
-                    <Ruler size={24} />
-                  </div>
-                  <h3 className="text-xl font-bold text-[#132333]">Parametry a specifikace</h3>
-                </div>
-                
-                <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                  <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                    <dt className="text-gray-500">Minimální šířka</dt>
-                    <dd className="font-medium text-gray-900">{dim.width_mm_min} mm</dd>
-                  </div>
-                  <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                    <dt className="text-gray-500">Maximální šířka</dt>
-                    <dd className="font-medium text-gray-900">{dim.width_mm_max} mm</dd>
-                  </div>
-                  <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                    <dt className="text-gray-500">Minimální výška</dt>
-                    <dd className="font-medium text-gray-900">{dim.height_mm_min} mm</dd>
-                  </div>
-                  <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                    <dt className="text-gray-500">Maximální výška</dt>
-                    <dd className="font-medium text-gray-900">{dim.height_mm_max} mm</dd>
-                  </div>
-                  {dim.max_area_m2 && (
-                    <div className="flex justify-between items-center py-2 border-b border-gray-200 sm:col-span-2">
-                      <dt className="text-gray-500">Maximální plocha</dt>
-                      <dd className="font-medium text-gray-900">{dim.max_area_m2} m²</dd>
-                    </div>
-                  )}
-                </dl>
-              </div>
-            )}
+          {/* Desktop Info (visible only on desktop) */}
+          <div className="hidden lg:block mt-8">
+            {productInfoBlock}
           </div>
         </div>
 
@@ -458,30 +498,10 @@ export default function ProductDetail({ productId }: { productId: string }) {
               {/* Decorative background element */}
               <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#132333] via-[#CCAD8A] to-[#132333]"></div>
             
-            <div className="mb-8">
-              <span className="text-[#CCAD8A] text-xs font-bold uppercase tracking-widest bg-[#CCAD8A]/10 px-3 py-1 rounded-full inline-block mb-3">
-                {product.category}
-              </span>
-              <h1 className="text-3xl font-extrabold text-[#132333] leading-tight">{product.title}</h1>
-              <p className="text-sm text-gray-500 mt-4 leading-relaxed font-light">
-                {product.desc ? (product.desc.replace(/<[^>]+>/g, '').split(/(?<=\.)\s+/)[0] + (product.desc.replace(/<[^>]+>/g, '').split(/(?<=\.)\s+/)[0].endsWith('.') ? '' : '.')) : "Kvalitní a elegantní řešení pro vaše okna."} Užívejte si dokonalou regulaci světla a soukromí s produkty přesně na míru.
-              </p>
-              
-              <ul className="mt-5 space-y-2">
-                <li className="flex items-center gap-2 text-sm text-gray-700">
-                  <Check size={16} className="text-green-500 flex-shrink-0" />
-                  <span>Výroba přesně na míru vašemu oknu</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm text-gray-700">
-                  <Check size={16} className="text-green-500 flex-shrink-0" />
-                  <span>Kvalitní materiály a precizní zpracování</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm text-gray-700">
-                  <Check size={16} className="text-green-500 flex-shrink-0" />
-                  <span>Dlouhá životnost a snadná údržba</span>
-                </li>
-              </ul>
-            </div>
+          {/* Desktop Title (visible only on desktop) */}
+          <div className="hidden lg:block mb-8">
+            {productTitleBlock}
+          </div>
 
             <div className="space-y-6">
               {/* Dimensions */}
@@ -1001,6 +1021,11 @@ export default function ProductDetail({ productId }: { productId: string }) {
             </div>
           </div>
       </div>
+      </div>
+
+      {/* Mobile Info (visible only on mobile) */}
+      <div className="block lg:hidden mt-8 mb-12">
+        {productInfoBlock}
       </div>
       </div>
 
