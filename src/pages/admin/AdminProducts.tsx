@@ -66,6 +66,7 @@ export interface ProductParameter {
 
 interface Product {
   id: number | string;
+  slug?: string;
   title: string;
   category: string;
   price: number;

@@ -6,6 +6,7 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { Pool } from "pg";
 import path from "path";
+import fs from "fs";
 import crypto from "crypto";
 import { mapProductRow, num, optIntCol, optStrCol, parseDimBody } from "./product-row";
 import { computeProductQuote } from "./quote-compute";
@@ -794,10 +795,12 @@ async function startServer() {
       try {
         const { mimeType, data } = req.body;
         if (!mimeType || !data) {
-          return res.status(400).json({ error: "Chybí mimeType nebo data." });
+          res.status(400).json({ error: "Chybí mimeType nebo data." });
+          return;
         }
         if (!mimeType.startsWith("image/")) {
-          return res.status(400).json({ error: "Nepovolený formát." });
+          res.status(400).json({ error: "Nepovolený formát." });
+          return;
         }
         const cryptoPath = await import("crypto");
         const id = "rev_" + cryptoPath.default.randomBytes(8).toString("hex");

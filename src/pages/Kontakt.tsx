@@ -169,7 +169,7 @@ export default function Kontakt() {
               <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-lg mx-auto mb-6">
                 <MapPin className="text-[#CCAD8A] w-10 h-10" />
               </div>
-              <h2 className="text-2xl md:text-3xl font-extrabold text-[#132333] mb-4">Působíme po celé ČR</h2>
+              <h2 className="text-2xl md:text-3xl font-extrabold text-[#132333] mb-4">Doručíme po celé ČR</h2>
               <p className="text-base text-gray-600 mb-8 max-w-sm mx-auto leading-relaxed">
                 Nemáme kamennou pobočku, ale naše stínicí technika míří ke spokojeným zákazníkům do všech koutů České republiky.
               </p>

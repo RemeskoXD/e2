@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { ShoppingCart, Ruler, Info, Check, AlertCircle, Star } from 'lucide-react';
+import { ShoppingCart, Ruler, Info, Check, AlertCircle, Star, Truck, PackageCheck } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { formatCzk } from '../lib/money';
 import { sanitizeGuideHtml } from '../lib/measureGuide';
@@ -414,6 +414,15 @@ export default function ProductDetail({ productId }: { productId: string }) {
           <span>Dlouhá životnost a snadná údržba</span>
         </li>
       </ul>
+
+      <div className="mt-6 flex flex-wrap gap-3">
+        <div className="flex items-center gap-2 bg-green-50 text-green-700 px-3 py-1.5 rounded-lg text-sm font-bold border border-green-100">
+          <PackageCheck size={18} /> Skladem
+        </div>
+        <div className="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-sm font-bold border border-blue-100">
+          <Truck size={18} /> Obvyklé doručení do 14 dnů
+        </div>
+      </div>
     </>
   );
 
