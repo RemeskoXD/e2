@@ -363,12 +363,16 @@ export default function ProductDetail({ productId }: { productId: string }) {
       }
     }
 
-    // Validace pro Optima
-    if (product.title.toLowerCase().includes('optima')) {
+    // Validace pro Optima (běžná)
+    if (product.title === 'Textilní roletka Optima') {
       if (w > 1950 && h > 1850) {
         toast.error('Z důvodu výrobních rozměrů nelze vyrobit roletku, kde šířka i výška současně přesahují 1950 mm. U šířky > 1950 mm je výška limitována na 1850 mm.', { duration: 6000 });
         return;
       }
+    }
+    
+    // Společné ověření pro produkty Optima
+    if (product.title.toLowerCase().includes('optima')) {
       
       if (color && color.includes('12002') && h > 1100) {
         toast.error('Látka Melisa BO 12002 má omezenou maximální výšku na 1100 mm.', { duration: 5000 });
