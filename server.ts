@@ -2350,6 +2350,10 @@ async function startServer() {
             id: "vodici_lista_ps3",
             name: "Vodící lišta pro model PS3",
             type: "select",
+            condition: {
+              dependsOnParamId: "model",
+              allowedValues: ["PS3"]
+            },
             options: [
               { label: "Ne", value: "ne" },
               { label: "Základní barva", value: "ano_zaklad", priceVariant: 311, priceType: "per_bm_height" },
