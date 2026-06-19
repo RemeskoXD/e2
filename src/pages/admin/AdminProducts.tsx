@@ -555,7 +555,7 @@ export default function AdminProducts() {
                   });
                   if (res.ok) {
                     alert('Import ISOLINE proběhl úspěšně!');
-                    loadProducts();
+                    fetchData();
                   } else {
                     alert('Chyba při importu.');
                   }
