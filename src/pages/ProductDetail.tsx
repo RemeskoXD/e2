@@ -879,8 +879,11 @@ export default function ProductDetail({ productId }: { productId: string }) {
                           <select
                             value={selectedParameters[param.id] || ''}
                             onChange={(e) => {
-                              setSelectedParameters(prev => ({ ...prev, [param.id]: e.target.value }));
+                              const val = e.target.value;
+                              setSelectedParameters(prev => ({ ...prev, [param.id]: val }));
                               setQuote(null);
+                              const opt = param.options.find(o => o.value === val);
+                              if (opt?.img) setMainImg(opt.img);
                             }}
                             className="w-full border border-gray-200 rounded-xl px-3 py-3 focus:ring-2 focus:ring-[#CCAD8A] focus:border-[#CCAD8A] outline-none transition-all font-medium text-sm text-gray-700 bg-white"
                           >
@@ -892,7 +895,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                             ))}
                           </select>
                         </div>
-                      ) : (
+                      ) : param.type === 'color_array' ? (
                         <div className="flex flex-wrap gap-3">
                           {param.options.map(opt => {
                             const isSelected = selectedParameters[param.id] === opt.value;
@@ -929,7 +932,25 @@ export default function ProductDetail({ productId }: { productId: string }) {
                             );
                           })}
                         </div>
-                      )}
+                      ) : param.type === 'numeric' ? (
+                        <div className="relative">
+                          <input
+                            type="number"
+                            min={param.numericSettings?.min}
+                            max={param.numericSettings?.max}
+                            value={selectedParameters[param.id] || param.numericSettings?.defaultValue || ''}
+                            onChange={(e) => {
+                              setSelectedParameters(prev => ({ ...prev, [param.id]: e.target.value }));
+                              setQuote(null);
+                            }}
+                            className="w-full border border-gray-200 rounded-xl px-3 py-3 focus:ring-2 focus:ring-[#CCAD8A] focus:border-[#CCAD8A] outline-none transition-all font-medium text-sm text-gray-700 bg-white"
+                            placeholder={param.numericSettings ? `Zadejte hodnotu (min: ${param.numericSettings.min || 0})` : 'Zadejte hodnotu'}
+                          />
+                          {param.numericSettings?.min !== undefined && param.numericSettings?.max !== undefined && (
+                            <p className="text-[10px] text-gray-400 mt-1">min: {param.numericSettings.min}, max: {param.numericSettings.max}</p>
+                          )}
+                        </div>
+                      ) : null}
                       {selectedParameters[param.id] && param.options.find(o => o.value === selectedParameters[param.id])?.priceVariant ? (
                          <p className="text-xs text-gray-500 mt-2">
                            Příplatek za volbu: +{param.options.find(o => o.value === selectedParameters[param.id])!.priceVariant} Kč

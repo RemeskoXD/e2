@@ -51,11 +51,16 @@ export interface ParameterOption {
 export interface ProductParameter {
   id: string;
   name: string;
-  type: 'select' | 'color_array';
+  type: 'select' | 'color_array' | 'numeric';
   options: ParameterOption[];
   condition?: {
     dependsOnParamId: string;
     allowedValues: string[];
+  };
+  numericSettings?: {
+    min?: number;
+    max?: number;
+    defaultValue?: number;
   };
 }
 
@@ -1696,6 +1701,7 @@ export default function AdminProducts() {
                           >
                             <option value="select">Klasický výběr ze seznamu</option>
                             <option value="color_array">Vzorník (Dlaždice s obrázky/barvou)</option>
+                            <option value="numeric">Číselná hodnota (rozměr)</option>
                           </select>
                         </div>
                       </div>
@@ -1773,7 +1779,53 @@ export default function AdminProducts() {
                         )}
                       </div>
 
-                      {/* Options for this parameter */}
+                      {/* Numeric Settings */}
+                      {param.type === 'numeric' && (
+                        <div className="mt-4 border-t border-gray-100 pt-4 grid grid-cols-3 gap-4">
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-600 mb-1">Min. hodnota</label>
+                            <input
+                              type="number"
+                              value={param.numericSettings?.min ?? ''}
+                              onChange={(e) => {
+                                const newParams = structuredClone(formData.parameters || []);
+                                newParams[pIdx].numericSettings = { ...newParams[pIdx].numericSettings, min: e.target.value ? Number(e.target.value) : undefined };
+                                setFormData(prev => ({ ...prev, parameters: newParams }));
+                              }}
+                              className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-200 rounded-lg focus:ring-[#CCAD8A]"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-600 mb-1">Max. hodnota</label>
+                            <input
+                              type="number"
+                              value={param.numericSettings?.max ?? ''}
+                              onChange={(e) => {
+                                const newParams = structuredClone(formData.parameters || []);
+                                newParams[pIdx].numericSettings = { ...newParams[pIdx].numericSettings, max: e.target.value ? Number(e.target.value) : undefined };
+                                setFormData(prev => ({ ...prev, parameters: newParams }));
+                              }}
+                              className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-200 rounded-lg focus:ring-[#CCAD8A]"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-600 mb-1">Výchozí hodnota</label>
+                            <input
+                              type="number"
+                              value={param.numericSettings?.defaultValue ?? ''}
+                              onChange={(e) => {
+                                const newParams = structuredClone(formData.parameters || []);
+                                newParams[pIdx].numericSettings = { ...newParams[pIdx].numericSettings, defaultValue: e.target.value ? Number(e.target.value) : undefined };
+                                setFormData(prev => ({ ...prev, parameters: newParams }));
+                              }}
+                              className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-200 rounded-lg focus:ring-[#CCAD8A]"
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Options for this parameter (only if not numeric) */}
+                      {param.type !== 'numeric' && (
                       <div className="mt-4 border-t border-gray-100 pt-4">
                         <div className="flex items-center justify-between mb-2">
                           <label className="block text-xs font-semibold text-gray-700">Možnosti výběru</label>
@@ -1897,6 +1949,7 @@ export default function AdminProducts() {
                           <p className="text-xs text-gray-400 italic mt-2">Zatím nejsou přidány žádné možnosti.</p>
                         )}
                       </div>
+                      )}
                     </SortableParameterItem>
                   ))}
                 </div>
