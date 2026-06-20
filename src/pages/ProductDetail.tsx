@@ -445,6 +445,19 @@ export default function ProductDetail({ productId }: { productId: string }) {
     allImages.push(measureImg);
   }
 
+  let activeMinW = dim?.width_mm_min ?? 1;
+  let activeMaxW = dim?.width_mm_max;
+  let activeMinH = dim?.height_mm_min ?? 1;
+  let activeMaxH = dim?.height_mm_max;
+  let activeMaxArea: number | undefined;
+
+  if (prof === "dverni_sit") {
+    const isDvou = selectedParams['typ_dveri']?.includes('_dvou');
+    activeMaxW = isDvou ? 2000 : 1000;
+    activeMaxH = 2500;
+    activeMaxArea = isDvou ? 5.00 : 2.50;
+  }
+
   const productTitleBlock = (
     <>
       <span className="text-[#CCAD8A] text-xs font-bold uppercase tracking-widest bg-[#CCAD8A]/10 px-3 py-1 rounded-full inline-block mb-3">
@@ -635,17 +648,22 @@ export default function ProductDetail({ productId }: { productId: string }) {
                     </label>
                     <input
                       type="number"
-                      min={dim?.width_mm_min ?? 1}
-                      max={dim?.width_mm_max}
+                      min={activeMinW}
+                      max={activeMaxW}
                       value={widthMm}
                       onChange={(e) => {
-                        setWidthMm(e.target.value);
+                        const val = Number(e.target.value);
+                        if (activeMaxW && val > activeMaxW) {
+                          setWidthMm(activeMaxW.toString());
+                        } else {
+                          setWidthMm(e.target.value);
+                        }
                         setQuote(null);
                       }}
                       className="w-full border border-gray-200 rounded-xl px-3 pt-6 pb-2 focus:ring-2 focus:ring-[#CCAD8A] focus:border-[#CCAD8A] outline-none transition-all placeholder-transparent font-medium"
-                      placeholder={dim ? `${dim.width_mm_min}-${dim.width_mm_max}` : "0"}
+                      placeholder={activeMaxW ? `${activeMinW}-${activeMaxW}` : "0"}
                     />
-                    {dim && <p className="text-[10px] text-gray-400 absolute bottom-2 right-3">min: {dim.width_mm_min}, max: {dim.width_mm_max}</p>}
+                    {activeMaxW && <p className={`text-[10px] absolute bottom-2 right-3 transition-colors duration-200 ${Number(widthMm) > activeMaxW ? 'text-red-500 font-bold' : 'text-gray-400'}`}>min: {activeMinW}, max: {activeMaxW}</p>}
                   </div>
                   <div className="relative">
                     <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider absolute top-2 left-3 z-10">
@@ -653,17 +671,22 @@ export default function ProductDetail({ productId }: { productId: string }) {
                     </label>
                     <input
                       type="number"
-                      min={dim?.height_mm_min ?? 1}
-                      max={dim?.height_mm_max}
+                      min={activeMinH}
+                      max={activeMaxH}
                       value={heightMm}
                       onChange={(e) => {
-                        setHeightMm(e.target.value);
+                        const val = Number(e.target.value);
+                        if (activeMaxH && val > activeMaxH) {
+                          setHeightMm(activeMaxH.toString());
+                        } else {
+                          setHeightMm(e.target.value);
+                        }
                         setQuote(null);
                       }}
                       className="w-full border border-gray-200 rounded-xl px-3 pt-6 pb-2 focus:ring-2 focus:ring-[#CCAD8A] focus:border-[#CCAD8A] outline-none transition-all placeholder-transparent font-medium"
-                      placeholder={dim ? `${dim.height_mm_min}-${dim.height_mm_max}` : "0"}
+                      placeholder={activeMaxH ? `${activeMinH}-${activeMaxH}` : "0"}
                     />
-                    {dim && <p className="text-[10px] text-gray-400 absolute bottom-2 right-3">min: {dim.height_mm_min}, max: {dim.height_mm_max}</p>}
+                    {activeMaxH && <p className={`text-[10px] absolute bottom-2 right-3 transition-colors duration-200 ${Number(heightMm) > activeMaxH ? 'text-red-500 font-bold' : 'text-gray-400'}`}>min: {activeMinH}, max: {activeMaxH}</p>}
                   </div>
                 </div>
                 {widthMm && heightMm && (

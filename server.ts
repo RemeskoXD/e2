@@ -2734,8 +2734,8 @@ async function startServer() {
         }
 
         const title = "Dveřní sítě proti hmyzu";
-        const desc = "Kompletní portfolio otevíravých dveřních sítí od bezrámových (DE 50x20 a DE 40x20 Lux) až po sítě s pevným rámem R3/R4, včetně dvoukřídlých variant pro široké terasové dveře.";
-        const img = "/img/placeholder.jpg"; 
+        const desc = "<p>Přizpůsobte si <strong>dveřní sítě proti hmyzu</strong> na míru a zbavte se nechtěných návštěvníků. Nabízíme vysoce kvalitní modely s rámem (luxusní provedení pro vyšší stabilitu a exkluzivní vzhled) i odlehčené varianty bez rámu, ideální pro čistý a nenápadný design.</p><p>K dispozici jsou špičkové profily <strong>DE 50x20</strong> a vylepšené prémie <strong>DE 40x20 Lux</strong>. Naše sítě poskytují naprosto plynulý chod, precizní magnetické dovírání a dlouholetou životnost i při každodenním náročném užívání. Zvolit si můžete standardní odolnou síťovinu, protipylové varianty pro alergiky nebo speciální transparentní verzi, která téměř není vidět. Obrovskou volnost máte také ve výběru povrchové úpravy od základu až po precizní imitaci dřeva či elegantní perleťové laky.</p>";
+        const img = "/images/dverni_sit_cover.png"; 
 
         await db.query(
           `INSERT INTO "Product" 
@@ -2746,6 +2746,7 @@ async function startServer() {
             title = EXCLUDED.title,
             category = EXCLUDED.category,
             "desc" = EXCLUDED."desc",
+            img = EXCLUDED.img,
             price_mode = EXCLUDED.price_mode,
             validation_profile = EXCLUDED.validation_profile,
             parameters = EXCLUDED.parameters,
