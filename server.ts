@@ -2545,7 +2545,7 @@ async function startServer() {
             title, slug, 'Sítě proti hmyzu', desc, 562, 
             'custom', 'sit_hmyz', img, 
             JSON.stringify(params), 0, 0, 
-            JSON.stringify({ width_mm_min: 200, width_mm_max: 1800, height_mm_min: 200, height_mm_max: 1800 })
+            JSON.stringify({ width_mm_min: 100, width_mm_max: 1800, height_mm_min: 100, height_mm_max: 1800 })
           ]
         );
 
@@ -2721,7 +2721,7 @@ async function startServer() {
             title, slug, 'Sítě proti hmyzu', desc, 1474, 
             'custom', 'dverni_sit', img, 
             JSON.stringify(params), 0, 0, 
-            JSON.stringify({ width_mm_min: 200, width_mm_max: 2000, height_mm_min: 200, height_mm_max: 2500 })
+            JSON.stringify({ width_mm_min: 100, width_mm_max: 2000, height_mm_min: 100, height_mm_max: 2500 })
           ]
         );
 
