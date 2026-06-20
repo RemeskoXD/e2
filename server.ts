@@ -189,7 +189,8 @@ async function ensureSchema(db: Pool) {
     `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS fabric_groups_config JSONB DEFAULT '[]'::jsonb`,
     `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS extras JSONB DEFAULT '[]'::jsonb`,
     `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS parameters JSONB DEFAULT '[]'::jsonb`,
-    `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS slug VARCHAR(255) UNIQUE`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS dimension_constraints JSONB DEFAULT NULL`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS slug VARCHAR(255) UNIQUE`,
   ]) {
     await db.query(sql).catch(() => {});
   }
@@ -1329,6 +1330,7 @@ async function startServer() {
           `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS fabric_groups_config JSONB DEFAULT '[]'::jsonb`,
           `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS extras JSONB DEFAULT '[]'::jsonb`,
           `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS parameters JSONB DEFAULT '[]'::jsonb`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS dimension_constraints JSONB DEFAULT NULL`,
           `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS slug VARCHAR(255) UNIQUE`,
         ]) {
           await db.query(sql).catch(() => {});
@@ -2856,6 +2858,7 @@ async function startServer() {
           `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS fabric_groups_config JSONB DEFAULT '[]'::jsonb`,
           `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS extras JSONB DEFAULT '[]'::jsonb`,
           `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS parameters JSONB DEFAULT '[]'::jsonb`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS dimension_constraints JSONB DEFAULT NULL`,
           `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS slug VARCHAR(255) UNIQUE`
         ];
 
@@ -2864,6 +2867,18 @@ async function startServer() {
           await executeQuery(sql, `Add column ${colName} to Product`);
         }
 
+        // Indexes
+        await executeQuery(`CREATE INDEX IF NOT EXISTS "ProductHeightPriceTier_product_id_idx" ON "ProductHeightPriceTier" (product_id)`, 'Index ProductHeightPriceTier');
+        await executeQuery(`CREATE INDEX IF NOT EXISTS "ProductPriceBracket_product_id_idx" ON "ProductPriceBracket" (product_id)`, 'Index ProductPriceBracket');
+        await executeQuery(`CREATE INDEX IF NOT EXISTS "OrderItem_order_id_idx" ON "OrderItem" (order_id)`, 'Index OrderItem');
+
+        // Slugs fix
+        await executeQuery(`UPDATE "Product" SET slug = substring(md5(random()::text) from 1 for 16) WHERE slug IS NULL`, 'Fix empty slugs');
+
+        res.json({
+          status: errors.length === 0 ? "success" : "partial_success",
+          results,
+          errors
         });
       } catch (e: any) {
         res.status(500).json({ error: e.message });
@@ -3122,4 +3137,6 @@ async function startServer() {
 }
 
 startServer();
+
+
 
