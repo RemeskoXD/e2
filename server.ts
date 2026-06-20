@@ -2621,15 +2621,15 @@ async function startServer() {
             id: "typ_dveri",
             name: "Typ dveřní sítě",
             hint: "Bez rámu se síť montuje přímo na rám dveří pomocí pantů. Verze 's rámem' obsahuje vlastní obvodový rám sítě, který se instaluje do otvoru (je tak stabilnější a vypadá velmi elegantně).",
-            type: "select",
+            type: "color_array",
             options: [
-              { label: "Jednokřídlé bez rámu (DE 50x20)", value: "bez_ramu_de50" },
-              { label: "Jednokřídlé bez rámu (DE 40x20 Lux)", value: "bez_ramu_de40", qapiRecommended: true, hint: "Oblíbená volba, pevnější profil 40x20." },
-              { label: "Dvoukřídlé bez rámu (DE 40x20 Lux)", value: "bez_ramu_de40_dvou" },
-              { label: "Jednokřídlé s rámem R3 (DE 40x20 Lux + R3)", value: "ram_r3_de40", hint: "Vlastní rám R3 je vhodný, pokud nechcete vrtat panty do rámu vlastních dveří." },
-              { label: "Jednokřídlé s rámem R4 (DE 40x20 Lux + R4)", value: "ram_r4_de40", hint: "Vlastní rám R4 má širší lemování, ideální na hrubší fasádu." },
-              { label: "Dvoukřídlé s rámem R3 (DE 40x20 Lux + R3)", value: "ram_r3_de40_dvou" },
-              { label: "Dvoukřídlé s rámem R4 (DE 40x20 Lux + R4)", value: "ram_r4_de40_dvou" }
+              { label: "Jednokřídlé bez rámu (DE 50x20)", value: "bez_ramu_de50", img: "/images/icon_bez_ramu.png" },
+              { label: "Jednokřídlé bez rámu (DE 40x20 Lux)", value: "bez_ramu_de40", qapiRecommended: true, hint: "Oblíbená volba, pevnější profil 40x20.", img: "/images/icon_bez_ramu.png" },
+              { label: "Dvoukřídlé bez rámu (DE 40x20 Lux)", value: "bez_ramu_de40_dvou", img: "/images/icon_dvoukridla.png" },
+              { label: "Jednokřídlé s rámem R3 (DE 40x20 Lux + R3)", value: "ram_r3_de40", hint: "Vlastní rám R3 je vhodný, pokud nechcete vrtat panty do rámu vlastních dveří.", img: "/images/icon_s_ramem.png" },
+              { label: "Jednokřídlé s rámem R4 (DE 40x20 Lux + R4)", value: "ram_r4_de40", hint: "Vlastní rám R4 má širší lemování, ideální na hrubší fasádu.", img: "/images/icon_s_ramem.png" },
+              { label: "Dvoukřídlé s rámem R3 (DE 40x20 Lux + R3)", value: "ram_r3_de40_dvou", img: "/images/icon_dvoukridla.png" },
+              { label: "Dvoukřídlé s rámem R4 (DE 40x20 Lux + R4)", value: "ram_r4_de40_dvou", img: "/images/icon_dvoukridla.png" }
             ]
           },
           {
@@ -2655,13 +2655,14 @@ async function startServer() {
           {
             id: "sitovina",
             name: "Typ síťoviny",
+            hint: "Vyberte síťovinu. Skelné vlákno je standard. Pokud máte doma zvířátka, zvažte Pet screen (odolný proti protržení). Pro alergiky doporučujeme protipylovou síťovinu.",
             type: "select",
             options: [
-              { label: "Skelné vlákno - šedá", value: "zaklad_seda" },
+              { label: "Skelné vlákno - šedá", value: "zaklad_seda", qapiRecommended: true, hint: "Klasika, která propouští nejvíce světla a přirozeně splyne s okolím." },
               { label: "Skelné vlákno - černá", value: "zaklad_cerna" },
-              { label: "Transparentní síťovina - černá", value: "transparentni" },
-              { label: "Protipylová síťovina - černá", value: "protipylova" },
-              { label: "Pet screen (odolná) - šedá", value: "petscreen_seda" },
+              { label: "Transparentní síťovina - černá", value: "transparentni", hint: "Extrémně tenké vlákno, síť je po instalaci téměř neviditelná." },
+              { label: "Protipylová síťovina - černá", value: "protipylova", hint: "Zachytí prach i pyly, ideální pokud doma máte alergika." },
+              { label: "Pet screen (odolná) - šedá", value: "petscreen_seda", hint: "Nezničitelná síť, pokud máte kočku nebo psa, kteří rádi škrábou na dveře." },
               { label: "Pet screen (odolná) - černá", value: "petscreen_cerna" },
               { label: "Síťovina s nanovláknem - černá", value: "nano" }
             ]
@@ -2669,12 +2670,13 @@ async function startServer() {
           {
             id: "panty",
             name: "Panty",
+            hint: "Dveřní sítě se otevírají na pantech. Samozavírací panty obsahují pružinu, díky které se dveře samy zaklapnou.",
             type: "select",
             options: [
               { label: "PVC Standard panty (v ceně)", value: "pvc_standard" },
               { label: "PVC Samozavírací panty (56 Kč/ks)", value: "pvc_samozaviraci" },
               { label: "Al Standard panty (73 Kč/ks)", value: "al_standard" },
-              { label: "Al Samozavírací panty (84 Kč/ks)", value: "al_samozaviraci" }
+              { label: "Al Samozavírací panty (84 Kč/ks)", value: "al_samozaviraci", qapiRecommended: true, hint: "Hliníkové (Al) panty mají delší životnost a samozavírací mechanismus zaručí, že nezůstane otevřeno." }
             ]
           },
           {
@@ -2698,10 +2700,11 @@ async function startServer() {
           {
             id: "okopova_pricka",
             name: "Okopová příčka ve spodní části",
+            hint: "Okopová příčka je širší hliníkový profil umístěný úplně dole. Zabraňuje tomu, abyste do sítě omylem kopli nohou při otevírání.",
             type: "select",
             options: [
               { label: "Ne", value: "ne" },
-              { label: "Ano (počítá se dle barvy profilu)", value: "ano" }
+              { label: "Ano (počítá se dle barvy profilu)", value: "ano", qapiRecommended: true, hint: "Velmi doporučujeme, zvláště pokud máte doma děti." }
             ]
           },
           {

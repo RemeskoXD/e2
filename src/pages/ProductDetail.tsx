@@ -1108,12 +1108,12 @@ export default function ProductDetail({ productId }: { productId: string }) {
                                 title={`${opt.label} ${opt.priceVariant ? `(+${opt.priceVariant}${opt.priceType === 'per_m2' ? ' Kč/m²' : opt.priceType === 'per_bm' ? ' Kč/bm šířky' : opt.priceType === 'per_bm_height' ? ' Kč/bm výšky' : ' Kč'})` : ''}`}
                                 className={`relative group overflow-hidden border-2 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#CCAD8A] ${
                                   isSelected ? 'border-[#CCAD8A] shadow-md scale-105' : 'border-gray-200 hover:border-[#132333]'
-                                } ${opt.img ? 'w-20 h-16 rounded-xl' : 'px-4 py-2 text-sm font-medium rounded-xl text-gray-700 bg-white'}`}
+                                } ${opt.img ? 'w-28 h-28 rounded-xl' : 'px-4 py-2 text-sm font-medium rounded-xl text-gray-700 bg-white'}`}
                                 style={!opt.img && opt.colorCode ? { backgroundColor: opt.colorCode } : {}}
                               >
                                 {opt.img ? (
                                   <>
-                                    <img src={opt.img} alt={opt.label} className="w-full h-full object-cover bg-gray-50" />
+                                    <img src={opt.img} alt={opt.label} className="w-full h-full object-contain p-2 bg-white" />
                                     <div className="absolute inset-x-0 bottom-0 bg-black/60 pt-2 pb-1 px-1 min-h-[50%] flex items-end">
                                       <span className="text-white text-[10px] sm:text-xs leading-none font-medium truncate w-full text-center drop-shadow-sm">{opt.label}</span>
                                     </div>
