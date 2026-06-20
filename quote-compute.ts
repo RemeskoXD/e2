@@ -551,7 +551,7 @@ export async function computeProductQuote(
     let maxH = 2200;
 
     if (typProfilu === 'prim') {
-      maxH = 2400;
+      maxH = 2200;
       minW = 240;
       const ovladani = p.ovladani_prim;
       if (ovladani === 'brzda') {

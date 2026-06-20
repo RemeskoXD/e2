@@ -1550,42 +1550,81 @@ async function startServer() {
         
         const params = [
           {
-            id: "lamela_provedeni",
-            name: "Provedení a typ lamel",
-            type: "select",
+            id: "typ_profilu",
+            name: "Typ profilu",
+            type: "color_array",
             options: [
-              { label: "Standardní provedení - Základní barvy (lamela 25x0.18)", value: "std_zaklad", priceVariant: 0, priceType: "per_m2" },
-              { label: "Domykatelné provedení (Celostín) - Základní barvy", value: "dom_zaklad", priceVariant: 33, priceType: "per_m2" },
-              { label: "Standardní provedení - Lamela 16 mm", value: "std_l16", priceVariant: 74, priceType: "per_m2" },
-              { label: "Standardní provedení - Lamela 25x0.21 (č. 101-155, 211-265, 311-371, 700 a 714)", value: "std_l25_g1", priceVariant: 74, priceType: "per_m2" },
-              { label: "Domykatelné provedení - Lamela 25x0.21 (č. 101-155, 211-265, 311-371, 700 a 714)", value: "dom_l25_g1", priceVariant: 107, priceType: "per_m2" },
-              { label: "Standardní provedení - Lamela 25x0.21 (SR 621-630, SM 801-869)", value: "std_l25_g2", priceVariant: 207, priceType: "per_m2" },
-              { label: "Domykatelné provedení - Lamela 25x0.21 (SR 621-630, SM 801-869)", value: "dom_l25_g2", priceVariant: 240, priceType: "per_m2" },
-              { label: "Standardní provedení - Barvy 780, 783, 1940, 8005, 8101, 8300, 8204, 8107", value: "std_barva_ex", priceVariant: 87, priceType: "per_m2" },
-              { label: "Domykatelné provedení - Barvy 780, 783, 1940, 8005, 8101, 8300, 8204, 8107", value: "dom_barva_ex", priceVariant: 120, priceType: "per_m2" },
-              { label: "Standardní provedení - Perforované lamely (PR1, PR58, PR61, PR103, PR285)", value: "std_perf", priceVariant: 76, priceType: "per_m2" },
-              { label: "Domykatelné provedení - Perforované lamely (PR1, PR58, PR61, PR103, PR285)", value: "dom_perf", priceVariant: 109, priceType: "per_m2" },
-              { label: "Standardní provedení - Imitace dřeva", value: "std_drevo", priceVariant: 169, priceType: "per_m2" },
-              { label: "Domykatelné provedení - Imitace dřeva", value: "dom_drevo", priceVariant: 267, priceType: "per_m2" }
+              { label: "Isoline (Rovný profil)", value: "isoline", img: "/images/icon_isoline_rovny.png", hint: "Klasický hranatý profil s možností hliníkového provedení či lakování do RAL." },
+              { label: "Isoline PRIM (Obloukový profil)", value: "prim", img: "/images/icon_isoline_prim.png", qapiRecommended: true, hint: "Moderní zaoblený design profilu, vhodný i pro větší plochy s využitím převodovky." }
             ]
           },
           {
-            id: "profil",
-            name: "Barva profilů (horní a dolní)",
+            id: "lamela_typ",
+            name: "Design a typ lamel",
+            hint: "Vyberte si šířku a povrchovou úpravu hliníkových lamel.",
             type: "select",
             options: [
-              { label: "Základní sladění (bílá atd.)", value: "zakladni", priceVariant: 0, priceType: "fixed" },
-              { label: "Prim imitace dřeva", value: "prim_drevo", priceVariant: 131, priceType: "per_bm" }
+              { label: "Základní barvy (lamela 25x0.18 mm)", value: "std_zaklad", priceVariant: 0, priceType: "per_m2" },
+              { label: "Lamela 16 mm", value: "std_l16", priceVariant: 74, priceType: "per_m2" },
+              { label: "Lamela 25x0.21 mm (Skupina 1)", value: "std_l25_g1", priceVariant: 74, priceType: "per_m2", hint: "Čísla: 101-155, 211-265, 311-371, 700, 714" },
+              { label: "Lamela 25x0.21 mm (Skupina 2)", value: "std_l25_g2", priceVariant: 207, priceType: "per_m2", hint: "Čísla: SR 621-630, SM 801-869" },
+              { label: "Speciální barvy (Skupina 3)", value: "std_barva_ex", priceVariant: 87, priceType: "per_m2", hint: "Čísla: 780, 783, 1940, 8005, 8101, 8300, 8204, 8107" },
+              { label: "Perforované lamely", value: "std_perf", priceVariant: 76, priceType: "per_m2", hint: "Dírkované lamely propouštějící část světla (PR1, PR58, PR61, PR103, PR285)" },
+              { label: "Imitace dřeva", value: "std_drevo", priceVariant: 169, priceType: "per_m2" }
             ]
           },
           {
-            id: "ovladani_brzda",
+            id: "celostin",
+            name: "Domykatelné provedení (Celostín)",
+            hint: "U domykatelné žaluzie je po dovření lamel minimalizován prostup světla. Otvory pro strunu jsou schované.",
+            type: "select",
+            options: [
+              { label: "Ne (Standardní)", value: "ne" },
+              { label: "Ano (Celostín)", value: "ano" }
+            ]
+          },
+          {
+            id: "barva_profilu_isoline",
+            name: "Materiál a barva profilu (Isoline)",
+            type: "select",
+            condition: {
+              dependsOnParamId: "typ_profilu",
+              allowedValues: ["isoline"]
+            },
+            options: [
+              { label: "Základní (dle vzorníku)", value: "zakladni", priceVariant: 0, priceType: "fixed" },
+              { label: "Hliníkový profil (Al)", value: "al_isoline", priceVariant: 77, priceType: "per_m2" },
+              { label: "Hliníkový profil (Al) lakovaný v RAL", value: "al_ral", priceVariant: 147, priceType: "per_bm" },
+              { label: "Hliníkový profil (Al) v imitaci dřeva", value: "al_drevo", priceVariant: 131, priceType: "per_bm" },
+              { label: "Železný profil (Fe) v imitaci dřeva", value: "fe_drevo", priceVariant: 131, priceType: "per_bm" }
+            ]
+          },
+          {
+            id: "barva_profilu_prim",
+            name: "Materiál a barva profilu (PRIM)",
+            type: "select",
+            condition: {
+              dependsOnParamId: "typ_profilu",
+              allowedValues: ["prim"]
+            },
+            options: [
+              { label: "Základní (dle vzorníku)", value: "zakladni", priceVariant: 0, priceType: "fixed" },
+              { label: "Imitace dřeva", value: "prim_drevo", priceVariant: 131, priceType: "per_bm" }
+            ]
+          },
+          {
+            id: "ovladani_prim",
             name: "Ovládání (Brzda a převodovka)",
+            hint: "Pro velké plochy nad 2.4 m² je nutná převodovka pro zachování záruky. Slouží ke snížení námahy při stahování.",
             type: "select",
+            condition: {
+              dependsOnParamId: "typ_profilu",
+              allowedValues: ["prim"]
+            },
             options: [
-              { label: "Standardní provedení (bez brzdy)", value: "std", priceVariant: 0, priceType: "fixed" },
-              { label: "Brzda (poměr 1:1)", value: "brzda", priceVariant: 34, priceType: "fixed" },
-              { label: "Převodovka s brzdou (poměr 1:4)", value: "prevodovka", priceVariant: 82, priceType: "fixed" }
+              { label: "Standardní řetízek (bez brzdy)", value: "std", priceVariant: 0, priceType: "fixed" },
+              { label: "S brzdou (poměr 1:1)", value: "brzda", priceVariant: 34, priceType: "fixed" },
+              { label: "S převodovkou a brzdou (poměr 1:4)", value: "prevodovka", priceVariant: 82, priceType: "fixed" }
             ]
           },
           {
@@ -1626,12 +1665,12 @@ async function startServer() {
             title, slug, category, price, "oldPrice", badge, img, "desc", 
             supplier_markup_percent, commission_percent, 
             width_mm_min, width_mm_max, height_mm_min, height_mm_max, max_area_m2, 
-            parameters, gallery, colors, extras, fabric_groups_config, price_mode, hidden
+            parameters, gallery, colors, extras, fabric_groups_config, price_mode, validation_profile, hidden
           ) VALUES (
             $1, $2, $3, $4, null, $5, $6, $7,
             4.9, 0,
-            240, 2200, 300, 2400, 5.28,
-            $8, '[]', '[]', '[]', '[]', 'matrix_cell', false
+            200, 2200, 300, 2200, 5.28,
+            $8, '[]', '[]', '[]', '[]', 'matrix_cell', 'isoline_merged', false
           )
           ON CONFLICT (slug) DO UPDATE SET
             title = EXCLUDED.title,
@@ -1639,18 +1678,19 @@ async function startServer() {
             "desc" = EXCLUDED."desc",
             parameters = EXCLUDED.parameters,
             max_area_m2 = 5.28,
-            height_mm_max = 2400,
-            width_mm_min = 240,
-            price_mode = 'matrix_cell'
+            height_mm_max = 2200,
+            width_mm_min = 200,
+            price_mode = 'matrix_cell',
+            validation_profile = 'isoline_merged'
           RETURNING id
         `, [
-          "Horizontální žaluzie Isoline PRIM",
-          "horizontalni-zaluzie-isoline-prim",
+          "Horizontální žaluzie Isoline & PRIM",
+          "horizontalni-zaluzie-isoline-prim-merged",
           category,
           263,
           "",
           "https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=600&auto=format&fit=crop",
-          `<h3>Základní ceníková sestava</h3><ul><li><strong>Horní profil:</strong> 47,3 x 24 x 24,7 mm, materiál válcovaný pozinkovaný plech</li><li><strong>Dolní profil:</strong> materiál válcovaný pozinkovaný plech</li><li><strong>Ovládání:</strong> Sdružené řetízkové ovládání</li><li><strong>Montáž:</strong> Interiérové provedení s čelním vývodem ovládání a s fixací silonovou strunou</li></ul><br /><h3>Technické detaily a provedení</h3><p><strong>Domykatelné provedení (Celostín):</strong> Domykatelná žaluzie, u které je po dovření lamel minimalizován prostup světla skrze lamely. Efektu je docíleno excentrickým umístěním otvorů v lamelách (nelze pro lamelu 16 mm).</p><p><strong>Vyměření:</strong> Jako výrobní šířka a výška se uvádí rozměr mezi zasklívacími lištami. Při malé hloubce zasklívacích lišt je nutno přidat distanční podložky pod koncovky.</p><p><em>DŮLEŽITÉ UPOZORNĚNÍ: Standardní provedení má maximální plochu 1.5 m². Pro žaluzie s větší plochou (až do 5.28 m²) zvolte jako příplatek <strong>Převodovku s brzdou</strong> pro zachování záruky.</em></p>`,
+          `<h3>Základní ceníková sestava</h3><p>Tento produkt kombinuje dva nejoblíbenější typy horizontálních žaluzií - s rovným profilem (Isoline) i luxusním obloukovým (PRIM). Obě varianty jsou interiérové, ovládané řetízkem a s fixací silonovou strunou.</p><ul><li><strong>Isoline:</strong> Rovný profil 42,5 x 25,6 mm, max. plocha 2.4 m²</li><li><strong>Isoline PRIM:</strong> Obloukový profil 47,3 x 24 mm, ideální i pro větší plochy (až 5.28 m² s převodovkou)</li></ul><br /><h3>Technické detaily a provedení</h3><p><strong>Domykatelné provedení (Celostín):</strong> Žaluzie, u které je po dovření lamel minimalizován prostup světla. Otvory pro textilní pásku a fixační strunu jsou umístěny excentricky (nelze použít s 16 mm lamelou).</p><p><strong>Vyměření:</strong> Výrobní šířka a výška je vždy rozměr mezi zasklívacími lištami. Při mělké zasklívací liště je nutné použít distanční podložky pod koncovky.</p><p><em>DŮLEŽITÉ UPOZORNĚNÍ: E-shop vás automaticky upozorní, pokud vaše rozměry přesáhnou standardní limity pro zvolený typ profilu.</em></p>`,
           JSON.stringify(params)
         ]);
 
