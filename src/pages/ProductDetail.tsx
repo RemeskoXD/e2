@@ -207,12 +207,24 @@ export default function ProductDetail({ productId }: { productId: string }) {
   const visibleParameters = useMemo(() => {
     if (!product?.parameters) return [];
     return product.parameters.filter(param => {
-      if (!param.condition) return true;
-      const parentVal = selectedParameters[param.condition.dependsOnParamId];
-      if (!parentVal) return false;
-      return param.condition.allowedValues.includes(parentVal);
+      // Support for array of conditions (all must match if provided)
+      if (param.conditions && Array.isArray(param.conditions)) {
+        return param.conditions.every((cond: any) => {
+          const parentVal = selectedParameters[cond.dependsOnParamId] || (cond.dependsOnParamId === 'model' ? pliseModel : null);
+          if (!parentVal) return false;
+          return cond.allowedValues.includes(parentVal);
+        });
+      }
+      // Fallback for single condition
+      if (param.condition) {
+        // Allow fallback to generic hardcoded 'pliseModel' if it's the 'model' parameter
+        const parentVal = selectedParameters[param.condition.dependsOnParamId] || (param.condition.dependsOnParamId === 'model' ? pliseModel : null);
+        if (!parentVal) return false;
+        return param.condition.allowedValues.includes(parentVal);
+      }
+      return true;
     });
-  }, [product?.parameters, selectedParameters]);
+  }, [product?.parameters, selectedParameters, pliseModel]);
 
   useEffect(() => {
     if (!product?.parameters) return;

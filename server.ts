@@ -2335,23 +2335,11 @@ async function startServer() {
               { label: "RAL", value: "ral" }
             ]
           },
-          {
-            id: "lakovani_ral",
-            name: "Lakováni do RAL",
-            type: "select",
-            condition: {
-              dependsOnParamId: "barva_profilu",
-              allowedValues: ["ral"]
-            },
-            options: [
-              { label: "PM1, PM3, PP1, PP2, PS3", value: "lak_pm1", priceVariant: 157, priceType: "per_bm" },
-              { label: "PM2, PM5", value: "lak_pm2", priceVariant: 236, priceType: "per_bm" },
-              { label: "PM4", value: "lak_pm4", priceVariant: 315, priceType: "per_bm" }
-            ]
-          },
+
           {
             id: "vodici_lista_ps3",
             name: "Vodící lišta pro model PS3",
+            hint: "Vodící lišta pomáhá stabilizovat žaluzii ve střešním okně. Pokud zvolíte barvu RAL, bude i lišta lakována do RAL a automaticky se připočte lakování.",
             type: "select",
             condition: {
               dependsOnParamId: "model",
@@ -2359,8 +2347,7 @@ async function startServer() {
             },
             options: [
               { label: "Ne", value: "ne" },
-              { label: "Základní barva", value: "ano_zaklad", priceVariant: 311, priceType: "per_bm_height" },
-              { label: "RAL", value: "ano_ral", priceVariant: 638, priceType: "per_bm_height" } // 311 + 327
+              { label: "Ano", value: "ano", priceVariant: 311, priceType: "per_bm_height" }
             ]
           },
           {

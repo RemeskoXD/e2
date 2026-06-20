@@ -484,6 +484,25 @@ export async function computeProductQuote(
        }
     }
 
+    if (body?.selected_parameters?.barva_profilu === 'ral') {
+       let ralPricePerBm = 0;
+       if (["PM1", "PM3", "PP1", "PP2", "PS3"].includes(model)) ralPricePerBm = 157;
+       else if (["PM2", "PM5"].includes(model)) ralPricePerBm = 236;
+       else if (model === "PM4") ralPricePerBm = 315;
+       
+       if (ralPricePerBm > 0) {
+         const ralSurcharge = ralPricePerBm * (wR / 1000);
+         parametersSurcharge += Math.round(ralSurcharge); // Add to parametersSurcharge!
+         screenUnionCatalogNotes.push(`+ Lakování profilu do RAL (${ralPricePerBm} Kč/bm × ${(wR/1000).toFixed(2)} bm = ${Math.round(ralSurcharge)} Kč)`);
+       }
+
+       if (model === 'PS3' && body?.selected_parameters?.vodici_lista_ps3 === 'ano') {
+          const ralRailSurcharge = 327 * (hR / 1000);
+          parametersSurcharge += Math.round(ralRailSurcharge);
+          screenUnionCatalogNotes.push(`+ Lakování vodící lišty do RAL (327 Kč/bm × ${(hR/1000).toFixed(2)} bm = ${Math.round(ralRailSurcharge)} Kč)`);
+       }
+    }
+
     if (isBlackoutOrBamboo) {
       if (hR > 2100) {
         return { ok: false, status: 400, body: { error: `Látky typu Blackout a Bamboo mají omezenou výšku na 2100 mm.` } };
