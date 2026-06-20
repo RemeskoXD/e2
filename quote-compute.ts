@@ -449,22 +449,24 @@ export async function computeProductQuote(
 
     // 2. Získání základní ceny z JSON matice uvnitř skupiny látek
     let lagartaPrice = 0;
-    if (typeof body.fabric_group_config_index === 'number') {
-      const configs = Array.isArray(product.fabric_groups_config) ? product.fabric_groups_config : [];
-      const cfg = configs[body.fabric_group_config_index] as any;
-      if (cfg && cfg.matrix) {
-        // Find nearest width and height
-        const widths = [400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300];
-        const heights = [800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600];
-        const tW = widths.find(w => w >= wR);
-        const tH = heights.find(h => h >= hR);
-        if (tW && tH && cfg.matrix[`${tW}_${tH}`]) {
-          lagartaPrice = cfg.matrix[`${tW}_${tH}`];
-        } else {
-          return { ok: false, status: 400, body: { error: `Pro rozměr ${wR}x${hR} s touto látkou neexistuje cena v ceníku.` } };
-        }
+    let fgIndex = body.fabric_group_config_index;
+    if (typeof fgIndex !== 'number') fgIndex = 0; // Default to first fabric group
+    
+    const configs = Array.isArray(product.fabric_groups_config) ? product.fabric_groups_config : [];
+    const cfg = configs[fgIndex] as any;
+    if (cfg && cfg.matrix) {
+      // Find nearest width and height
+      const widths = [400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300];
+      const heights = [800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600];
+      const tW = widths.find(w => w >= wR);
+      const tH = heights.find(h => h >= hR);
+      if (tW && tH && cfg.matrix[`${tW}_${tH}`]) {
+        lagartaPrice = cfg.matrix[`${tW}_${tH}`];
+      } else {
+        return { ok: false, status: 400, body: { error: `Pro rozměr ${wR}x${hR} neexistuje cena v ceníku vybrané skupiny látek.` } };
       }
     }
+    
     if (!lagartaPrice) {
       return { ok: false, status: 400, body: { error: "Nepodařilo se určit cenu látky z matice." } };
     }
