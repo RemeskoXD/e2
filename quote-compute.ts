@@ -551,14 +551,14 @@ export async function computeProductQuote(
     let maxH = 2200;
 
     if (typProfilu === 'prim') {
-      maxH = 2200;
+      maxH = 2400;
       minW = 240;
       const ovladani = p.ovladani_prim;
       if (ovladani === 'brzda') {
          minW = 330;
       } else if (ovladani === 'prevodovka') {
          minW = 350;
-         maxArea = 4.84;
+         maxArea = 5.28;
       }
     }
 

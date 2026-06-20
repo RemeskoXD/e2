@@ -1669,7 +1669,7 @@ async function startServer() {
           ) VALUES (
             $1, $2, $3, $4, null, $5, $6, $7,
             4.9, 0,
-            200, 2200, 300, 2200, 4.84,
+            200, 2200, 300, 2400, 5.28,
             $8, '[]', '[]', '[]', '[]', 'matrix_cell', 'isoline_merged', false
           )
           ON CONFLICT (slug) DO UPDATE SET
@@ -1677,8 +1677,8 @@ async function startServer() {
             price = EXCLUDED.price,
             "desc" = EXCLUDED."desc",
             parameters = EXCLUDED.parameters,
-            max_area_m2 = 4.84,
-            height_mm_max = 2200,
+            max_area_m2 = 5.28,
+            height_mm_max = 2400,
             width_mm_min = 200,
             price_mode = 'matrix_cell',
             validation_profile = 'isoline_merged'
@@ -1690,7 +1690,7 @@ async function startServer() {
           263,
           "",
           "https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=600&auto=format&fit=crop",
-          `<h3>Základní ceníková sestava</h3><p>Tento produkt kombinuje dva nejoblíbenější typy horizontálních žaluzií - s rovným profilem (Isoline) i luxusním obloukovým (PRIM). Obě varianty jsou interiérové, ovládané řetízkem a s fixací silonovou strunou.</p><ul><li><strong>Isoline:</strong> Rovný profil 42,5 x 25,6 mm, max. plocha 2.4 m²</li><li><strong>Isoline PRIM:</strong> Obloukový profil 47,3 x 24 mm, ideální i pro větší plochy (až 4.84 m² s převodovkou)</li></ul><br /><h3>Technické detaily a provedení</h3><p><strong>Domykatelné provedení (Celostín):</strong> Žaluzie, u které je po dovření lamel minimalizován prostup světla. Otvory pro textilní pásku a fixační strunu jsou umístěny excentricky (nelze použít s 16 mm lamelou).</p><p><strong>Vyměření:</strong> Výrobní šířka a výška je vždy rozměr mezi zasklívacími lištami. Při mělké zasklívací liště je nutné použít distanční podložky pod koncovky.</p><p><em>DŮLEŽITÉ UPOZORNĚNÍ: E-shop vás automaticky upozorní, pokud vaše rozměry přesáhnou standardní limity pro zvolený typ profilu.</em></p>`,
+          `<h3>Základní ceníková sestava</h3><p>Tento produkt kombinuje dva nejoblíbenější typy horizontálních žaluzií - s rovným profilem (Isoline) i luxusním obloukovým (PRIM). Obě varianty jsou interiérové, ovládané řetízkem a s fixací silonovou strunou.</p><ul><li><strong>Isoline:</strong> Rovný profil 42,5 x 25,6 mm, max. plocha 2.4 m²</li><li><strong>Isoline PRIM:</strong> Obloukový profil 47,3 x 24 mm, ideální i pro větší plochy (až 5.28 m² s převodovkou)</li></ul><br /><h3>Technické detaily a provedení</h3><p><strong>Domykatelné provedení (Celostín):</strong> Žaluzie, u které je po dovření lamel minimalizován prostup světla. Otvory pro textilní pásku a fixační strunu jsou umístěny excentricky (nelze použít s 16 mm lamelou).</p><p><strong>Vyměření:</strong> Výrobní šířka a výška je vždy rozměr mezi zasklívacími lištami. Při mělké zasklívací liště je nutné použít distanční podložky pod koncovky.</p><p><em>DŮLEŽITÉ UPOZORNĚNÍ: E-shop vás automaticky upozorní, pokud vaše rozměry přesáhnou standardní limity pro zvolený typ profilu.</em></p>`,
           JSON.stringify(params)
         ]);
 
