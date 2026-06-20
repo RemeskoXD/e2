@@ -558,7 +558,7 @@ export async function computeProductQuote(
          minW = 330;
       } else if (ovladani === 'prevodovka') {
          minW = 350;
-         maxArea = 5.28;
+         maxArea = 4.84;
       }
     }
 
