@@ -456,6 +456,21 @@ export default function ProductDetail({ productId }: { productId: string }) {
     activeMaxW = isDvou ? 2000 : 1000;
     activeMaxH = 2500;
     activeMaxArea = isDvou ? 5.00 : 2.50;
+  } else if (prof === "sit_hmyz") {
+    const typOkna = selectedParams['typ_okna'];
+    if (typOkna === 'pvc') {
+      activeMaxW = 1500;
+      activeMaxH = 1800;
+      activeMaxArea = 2.70;
+    } else if (typOkna === 'euro') {
+      activeMaxW = 1800;
+      activeMaxH = 1800;
+      activeMaxArea = 3.30;
+    } else if (typOkna === 'hlinik') {
+      activeMaxW = 1800;
+      activeMaxH = 1800;
+      activeMaxArea = 3.24;
+    }
   }
 
   const productTitleBlock = (
@@ -694,6 +709,11 @@ export default function ProductDetail({ productId }: { productId: string }) {
                     <strong>Plocha:</strong> {((Number(widthMm) * Number(heightMm)) / 1000000).toFixed(2)} m²
                     {product?.title?.toLowerCase().includes('isoline') && ((Number(widthMm) * Number(heightMm)) / 1000000) < 0.5 && (
                       <span className="text-[#CCAD8A] ml-2 font-medium">(účtováno 0.5 m²)</span>
+                    )}
+                    {activeMaxArea && ((Number(widthMm) * Number(heightMm)) / 1000000) > activeMaxArea && (
+                      <div className="text-red-500 font-bold mt-1 text-xs">
+                        Tato velikost překračuje maximální povolenou plochu pro tento profil ({activeMaxArea.toFixed(2)} m²). Přejděte na menší rozměr, jinak produkt nepůjde objednat!
+                      </div>
                     )}
                   </div>
                 )}

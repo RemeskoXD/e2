@@ -2572,8 +2572,8 @@ async function startServer() {
         }
 
         const title = "Okenní sítě proti hmyzu";
-        const desc = "Univerzální okenní sítě proti hmyzu s profilací na míru pro plastová, dřevěná i hliníková okna. Obsahuje široký výběr síťovin včetně antialergických nebo extra odolných (Pet Screen).";
-        const img = "/img/placeholder.jpg"; 
+        const desc = "<p>Ochraňte svůj domov před obtížným hmyzem pomocí našich <strong>prémiových okenních sítí</strong>. Vyrobené přesně na míru vašim oknům, ať už se jedná o moderní plastová okna, klasická dřevěná EURO okna, nebo stylová hliníková okna s okapničkou. Naše přesně tvarované profily ISSO OE perfektně zapadnou do struktury vašeho okna a stanou se téměř neviditelnými.</p><p>Vybírat můžete z několika druhů odolných síťovin – od standardní přes transparentní, protipylovou až po nezničitelný Pet Screen pro vaše mazlíčky. Rámy v mnoha barevných provedeních, včetně přesných imitací dřeva a odstínů RAL, zajistí dokonalé splynutí s exteriérem vašeho domu. Instalace je díky chytrému systému uchycení velmi jednoduchá a nevyžaduje vrtání do rámu okna.</p>";
+        const img = "/images/okenni_sit_cover.png"; 
 
         await db.query(
           `INSERT INTO "Product" 
@@ -2584,6 +2584,7 @@ async function startServer() {
             title = EXCLUDED.title,
             category = EXCLUDED.category,
             "desc" = EXCLUDED."desc",
+            img = EXCLUDED.img,
             price_mode = EXCLUDED.price_mode,
             validation_profile = EXCLUDED.validation_profile,
             parameters = EXCLUDED.parameters,
