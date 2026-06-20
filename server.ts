@@ -2248,16 +2248,17 @@ async function startServer() {
           {
             id: "barva_profilu",
             name: "Barva profilu",
-            type: "select",
+            hint: "Sladění profilu s rámem vašeho okna je základem dokonalého designu. Standardní barvy jsou bez příplatku. Imitace dřeva a lakování RAL jsou za příplatek.",
+            type: "color_array",
             options: [
-              { label: "Bílá", value: "bila" },
-              { label: "Krémová", value: "kremova" },
-              { label: "Hnědá", value: "hneda" },
-              { label: "Stříbrná", value: "stribrna" },
-              { label: "Antracit", value: "antracit" },
-              { label: "Černá", value: "cerna" },
-              { label: "Imitace dřeva (zlatý dub, ořech, winchester)", value: "imitace", priceVariant: 300, priceType: "fixed" },
-              { label: "RAL", value: "ral" }
+              { label: "Bílá (RAL 9016)", value: "bila", hex: "#ffffff", qapiRecommended: true },
+              { label: "Krémová (RAL 1015)", value: "kremova", hex: "#e6d6b8" },
+              { label: "Hnědá (RAL 8017)", value: "hneda", hex: "#45322e" },
+              { label: "Stříbrná (RAL 9006)", value: "stribrna", hex: "#a5a5a5" },
+              { label: "Antracit (RAL 7016)", value: "antracit", hex: "#383e42" },
+              { label: "Černá (RAL 9005)", value: "cerna", hex: "#111111" },
+              { label: "Imitace dřeva (zlatý dub, ořech, winchester)", value: "imitace", priceVariant: 300, priceType: "fixed", hex: "#8b5a2b", hint: "Přesný odstín imitace s vámi doladíme po objednávce." },
+              { label: "Vlastní lakování RAL", value: "ral", hint: "Můžete si vybrat jakoukoliv barvu ze vzorníku RAL. Kód RAL prosím uveďte do poznámky." }
             ]
           },
 
