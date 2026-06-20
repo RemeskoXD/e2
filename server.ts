@@ -2296,11 +2296,11 @@ async function startServer() {
             id: "typ_okna",
             name: "Typ okna (určuje profil sítě)",
             hint: "Typ okna je klíčový pro výběr správného tvaru rámu sítě. Plastová okna mají jinou tloušťku rámu než dřevěná EURO okna. Pokud si nejste jistí, změřte tloušťku rámu podle našeho návodu.",
-            type: "select",
+            type: "color_array",
             options: [
-              { label: "Plastové okno (profil ISSO OE 19x8)", value: "pvc", qapiRecommended: true },
-              { label: "Dřevěné EURO okno / plast s okapničkou (profil OE 24x24)", value: "euro" },
-              { label: "Hliníkové okno (profil OE 32x11 LUX)", value: "hlinik" }
+              { label: "Plastové okno (profil ISSO OE 19x8)", value: "pvc", qapiRecommended: true, hint: "Nejčastější varianta. Tenký profil ideální pro standardní plastová okna.", img: "/images/icon_okno_pvc.png" },
+              { label: "Dřevěné EURO okno / plast s okapničkou (profil OE 24x24)", value: "euro", hint: "Silnější profil určený pro dřevěná okna nebo plastová okna, která mají vystouplou okapničku.", img: "/images/icon_okno_euro.png" },
+              { label: "Hliníkové okno (profil OE 32x11 LUX)", value: "hlinik", hint: "Široký, elegantní hliníkový profil speciálně tvarovaný pro okna z hliníku.", img: "/images/icon_okno_hlinik.png" }
             ]
           },
           {
@@ -2355,15 +2355,15 @@ async function startServer() {
             id: "sitovina",
             name: "Typ síťoviny",
             hint: "Vyberte si materiál síťoviny podle vašich potřeb. Skelné vlákno je zlatý standard. Pet screen je silnější verze odolná proti drápkům. Protipylová síťovina uleví alergikům a transparentní zase zajistí maximální neviditelnost.",
-            type: "select",
+            type: "color_array",
             options: [
-              { label: "Skelné vlákno - šedá", value: "zaklad_seda", qapiRecommended: true, hint: "Nejuniverzálnější volba. Šedá barva dokonale splyne s oknem a propouští nejvíce světla." },
-              { label: "Skelné vlákno - černá", value: "zaklad_cerna" },
-              { label: "Transparentní síťovina - černá", value: "transparentni", priceVariant: 142, priceType: "per_m2", hint: "Extrémně tenké vlákno. Zevnitř i zvenku je síť téměř nepostřehnutelná." },
-              { label: "Protipylová síťovina - černá", value: "protipylova", priceVariant: 431, priceType: "per_m2", hint: "Hustší tkaní zachytí většinu pylu a prachu. Ideální do ložnice alergiků." },
-              { label: "Pet screen (odolná) - šedá", value: "petscreen_seda", priceVariant: 475, priceType: "per_m2", hint: "Vysoce odolná proti protržení kočkou nebo psem. Mírně snižuje světelnost." },
-              { label: "Pet screen (odolná) - černá", value: "petscreen_cerna", priceVariant: 475, priceType: "per_m2" },
-              { label: "Síťovina s nanovláknem - černá (jen pro EURO a Hliníková okna)", value: "nano", priceVariant: 1078, priceType: "per_m2" }
+              { label: "Skelné vlákno - šedá", value: "zaklad_seda", qapiRecommended: true, hint: "Nejuniverzálnější volba. Šedá barva dokonale splyne s oknem a propouští nejvíce světla.", img: "/images/icon_sit_seda.png" },
+              { label: "Skelné vlákno - černá", value: "zaklad_cerna", hint: "Klasické černé vlákno. Zevnitř je lépe průhledné.", img: "/images/icon_sit_cerna.png" },
+              { label: "Transparentní síťovina - černá", value: "transparentni", priceVariant: 142, priceType: "per_m2", hint: "Extrémně tenké vlákno. Zevnitř i zvenku je síť téměř nepostřehnutelná.", img: "/images/icon_sit_transparent.png" },
+              { label: "Protipylová síťovina - černá", value: "protipylova", priceVariant: 431, priceType: "per_m2", hint: "Hustší tkaní zachytí většinu pylu a prachu. Ideální do ložnice alergiků.", img: "/images/icon_sit_protipylova.png" },
+              { label: "Pet screen (odolná) - šedá", value: "petscreen_seda", priceVariant: 475, priceType: "per_m2", hint: "Vysoce odolná proti protržení kočkou nebo psem. Mírně snižuje světelnost.", img: "/images/icon_sit_petscreen.png" },
+              { label: "Pet screen (odolná) - černá", value: "petscreen_cerna", priceVariant: 475, priceType: "per_m2", hint: "Vysoce odolná černá varianta proti drápkům.", img: "/images/icon_sit_petscreen.png" },
+              { label: "Síťovina s nanovláknem - černá (jen pro EURO a Hliníková okna)", value: "nano", priceVariant: 1078, priceType: "per_m2", hint: "Revoluční nanovlákno zachytí i ty nejmenší částice smogu. Nejvyšší možná ochrana.", img: "/images/icon_sit_nano.png" }
             ]
           },
           {
