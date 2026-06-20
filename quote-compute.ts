@@ -635,6 +635,7 @@ export async function computeProductQuote(
 
       // Al rohy checks (fixed price per net)
       if (barva.includes('al_rohy')) {
+        if (isDe50) return { ok: false, status: 400, body: { error: `Hliníkové rohy nejsou dostupné pro základní profil DE 50x20.` } };
         const rohyPrice = isDvou ? 813 : 407;
         baseCatalogCzk += rohyPrice;
         screenUnionCatalogNotes.push(`Provedení s Al rohy: ${rohyPrice} Kč.`);
