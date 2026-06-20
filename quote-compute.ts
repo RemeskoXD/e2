@@ -642,6 +642,22 @@ export async function computeProductQuote(
     }
 
     baseCatalogCzk = basePriceM2 * calcAreaM2;
+
+    if (p.okenni_pricka === 'ano') {
+      let isRal = false;
+      const bPvc = p.barva_profilu_pvc || '';
+      const bEuro = p.barva_profilu_euro || '';
+      const bHlin = p.barva_profilu_hlinik || '';
+      
+      const activeColor = typOkna === 'pvc' ? bPvc : typOkna === 'euro' ? bEuro : bHlin;
+      if (activeColor.includes('ral_nestandard') || activeColor.includes('ral_struktura') || activeColor.includes('elox')) {
+         isRal = true;
+      }
+      
+      const prickaPrice = isRal ? 85 : 69;
+      baseCatalogCzk += prickaPrice;
+      screenUnionCatalogNotes.push(`Okenní příčka: ${prickaPrice} Kč.`);
+    }
   }
   // --- KONEC SÍTĚ PROTI HMYZU ---
 

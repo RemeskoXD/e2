@@ -2511,8 +2511,7 @@ async function startServer() {
             condition: { dependsOnParamId: "typ_okna", allowedValues: ["pvc", "euro"] },
             options: [
               { label: "Ne", value: "ne" },
-              { label: "Ano (v základní barvě)", value: "ano_zaklad", priceVariant: 69, priceType: "fixed" },
-              { label: "Ano (v barvě RAL)", value: "ano_ral", priceVariant: 85, priceType: "fixed" }
+              { label: "Ano (dopočítá se dle barvy profilu)", value: "ano" }
             ]
           }
         ];
