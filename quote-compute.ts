@@ -537,6 +537,59 @@ export async function computeProductQuote(
   }
   // --- KONEC PLISÉ LAGARTA ---
 
+  // --- HORIZONTÁLNÍ ŽALUZIE (ISOLINE + PRIM MERGED) ---
+  if (matrixProfile === "isoline_merged") {
+    const p = body?.selected_parameters || {};
+    const typProfilu = p.typ_profilu || 'isoline'; // isoline or prim
+    const celostin = p.celostin === 'ano';
+    const lamelaTyp = p.lamela_typ || 'std_zaklad';
+    
+    let maxArea = 2.4;
+    let minW = 200;
+    const maxW = 2200;
+    let minH = 300;
+    let maxH = 2200;
+
+    if (typProfilu === 'prim') {
+      maxH = 2400;
+      minW = 240;
+      const ovladani = p.ovladani_prim;
+      if (ovladani === 'brzda') {
+         minW = 330;
+      } else if (ovladani === 'prevodovka') {
+         minW = 350;
+         maxArea = 5.28;
+      }
+    }
+
+    if (wR < minW || wR > maxW) {
+      return { ok: false, status: 400, body: { error: `Šířka musí být v rozmezí ${minW} - ${maxW} mm.` } };
+    }
+    if (hR < minH || hR > maxH) {
+      return { ok: false, status: 400, body: { error: `Výška musí být v rozmezí ${minH} - ${maxH} mm.` } };
+    }
+    const actualAreaM2 = (wR * hR) / 1000000;
+    if (actualAreaM2 > maxArea) {
+      return { ok: false, status: 400, body: { error: `Maximální povolená plocha pro toto provedení je ${maxArea} m² (zadáno ${actualAreaM2.toFixed(2)} m²). ${typProfilu === 'prim' && maxArea === 2.4 ? 'Pro větší plochu zvolte Převodovku s brzdou.' : ''}` } };
+    }
+
+    if (celostin) {
+       if (lamelaTyp === 'std_l16') {
+         return { ok: false, status: 400, body: { error: `Domykatelné provedení (Celostín) nelze vyrobit s lamelou 16 mm.` } };
+       }
+       let celostinSurchargeM2 = 33;
+       if (lamelaTyp === 'std_drevo') {
+         celostinSurchargeM2 = 98;
+       }
+       const calcAreaM2 = Math.max(0.5, actualAreaM2);
+       const calculatedCelostinPrice = celostinSurchargeM2 * calcAreaM2;
+       parametersSurcharge += Math.round(calculatedCelostinPrice);
+       screenUnionCatalogNotes.push(`+ Domykatelné provedení (Celostín): ${celostinSurchargeM2} Kč/m² × ${calcAreaM2.toFixed(2)} m² = ${Math.round(calculatedCelostinPrice)} Kč`);
+    }
+  }
+  // --- KONEC HORIZONTÁLNÍ ŽALUZIE ---
+
+
   // --- SÍTĚ PROTI HMYZU ---
   if (matrixProfile === "sit_hmyz") {
     const p = body?.selected_parameters || {};
