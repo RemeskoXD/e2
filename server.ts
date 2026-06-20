@@ -2171,11 +2171,57 @@ async function startServer() {
         const m = require('./scratch-matrices.js');
 
         const fabricGroups = [
-          { name: "Cenová skupina 1 (Basic, Basic Reflex FR)", surcharge_percent: 0, matrix: m.g1, colors: [] },
-          { name: "Cenová skupina 2 (Basic Semi, Stripes, Wood, Press Reflex)", surcharge_percent: 0, matrix: m.g2, colors: [] },
-          { name: "Cenová skupina 3 (Bamboo, Bamboo Reflex, Living, Basic Blackout, Honeycomb)", surcharge_percent: 0, matrix: m.g3, colors: [] },
-          { name: "Cenová skupina 4 (Zebra, Grass, Parquet)", surcharge_percent: 0, matrix: m.g4, colors: [] },
-          { name: "Cenová skupina 5 (Bamboo Pearl, Shine, Wave, Binary, Living Blackout, Sparkle)", surcharge_percent: 0, matrix: m.g5, colors: [] }
+          { 
+            name: "Cenová skupina 1 (Basic, Basic Reflex FR)", surcharge_percent: 0, matrix: m.g1, 
+            colors: [
+              { name: "Bílá", hex: "#ffffff" },
+              { name: "Krémová", hex: "#fffdd0" },
+              { name: "Béžová", hex: "#f5f5dc" },
+              { name: "Světle šedá", hex: "#d3d3d3" },
+              { name: "Tmavě šedá", hex: "#a9a9a9" },
+              { name: "Antracit", hex: "#3b3c36" }
+            ] 
+          },
+          { 
+            name: "Cenová skupina 2 (Basic Semi, Stripes, Wood, Press Reflex)", surcharge_percent: 0, matrix: m.g2, 
+            colors: [
+              { name: "Wood Oak (Imitace dřeva)", hex: "#dfc19c" },
+              { name: "Wood Walnut", hex: "#8b5a2b" },
+              { name: "Stripes White", hex: "#f8f8f8" },
+              { name: "Stripes Grey", hex: "#b0b0b0" },
+              { name: "Sand", hex: "#c2b280" }
+            ] 
+          },
+          { 
+            name: "Cenová skupina 3 (Bamboo, Living, Basic Blackout, Honeycomb)", surcharge_percent: 0, matrix: m.g3, 
+            colors: [
+              { name: "Bamboo Natural", hex: "#e3dac9" },
+              { name: "Bamboo Dark", hex: "#6b4423" },
+              { name: "Blackout Bílá", hex: "#f0f0f0" },
+              { name: "Blackout Šedá", hex: "#808080" },
+              { name: "Honeycomb Bílá", hex: "#fdfdfd" },
+              { name: "Honeycomb Béžová", hex: "#e8d3a2" }
+            ] 
+          },
+          { 
+            name: "Cenová skupina 4 (Zebra, Grass, Parquet)", surcharge_percent: 0, matrix: m.g4, 
+            colors: [
+              { name: "Zebra (Pruhovaná)", hex: "#555555" },
+              { name: "Grass (Svěží zelená)", hex: "#8fbc8f" },
+              { name: "Grass (Přírodní písková)", hex: "#d2b48c" },
+              { name: "Parquet Brown", hex: "#855e42" }
+            ] 
+          },
+          { 
+            name: "Cenová skupina 5 (Bamboo Pearl, Shine, Wave, Sparkle)", surcharge_percent: 0, matrix: m.g5, 
+            colors: [
+              { name: "Pearl White", hex: "#eae0c8" },
+              { name: "Shine Silver", hex: "#c0c0c0" },
+              { name: "Wave Blue", hex: "#add8e6" },
+              { name: "Sparkle Gold", hex: "#d4af37" },
+              { name: "Sparkle Black", hex: "#222222" }
+            ] 
+          }
         ];
 
         const params = [

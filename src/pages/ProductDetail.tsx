@@ -783,6 +783,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                           {product.fabric_groups_config[selectedFabricGroupConfigIndex].colors.map((cNameOrObj: any) => {
                             const cName = typeof cNameOrObj === 'string' ? cNameOrObj : cNameOrObj.name;
                             const cImg = typeof cNameOrObj === 'string' ? undefined : cNameOrObj.img;
+                            const cHex = typeof cNameOrObj === 'string' ? undefined : cNameOrObj.hex;
                             return (
                                 <button
                                   key={cName}
@@ -791,12 +792,24 @@ export default function ProductDetail({ productId }: { productId: string }) {
                                   }}
                                   className={`relative group overflow-hidden border-2 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#CCAD8A] ${
                                   color === cName ? 'border-[#CCAD8A] shadow-md scale-105' : 'border-gray-200 hover:border-[#132333]'
-                                } ${cImg ? 'w-full aspect-square rounded-xl flex items-center justify-center bg-gray-50' : 'w-full px-2 py-3 text-sm font-medium rounded-xl text-gray-700 bg-white'}`}
+                                } ${cImg || cHex ? 'w-full aspect-square rounded-xl flex items-center justify-center bg-gray-50' : 'w-full px-2 py-3 text-sm font-medium rounded-xl text-gray-700 bg-white'}`}
                                 title={cName}
                               >
                                 {cImg ? (
                                   <>
                                     <img src={cImg} alt={cName} className="w-full h-full object-cover" />
+                                    <div className="absolute inset-x-0 bottom-0 bg-black/60 pt-2 pb-1.5 px-1 flex items-end">
+                                      <span className="text-white text-[10px] sm:text-[11px] leading-tight font-medium w-full text-center drop-shadow-sm">{cName}</span>
+                                    </div>
+                                    {color === cName && (
+                                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center pb-4">
+                                        <Check className="text-white drop-shadow-md shadow-black" size={24} strokeWidth={3} />
+                                      </div>
+                                    )}
+                                  </>
+                                ) : cHex ? (
+                                  <>
+                                    <div className="w-full h-full" style={{ backgroundColor: cHex }}></div>
                                     <div className="absolute inset-x-0 bottom-0 bg-black/60 pt-2 pb-1.5 px-1 flex items-end">
                                       <span className="text-white text-[10px] sm:text-[11px] leading-tight font-medium w-full text-center drop-shadow-sm">{cName}</span>
                                     </div>
@@ -832,6 +845,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                     {product.colors.map((c: any) => {
                       const cName = typeof c === 'string' ? c : c.name;
                       const cImg = typeof c === 'string' ? undefined : c.img;
+                      const cHex = typeof c === 'string' ? undefined : c.hex;
                       return (
                         <button
                           key={cName}
@@ -840,7 +854,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                           }}
                           className={`relative group overflow-hidden border-2 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#CCAD8A] ${
                             color === cName ? 'border-[#CCAD8A] shadow-md scale-105' : 'border-gray-200 hover:border-[#132333]'
-                          } ${cImg ? 'w-20 h-16 rounded-xl' : 'px-4 py-2 text-sm font-medium rounded-xl text-gray-700 bg-white'}`}
+                          } ${cImg || cHex ? 'w-20 h-16 rounded-xl' : 'px-4 py-2 text-sm font-medium rounded-xl text-gray-700 bg-white'}`}
                           title={cName}
                         >
                           {cImg ? (
@@ -851,7 +865,19 @@ export default function ProductDetail({ productId }: { productId: string }) {
                               </div>
                               {color === cName && (
                                 <div className="absolute inset-0 bg-black/20 flex items-center justify-center pb-3">
-                                  <Check className="text-white drop-shadow-md shadow-black" size={24} strokeWidth={3} />
+                                  <Check className="text-white drop-shadow-md shadow-black" size={20} strokeWidth={3} />
+                                </div>
+                              )}
+                            </>
+                          ) : cHex ? (
+                            <>
+                              <div className="w-full h-full" style={{ backgroundColor: cHex }}></div>
+                              <div className="absolute inset-x-0 bottom-0 bg-black/60 pt-2 pb-1 px-1 min-h-[50%] flex items-end">
+                                <span className="text-white text-[10px] sm:text-xs leading-none font-medium truncate w-full text-center drop-shadow-sm">{cName}</span>
+                              </div>
+                              {color === cName && (
+                                <div className="absolute inset-0 bg-black/20 flex items-center justify-center pb-3">
+                                  <Check className="text-white drop-shadow-md shadow-black" size={20} strokeWidth={3} />
                                 </div>
                               )}
                             </>
