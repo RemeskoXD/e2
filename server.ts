@@ -1862,7 +1862,7 @@ async function startServer() {
           category,
           1050,
           "",
-          "https://images.unsplash.com/photo-1558211583-d26f610c1eb1?q=80&w=600&auto=format&fit=crop",
+          "/images/optima_cover.png",
           `<h3>Základní ceníková sestava</h3><ul><li><strong>Látka:</strong> 100% polyester, vzor dle výběru</li><li><strong>Box:</strong> hliníkový profil (bílá, hnědá, stříbrná)</li><li><strong>Hřídel:</strong> hliníkový profil, průměr 25 mm</li><li><strong>Vodící lišta:</strong> hliníková</li><li><strong>Závaží látky:</strong> hliníkové</li><li><strong>Ovládání:</strong> řetízkem</li><li><strong>Uchycení:</strong> křídlo okna</li></ul><br /><h3>Technické detaily a montáž</h3><p>Roletka je v provedení s krytem návinu látky a s vodícími lištami po stranách. Konstrukce roletky umožňuje různé nastavení výšky stažení látky.</p><p><strong>Neinvazivní montáž:</strong> Pomocí oboustranné lepící pásky na křídlo (nezmenšuje světlost). Vhodné pro pergoly.</p><p><em>Upozornění: Z důvodu výrobních rozměrů nelze vyrobit roletku s šířkou a výškou současně nad 1950 mm. Maximální rozměry jsou také limitovány zvolenou látkou!</em></p>`,
           JSON.stringify(params),
           JSON.stringify(fabricGroups)
@@ -2053,7 +2053,7 @@ async function startServer() {
           category,
           1370,
           "",
-          "https://images.unsplash.com/photo-1558211583-d26f610c1eb1?q=80&w=600&auto=format&fit=crop",
+          "/images/optima_den_noc_cover.png",
           `<h3>Základní ceníková sestava</h3><ul><li><strong>Látka:</strong> 100% polyester, vzor dle výběru</li><li><strong>Box:</strong> hliníkový profil (bílá, hnědá, stříbrná)</li><li><strong>Hřídel:</strong> hliníkový profil, průměr 18 mm</li><li><strong>Vodící lišta:</strong> hliníková</li><li><strong>Závaží látky:</strong> hliníkové</li><li><strong>Ovládání:</strong> nekonečný řetízek se závažím</li><li><strong>Uchycení:</strong> křídlo okna</li></ul><br /><h3>Technické detaily a montáž</h3><p>Roletka je v provedení s krytem návinu látky a s vodícími lištami po stranách. Konstrukce roletky umožňuje různé nastavení výšky stažení látky.</p><p><strong>Neinvazivní montáž:</strong> Pomocí oboustranné lepící pásky na křídlo (nezmenšuje světlost).</p><p><em>Upozornění: Každá látka má z důvodu své tloušťky a typu odlišný limit pro maximální výšku návinu! E-shop Vás na tyto limity upozorní podle Vašeho výběru.</em></p>`,
           JSON.stringify(params),
           JSON.stringify(fabricGroups)
