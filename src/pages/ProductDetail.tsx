@@ -46,7 +46,7 @@ type Product = {
     id: string;
     name: string;
     type: 'select' | 'color_array';
-    options: { label: string; value: string; colorCode?: string; img?: string; priceVariant?: number; priceType?: 'fixed' | 'per_m2' | 'per_bm' | 'per_bm_height' }[];
+    options: { label: string; value: string; colorCode?: string; hex?: string; img?: string; priceVariant?: number; priceType?: 'fixed' | 'per_m2' | 'per_bm' | 'per_bm_height' }[];
     condition?: {
       dependsOnParamId: string;
       allowedValues: string[];
@@ -1132,40 +1132,79 @@ export default function ProductDetail({ productId }: { productId: string }) {
                           </select>
                         </div>
                       ) : param.type === 'color_array' ? (
-                        <div className="flex flex-wrap gap-3">
+                        <div className="flex flex-wrap gap-4 items-start">
                           {param.options.map(opt => {
                             const isSelected = selectedParameters[param.id] === opt.value;
-                            return (
-                              <button
-                                key={opt.value}
-                                onClick={() => {
-                                  setSelectedParameters(prev => ({ ...prev, [param.id]: opt.value }));
-                                  setQuote(null);
-                                  if (opt.img) setMainImg(opt.img);
-                                }}
-                                title={`${opt.label} ${opt.priceVariant ? `(+${opt.priceVariant}${opt.priceType === 'per_m2' ? ' Kč/m²' : opt.priceType === 'per_bm' ? ' Kč/bm šířky' : opt.priceType === 'per_bm_height' ? ' Kč/bm výšky' : ' Kč'})` : ''}`}
-                                className={`relative group overflow-hidden border-2 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#CCAD8A] ${
-                                  isSelected ? 'border-[#CCAD8A] shadow-md scale-105' : 'border-gray-200 hover:border-[#132333]'
-                                } ${opt.img ? 'w-28 h-28 rounded-xl' : 'px-4 py-2 text-sm font-medium rounded-xl text-gray-700 bg-white'}`}
-                                style={!opt.img && opt.colorCode ? { backgroundColor: opt.colorCode } : {}}
-                              >
-                                {opt.img ? (
-                                  <>
-                                    <img src={opt.img} alt={opt.label} className="w-full h-full object-contain p-2 bg-white" />
-                                    <div className="absolute inset-x-0 bottom-0 bg-black/60 pt-2 pb-1 px-1 min-h-[50%] flex items-end">
-                                      <span className="text-white text-[10px] sm:text-xs leading-none font-medium truncate w-full text-center drop-shadow-sm">{opt.label}</span>
+                            const bgColor = opt.hex || opt.colorCode;
+                            const titleText = `${opt.label} ${opt.priceVariant ? `(+${opt.priceVariant}${opt.priceType === 'per_m2' ? ' Kč/m²' : opt.priceType === 'per_bm' ? ' Kč/bm šířky' : opt.priceType === 'per_bm_height' ? ' Kč/bm výšky' : ' Kč'})` : ''}`;
+
+                            if (opt.img) {
+                              return (
+                                <button
+                                  key={opt.value}
+                                  onClick={() => {
+                                    setSelectedParameters(prev => ({ ...prev, [param.id]: opt.value }));
+                                    setQuote(null);
+                                    if (opt.img) setMainImg(opt.img);
+                                  }}
+                                  title={titleText}
+                                  className={`relative group overflow-hidden border-2 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#CCAD8A] ${
+                                    isSelected ? 'border-[#CCAD8A] shadow-md scale-105' : 'border-gray-200 hover:border-[#132333]'
+                                  } w-28 h-28 rounded-xl`}
+                                >
+                                  <img src={opt.img} alt={opt.label} className="w-full h-full object-contain p-2 bg-white" />
+                                  <div className="absolute inset-x-0 bottom-0 bg-black/60 pt-2 pb-1 px-1 min-h-[50%] flex items-end">
+                                    <span className="text-white text-[10px] sm:text-xs leading-none font-medium truncate w-full text-center drop-shadow-sm">{opt.label}</span>
+                                  </div>
+                                  {isSelected && (
+                                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center pb-3">
+                                      <Check className="text-white drop-shadow-md shadow-black" size={24} strokeWidth={3} />
                                     </div>
+                                  )}
+                                </button>
+                              );
+                            } else if (bgColor) {
+                              return (
+                                <div key={opt.value} className="flex flex-col items-center gap-1.5 w-[72px]">
+                                  <button
+                                    onClick={() => {
+                                      setSelectedParameters(prev => ({ ...prev, [param.id]: opt.value }));
+                                      setQuote(null);
+                                    }}
+                                    title={titleText}
+                                    className={`relative group overflow-hidden border-2 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#CCAD8A] ${
+                                      isSelected ? 'border-[#CCAD8A] shadow-md scale-110' : 'border-gray-200 hover:border-gray-400'
+                                    } w-[72px] h-[48px] rounded-lg`}
+                                    style={{ backgroundColor: bgColor }}
+                                  >
                                     {isSelected && (
-                                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center pb-3">
+                                      <div className="absolute inset-0 bg-black/10 flex items-center justify-center">
                                         <Check className="text-white drop-shadow-md shadow-black" size={24} strokeWidth={3} />
                                       </div>
                                     )}
-                                  </>
-                                ) : (
-                                  <span className={opt.colorCode ? 'mix-blend-difference filter drop-shadow-sm font-bold text-white' : ''}>{opt.label}</span>
-                                )}
-                              </button>
-                            );
+                                  </button>
+                                  <span className="text-[11px] leading-tight text-center font-medium text-gray-700 select-none break-words w-full">
+                                    {opt.label}
+                                  </span>
+                                </div>
+                              );
+                            } else {
+                              return (
+                                <button
+                                  key={opt.value}
+                                  onClick={() => {
+                                    setSelectedParameters(prev => ({ ...prev, [param.id]: opt.value }));
+                                    setQuote(null);
+                                  }}
+                                  title={titleText}
+                                  className={`relative group overflow-hidden border-2 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#CCAD8A] px-4 py-2 text-sm font-medium rounded-xl ${
+                                    isSelected ? 'border-[#CCAD8A] bg-[#CCAD8A]/10 text-[#CCAD8A] shadow-sm' : 'border-gray-200 text-gray-700 bg-white hover:border-[#132333]'
+                                  }`}
+                                >
+                                  {opt.label}
+                                </button>
+                              );
+                            }
                           })}
                         </div>
                       ) : param.type === 'numeric' ? (
