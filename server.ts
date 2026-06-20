@@ -2387,49 +2387,49 @@ async function startServer() {
           {
             id: "barva_profilu_pvc",
             name: "Barva rámu",
-            type: "select",
+            type: "color_array",
             condition: { dependsOnParamId: "typ_okna", allowedValues: ["pvc"] },
             options: [
-              { label: "Bílá RAL 9016 mat", value: "bila" },
-              { label: "Hnědá RAL 8019 mat", value: "hneda" },
-              { label: "RAL 7016 mat", value: "ral_7016" },
-              { label: "RAL 8003 mat", value: "ral_8003" },
-              { label: "RAL 9006 mat", value: "ral_9006" },
-              { label: "ELOX champagne", value: "elox", priceVariant: 71, priceType: "per_m2" },
-              { label: "RAL 7016 struktura / DB 703", value: "ral_struktura", priceVariant: 57, priceType: "per_m2" },
+              { label: "Bílá RAL 9016 mat", value: "bila", hex: "#ffffff" },
+              { label: "Hnědá RAL 8019 mat", value: "hneda", hex: "#45322e" },
+              { label: "RAL 7016 mat (Antracit)", value: "ral_7016", hex: "#383e42" },
+              { label: "RAL 8003 mat (Zlatý dub)", value: "ral_8003", hex: "#8b5a2b" },
+              { label: "RAL 9006 mat (Stříbrná)", value: "ral_9006", hex: "#a5a5a5" },
+              { label: "ELOX champagne", value: "elox", hex: "#fad6a5", priceVariant: 71, priceType: "per_m2" },
+              { label: "RAL 7016 struktura / DB 703", value: "ral_struktura", hex: "#383e42", priceVariant: 57, priceType: "per_m2" },
               { label: "Nestandardní lakování RAL", value: "ral_nestandard", priceVariant: 382, priceType: "per_m2" },
-              { label: "Nástřik imitace dřeva (zlatý dub, přírodní dub, tmavý dub, třešeň, tmavý ořech, sapeli)", value: "imitace_nástrik", priceVariant: 162, priceType: "per_m2" },
-              { label: "Renolit jednostranně", value: "renolit_jedno", priceVariant: 301, priceType: "per_m2" },
-              { label: "Renolit oboustranně", value: "renolit_obou", priceVariant: 528, priceType: "per_m2" }
+              { label: "Nástřik imitace dřeva", value: "imitace_nástrik", hex: "#8b5a2b", priceVariant: 162, priceType: "per_m2" },
+              { label: "Renolit jednostranně", value: "renolit_jedno", hex: "#8b5a2b", priceVariant: 301, priceType: "per_m2" },
+              { label: "Renolit oboustranně", value: "renolit_obou", hex: "#8b5a2b", priceVariant: 528, priceType: "per_m2" }
             ]
           },
           {
             id: "barva_profilu_euro",
             name: "Barva rámu",
-            type: "select",
+            type: "color_array",
             condition: { dependsOnParamId: "typ_okna", allowedValues: ["euro"] },
             options: [
-              { label: "Bílá RAL 9016 mat", value: "bila" },
-              { label: "Hnědá RAL 8019 mat", value: "hneda" },
-              { label: "RAL 8003 mat", value: "ral_8003" },
+              { label: "Bílá RAL 9016 mat", value: "bila", hex: "#ffffff" },
+              { label: "Hnědá RAL 8019 mat", value: "hneda", hex: "#45322e" },
+              { label: "RAL 8003 mat (Zlatý dub)", value: "ral_8003", hex: "#8b5a2b" },
               { label: "Nestandardní lakování RAL", value: "ral_nestandard", priceVariant: 382, priceType: "per_m2" },
-              { label: "Renolit oboustranně", value: "renolit_obou", priceVariant: 282, priceType: "per_m2" }
+              { label: "Renolit oboustranně", value: "renolit_obou", hex: "#8b5a2b", priceVariant: 282, priceType: "per_m2" }
             ]
           },
           {
             id: "barva_profilu_hlinik",
             name: "Barva rámu",
-            type: "select",
+            type: "color_array",
             condition: { dependsOnParamId: "typ_okna", allowedValues: ["hlinik"] },
             options: [
-              { label: "Bílá RAL 9016 mat", value: "bila" },
-              { label: "Hnědá RAL 8019 mat", value: "hneda" },
-              { label: "RAL 7016 mat", value: "ral_7016" },
-              { label: "RAL 8003 mat", value: "ral_8003" },
-              { label: "RAL 9006 mat", value: "ral_9006" },
-              { label: "RAL 7016 struktura / DB 703", value: "ral_struktura", priceVariant: 117, priceType: "per_m2" },
+              { label: "Bílá RAL 9016 mat", value: "bila", hex: "#ffffff" },
+              { label: "Hnědá RAL 8019 mat", value: "hneda", hex: "#45322e" },
+              { label: "RAL 7016 mat (Antracit)", value: "ral_7016", hex: "#383e42" },
+              { label: "RAL 8003 mat (Zlatý dub)", value: "ral_8003", hex: "#8b5a2b" },
+              { label: "RAL 9006 mat (Stříbrná)", value: "ral_9006", hex: "#a5a5a5" },
+              { label: "RAL 7016 struktura / DB 703", value: "ral_struktura", hex: "#383e42", priceVariant: 117, priceType: "per_m2" },
               { label: "Nestandardní lakování RAL", value: "ral_nestandard", priceVariant: 382, priceType: "per_m2" },
-              { label: "Lakování imitace dřeva (zlatý dub, třešeň amaretto, tmavý ořech)", value: "imitace_lak", priceVariant: 200, priceType: "per_m2" }
+              { label: "Lakování imitace dřeva", value: "imitace_lak", hex: "#8b5a2b", priceVariant: 200, priceType: "per_m2" }
             ]
           },
           {
