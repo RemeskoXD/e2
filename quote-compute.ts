@@ -699,13 +699,15 @@ export async function computeProductQuote(
     baseCatalogCzk = basePriceM2 * calcAreaM2;
 
     // COLORS & ROHY (Al rohy jsou per kus, barvy per m2)
-    const barva = p.barva || '';
-    if (barva !== 'zaklad' && barva !== '') {
+    const barva = p.barva_profilu || '';
+    const rohy = p.rohy || 'plast';
+
+    if (barva !== '' || rohy !== 'plast') {
       let colorPriceM2 = 0;
       let min1m2 = false;
 
       // Al rohy checks (fixed price per net)
-      if (barva.includes('al_rohy')) {
+      if (rohy === 'al_rohy') {
         if (isDe50) return { ok: false, status: 400, body: { error: `Hliníkové rohy nejsou dostupné pro základní profil DE 50x20.` } };
         const rohyPrice = isDvou ? 813 : 407;
         baseCatalogCzk += rohyPrice;

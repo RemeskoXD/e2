@@ -2582,23 +2582,31 @@ async function startServer() {
             ]
           },
           {
-            id: "barva",
-            name: "Barva profilu a rohy",
-            hint: "Vyberte povrchovou úpravu. Hliníkové (Al) rohy výrazně prodlužují životnost celé konstrukce sítě oproti běžným plastovým rohům.",
+            id: "barva_profilu",
+            name: "Barva profilu",
+            hint: "Vyberte povrchovou úpravu.",
+            type: "color_array",
+            options: [
+              { label: "Bílá RAL 9016 mat", value: "zaklad_bila", hex: "#ffffff", qapiRecommended: true },
+              { label: "Hnědá RAL 8019 mat", value: "zaklad_hneda", hex: "#45322e" },
+              { label: "RAL 7016 mat (Antracit)", value: "zaklad_7016", hex: "#383e42" },
+              { label: "RAL 8003 mat (Zlatý dub)", value: "zaklad_8003", hex: "#8b5a2b" },
+              { label: "RAL 9006 mat (Stříbrná)", value: "zaklad_9006", hex: "#a5a5a5" },
+              { label: "RAL 7016 struktura / DB 703", value: "ral_struktura", hex: "#383e42" },
+              { label: "Nestandardní lakování RAL", value: "ral_nestandard" },
+              { label: "Lakování imitace dřeva", value: "imitace_dreva", hex: "#8b5a2b" },
+              { label: "Renolit jednostranně", value: "renolit_jedno", hex: "#8b5a2b" },
+              { label: "Renolit oboustranně", value: "renolit_obou", hex: "#8b5a2b" }
+            ]
+          },
+          {
+            id: "rohy",
+            name: "Spojovací rohy rámu",
+            hint: "Hliníkové (Al) rohy výrazně prodlužují životnost celé konstrukce sítě oproti běžným plastovým rohům.",
             type: "select",
             options: [
-              { label: "Základní (bílá, hnědá, RAL 7016, 8003, 9006)", value: "zaklad" },
-              { label: "Základní s hliníkovými rohy", value: "zaklad_al_rohy", qapiRecommended: true, hint: "Pevné hliníkové rohy doporučujeme pro každodenně používané dveřní sítě." },
-              { label: "RAL 7016 struktura / DB 703", value: "ral_struktura" },
-              { label: "RAL 7016 struktura / DB 703 s hliníkovými rohy", value: "ral_struktura_al_rohy" },
-              { label: "Nestandardní lakování RAL", value: "ral_nestandard" },
-              { label: "Nestandardní lakování RAL s hliníkovými rohy", value: "ral_nestandard_al_rohy" },
-              { label: "Lakování imitace dřeva", value: "imitace_dreva" },
-              { label: "Lakování imitace dřeva s hliníkovými rohy", value: "imitace_dreva_al_rohy" },
-              { label: "Renolit jednostranně na bílý profil", value: "renolit_jedno" },
-              { label: "Renolit jednostranně s hliníkovými rohy", value: "renolit_jedno_al_rohy" },
-              { label: "Renolit oboustranně", value: "renolit_obou" },
-              { label: "Renolit oboustranně s hliníkovými rohy", value: "renolit_obou_al_rohy" }
+              { label: "Standardní plastové (v ceně)", value: "plast" },
+              { label: "Zpevněné hliníkové", value: "al_rohy", qapiRecommended: true, hint: "Pevné hliníkové rohy doporučujeme pro každodenně používané dveřní sítě." }
             ]
           },
           {
