@@ -2274,9 +2274,9 @@ async function startServer() {
               { label: "PP1", value: "PP1", priceVariant: 255, priceType: "fixed", hint: "Zavěšené na lanku.", img: "/images/icon_pm1.png" },
               { label: "PP2", value: "PP2", priceVariant: 425, priceType: "fixed", hint: "Zavěšené na lanku (obousměrně stahovací).", img: "/images/icon_pm2.png" },
               { label: "PS3", value: "PS3", hint: "Speciálně navrženo do střešních oken s vodicími lištami.", img: "/images/icon_ps3.png" },
-              { label: "AM1", value: "AM1", priceVariant: 1079, priceType: "fixed", hint: "Atypický tvar (jednostranný úkos)." },
-              { label: "AM2", value: "AM2", priceVariant: 1733, priceType: "fixed", hint: "Atypický tvar (oboustranný úkos)." },
-              { label: "AP1", value: "AP1", priceVariant: 1079, priceType: "fixed", hint: "Atypický tvar." }
+              { label: "AM1", value: "AM1", priceVariant: 1079, priceType: "fixed", hint: "Atypický tvar (jednostranný úkos).", img: "/images/icon_am1.png" },
+              { label: "AM2", value: "AM2", priceVariant: 1733, priceType: "fixed", hint: "Atypický tvar (oboustranný úkos).", img: "/images/icon_am2.png" },
+              { label: "AP1", value: "AP1", priceVariant: 1079, priceType: "fixed", hint: "Atypický tvar v šikmině.", img: "/images/icon_ap1.png" }
             ]
           },
           {
@@ -2332,7 +2332,7 @@ async function startServer() {
 
         const title = "Plisé žaluzie Lagarta";
         const desc = "<p>Proměňte svá okna s **Plisé žaluziemi Lagarta**, které nabízejí dokonalou harmonii mezi moderním designem a praktickou ochranou před sluncem. Na rozdíl od klasických žaluzií je plisé tvořeno elegantní skládanou látkou, kterou můžete stahovat jak shora dolů, tak zespoda nahoru (dle zvoleného modelu).</p><p>Díky možnosti volby z <strong>5 cenových skupin látek</strong> – od lehkých průsvitných materiálů až po zatemňovací (Blackout) nebo luxusní strukturované vzory – získáte přesně ten styl, který padne do vašeho interiéru. Vyberte si prémiový systém s magnetickým zámkem nebo dvoulátkový systém 'Den a Noc', a posuňte stínění na novou úroveň.</p>";
-        const img = "/images/icon_pm2.png"; // temporary until real cover exists
+        const img = "/images/plise_lagarta_cover.png";
 
         await db.query(
           `INSERT INTO "Product" 
@@ -2604,16 +2604,16 @@ async function startServer() {
           {
             id: "sitovina",
             name: "Typ síťoviny",
-            hint: "Vyberte síťovinu. Skelné vlákno je standard. Pokud máte doma zvířátka, zvažte Pet screen (odolný proti protržení). Pro alergiky doporučujeme protipylovou síťovinu.",
-            type: "select",
+            hint: "Vyberte si materiál síťoviny podle vašich potřeb. Skelné vlákno je zlatý standard. Pet screen je silnější verze odolná proti drápkům. Protipylová síťovina uleví alergikům a transparentní zase zajistí maximální neviditelnost.",
+            type: "color_array",
             options: [
-              { label: "Skelné vlákno - šedá", value: "zaklad_seda", qapiRecommended: true, hint: "Klasika, která propouští nejvíce světla a přirozeně splyne s okolím." },
-              { label: "Skelné vlákno - černá", value: "zaklad_cerna" },
-              { label: "Transparentní síťovina - černá", value: "transparentni", hint: "Extrémně tenké vlákno, síť je po instalaci téměř neviditelná." },
-              { label: "Protipylová síťovina - černá", value: "protipylova", hint: "Zachytí prach i pyly, ideální pokud doma máte alergika." },
-              { label: "Pet screen (odolná) - šedá", value: "petscreen_seda", hint: "Nezničitelná síť, pokud máte kočku nebo psa, kteří rádi škrábou na dveře." },
-              { label: "Pet screen (odolná) - černá", value: "petscreen_cerna" },
-              { label: "Síťovina s nanovláknem - černá", value: "nano" }
+              { label: "Skelné vlákno - šedá", value: "zaklad_seda", qapiRecommended: true, hint: "Nejuniverzálnější volba. Šedá barva dokonale splyne s oknem a propouští nejvíce světla.", img: "/images/icon_sit_seda.png" },
+              { label: "Skelné vlákno - černá", value: "zaklad_cerna", hint: "Klasické černé vlákno. Zevnitř je lépe průhledné.", img: "/images/icon_sit_cerna.png" },
+              { label: "Transparentní síťovina - černá", value: "transparentni", hint: "Extrémně tenké vlákno. Zevnitř i zvenku je síť téměř nepostřehnutelná.", img: "/images/icon_sit_transparent.png" },
+              { label: "Protipylová síťovina - černá", value: "protipylova", hint: "Hustší tkaní zachytí většinu pylu a prachu. Ideální do ložnice alergiků.", img: "/images/icon_sit_protipylova.png" },
+              { label: "Pet screen (odolná) - šedá", value: "petscreen_seda", hint: "Vysoce odolná proti protržení kočkou nebo psem. Mírně snižuje světelnost.", img: "/images/icon_sit_petscreen.png" },
+              { label: "Pet screen (odolná) - černá", value: "petscreen_cerna", hint: "Vysoce odolná černá varianta proti drápkům.", img: "/images/icon_sit_petscreen.png" },
+              { label: "Síťovina s nanovláknem - černá", value: "nano", hint: "Revoluční nanovlákno zachytí i ty nejmenší částice smogu. Nejvyšší možná ochrana.", img: "/images/icon_sit_nano.png" }
             ]
           },
           {
