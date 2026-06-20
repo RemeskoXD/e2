@@ -69,7 +69,7 @@ export async function seedIsoline(pool: Pool) {
     const catRes = await pool.query('SELECT name FROM "Category" WHERE name = $1 LIMIT 1', ['Žaluzie']);
     let category = 'Žaluzie';
     if (catRes.rows.length === 0) {
-      await pool.query('INSERT INTO "Category" (name, slug) VALUES ($1, $2)', ['Žaluzie', 'zaluzie']);
+      await pool.query('INSERT INTO "Category" (name, count, img) VALUES ($1, $2, $3)', ['Žaluzie', 1, '']);
     }
 
     const prodRes = await pool.query(`

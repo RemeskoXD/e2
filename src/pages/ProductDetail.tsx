@@ -464,12 +464,12 @@ export default function ProductDetail({ productId }: { productId: string }) {
   let activeMaxArea: number | undefined;
 
   if (prof === "dverni_sit") {
-    const isDvou = selectedParams['typ_dveri']?.includes('_dvou');
+    const isDvou = selectedParameters['typ_dveri']?.includes('_dvou');
     activeMaxW = isDvou ? 2000 : 1000;
     activeMaxH = 2500;
     activeMaxArea = isDvou ? 5.00 : 2.50;
   } else if (prof === "sit_hmyz") {
-    const typOkna = selectedParams['typ_okna'];
+    const typOkna = selectedParameters['typ_okna'];
     if (typOkna === 'pvc') {
       activeMaxW = 1500;
       activeMaxH = 1800;
