@@ -2864,18 +2864,6 @@ async function startServer() {
           await executeQuery(sql, `Add column ${colName} to Product`);
         }
 
-        // Indexes
-        await executeQuery(`CREATE INDEX IF NOT EXISTS "ProductHeightPriceTier_product_id_idx" ON "ProductHeightPriceTier" (product_id)`, 'Index ProductHeightPriceTier');
-        await executeQuery(`CREATE INDEX IF NOT EXISTS "ProductPriceBracket_product_id_idx" ON "ProductPriceBracket" (product_id)`, 'Index ProductPriceBracket');
-        await executeQuery(`CREATE INDEX IF NOT EXISTS "OrderItem_order_id_idx" ON "OrderItem" (order_id)`, 'Index OrderItem');
-
-        // Slugs fix
-        await executeQuery(`UPDATE "Product" SET slug = encode(gen_random_bytes(8), 'hex') WHERE slug IS NULL`, 'Fix empty slugs');
-
-        res.json({
-          status: errors.length === 0 ? "success" : "partial_success",
-          results,
-          errors
         });
       } catch (e: any) {
         res.status(500).json({ error: e.message });
@@ -3134,3 +3122,4 @@ async function startServer() {
 }
 
 startServer();
+
