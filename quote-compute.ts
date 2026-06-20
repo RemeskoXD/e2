@@ -556,9 +556,6 @@ export async function computeProductQuote(
       const ovladani = p.ovladani_prim;
       if (ovladani === 'brzda') {
          minW = 330;
-      } else if (ovladani === 'prevodovka') {
-         minW = 350;
-         maxArea = 5.28;
       }
     }
 
@@ -570,7 +567,7 @@ export async function computeProductQuote(
     }
     const actualAreaM2 = (wR * hR) / 1000000;
     if (actualAreaM2 > maxArea) {
-      return { ok: false, status: 400, body: { error: `Maximální povolená plocha pro toto provedení je ${maxArea} m² (zadáno ${actualAreaM2.toFixed(2)} m²). ${typProfilu === 'prim' && maxArea === 2.4 ? 'Pro větší plochu zvolte Převodovku s brzdou.' : ''}` } };
+      return { ok: false, status: 400, body: { error: `Maximální povolená plocha pro toto provedení je ${maxArea} m² (zadáno ${actualAreaM2.toFixed(2)} m²).` } };
     }
 
     if (celostin) {

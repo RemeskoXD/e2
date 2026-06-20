@@ -1555,7 +1555,7 @@ async function startServer() {
             type: "color_array",
             options: [
               { label: "Isoline (Rovný profil)", value: "isoline", img: "/images/icon_isoline_rovny.png", hint: "Klasický hranatý profil s možností hliníkového provedení či lakování do RAL." },
-              { label: "Isoline PRIM (Obloukový profil)", value: "prim", img: "/images/icon_isoline_prim.png", qapiRecommended: true, hint: "Moderní zaoblený design profilu, vhodný i pro větší plochy s využitím převodovky." }
+              { label: "Isoline PRIM (Obloukový profil)", value: "prim", img: "/images/icon_isoline_prim.png", qapiRecommended: true, hint: "Moderní zaoblený design profilu." }
             ]
           },
           {
@@ -1614,8 +1614,7 @@ async function startServer() {
           },
           {
             id: "ovladani_prim",
-            name: "Ovládání (Brzda a převodovka)",
-            hint: "Pro velké plochy nad 2.4 m² je nutná převodovka pro zachování záruky. Slouží ke snížení námahy při stahování.",
+            name: "Ovládání",
             type: "select",
             condition: {
               dependsOnParamId: "typ_profilu",
@@ -1623,8 +1622,7 @@ async function startServer() {
             },
             options: [
               { label: "Standardní řetízek (bez brzdy)", value: "std", priceVariant: 0, priceType: "fixed" },
-              { label: "S brzdou (poměr 1:1)", value: "brzda", priceVariant: 34, priceType: "fixed" },
-              { label: "S převodovkou a brzdou (poměr 1:4)", value: "prevodovka", priceVariant: 82, priceType: "fixed" }
+              { label: "S brzdou (poměr 1:1)", value: "brzda", priceVariant: 34, priceType: "fixed" }
             ]
           },
           {
@@ -1669,7 +1667,7 @@ async function startServer() {
           ) VALUES (
             $1, $2, $3, $4, null, $5, $6, $7,
             4.9, 0,
-            200, 2200, 300, 2400, 5.28,
+            200, 2200, 300, 2400, 2.4,
             $8, '[]', '[]', '[]', '[]', 'matrix_cell', 'isoline_merged', false
           )
           ON CONFLICT (slug) DO UPDATE SET
@@ -1677,7 +1675,7 @@ async function startServer() {
             price = EXCLUDED.price,
             "desc" = EXCLUDED."desc",
             parameters = EXCLUDED.parameters,
-            max_area_m2 = 5.28,
+            max_area_m2 = 2.4,
             height_mm_max = 2400,
             width_mm_min = 200,
             price_mode = 'matrix_cell',
@@ -1690,7 +1688,7 @@ async function startServer() {
           263,
           "",
           "https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=600&auto=format&fit=crop",
-          `<h3>Základní ceníková sestava</h3><p>Tento produkt kombinuje dva nejoblíbenější typy horizontálních žaluzií - s rovným profilem (Isoline) i luxusním obloukovým (PRIM). Obě varianty jsou interiérové, ovládané řetízkem a s fixací silonovou strunou.</p><ul><li><strong>Isoline:</strong> Rovný profil 42,5 x 25,6 mm, max. plocha 2.4 m²</li><li><strong>Isoline PRIM:</strong> Obloukový profil 47,3 x 24 mm, ideální i pro větší plochy (až 5.28 m² s převodovkou)</li></ul><br /><h3>Technické detaily a provedení</h3><p><strong>Domykatelné provedení (Celostín):</strong> Žaluzie, u které je po dovření lamel minimalizován prostup světla. Otvory pro textilní pásku a fixační strunu jsou umístěny excentricky (nelze použít s 16 mm lamelou).</p><p><strong>Vyměření:</strong> Výrobní šířka a výška je vždy rozměr mezi zasklívacími lištami. Při mělké zasklívací liště je nutné použít distanční podložky pod koncovky.</p><p><em>DŮLEŽITÉ UPOZORNĚNÍ: E-shop vás automaticky upozorní, pokud vaše rozměry přesáhnou standardní limity pro zvolený typ profilu.</em></p>`,
+          `<h3>Základní ceníková sestava</h3><p>Tento produkt kombinuje dva nejoblíbenější typy horizontálních žaluzií - s rovným profilem (Isoline) i luxusním obloukovým (PRIM). Obě varianty jsou interiérové, ovládané řetízkem a s fixací silonovou strunou.</p><ul><li><strong>Isoline:</strong> Rovný profil 42,5 x 25,6 mm, max. plocha 2.4 m²</li><li><strong>Isoline PRIM:</strong> Obloukový profil 47,3 x 24 mm, max. plocha 2.4 m²</li></ul><br /><h3>Technické detaily a provedení</h3><p><strong>Domykatelné provedení (Celostín):</strong> Žaluzie, u které je po dovření lamel minimalizován prostup světla. Otvory pro textilní pásku a fixační strunu jsou umístěny excentricky (nelze použít s 16 mm lamelou).</p><p><strong>Vyměření:</strong> Výrobní šířka a výška je vždy rozměr mezi zasklívacími lištami. Při mělké zasklívací liště je nutné použít distanční podložky pod koncovky.</p><p><em>DŮLEŽITÉ UPOZORNĚNÍ: E-shop vás automaticky upozorní, pokud vaše rozměry přesáhnou standardní limity pro zvolený typ profilu.</em></p>`,
           JSON.stringify(params)
         ]);
 
