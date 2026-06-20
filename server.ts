@@ -1759,21 +1759,23 @@ async function startServer() {
           {
             id: "barva_profilu",
             name: "Barva boxu a vodících lišt",
-            type: "select",
+            hint: "Sladění barvy profilu s vaším oknem zajistí elegantní vzhled.",
+            type: "color_array",
             options: [
-              { label: "Bílá", value: "bila", priceVariant: 0, priceType: "fixed" },
-              { label: "Hnědá", value: "hneda", priceVariant: 0, priceType: "fixed" },
-              { label: "Stříbrná", value: "stribrna", priceVariant: 0, priceType: "fixed" }
+              { label: "Bílá", value: "bila", hex: "#ffffff", priceVariant: 0, priceType: "fixed", qapiRecommended: true },
+              { label: "Hnědá", value: "hneda", hex: "#45322e", priceVariant: 0, priceType: "fixed" },
+              { label: "Stříbrná", value: "stribrna", hex: "#a5a5a5", priceVariant: 0, priceType: "fixed" }
             ]
           },
           {
             id: "barva_retizku",
             name: "Barva řetízku",
-            type: "select",
+            hint: "Vyberte barvu ovládacího řetízku tak, aby ladila s profilem nebo látkou.",
+            type: "color_array",
             options: [
-              { label: "Bílá", value: "bila", priceVariant: 0, priceType: "fixed" },
-              { label: "Hnědá", value: "hneda", priceVariant: 0, priceType: "fixed" },
-              { label: "Šedá", value: "seda", priceVariant: 0, priceType: "fixed" }
+              { label: "Bílá", value: "bila", hex: "#ffffff", priceVariant: 0, priceType: "fixed", qapiRecommended: true },
+              { label: "Hnědá", value: "hneda", hex: "#45322e", priceVariant: 0, priceType: "fixed" },
+              { label: "Šedá", value: "seda", hex: "#a9a9a9", priceVariant: 0, priceType: "fixed" }
             ]
           },
           {
@@ -1788,11 +1790,42 @@ async function startServer() {
         ];
 
         const fabricGroups = [
-          { name: "Skupina 1 (Adriana, Melisa)", surcharge_percent: 0, max_width_mm: 2000, max_height_mm: 2300, colors: [] },
-          { name: "Skupina 2 (Melisa BO)", surcharge_percent: 10, max_width_mm: 2000, max_height_mm: 1200, colors: [] },
-          { name: "Skupina 3 (Stella BO, Melisa BO B/S)", surcharge_percent: 15, max_width_mm: 2000, max_height_mm: 1300, colors: [] },
-          { name: "Skupina 4 (Tropic)", surcharge_percent: 20, max_width_mm: 1950, max_height_mm: 1700, colors: [] },
-          { name: "Skupina 5 (Screen nehořlavá)", surcharge_percent: 45, max_width_mm: 1950, max_height_mm: 1200, colors: [] },
+          { name: "Skupina 1 (Adriana, Melisa)", surcharge_percent: 0, max_width_mm: 2000, max_height_mm: 2300, 
+            colors: [
+              { name: "Adriana Bílá", hex: "#f0f0f0" },
+              { name: "Adriana Béžová", hex: "#f5f5dc" },
+              { name: "Melisa Šedá", hex: "#d3d3d3" },
+              { name: "Melisa Antracit", hex: "#383e42" }
+            ] 
+          },
+          { name: "Skupina 2 (Melisa BO)", surcharge_percent: 10, max_width_mm: 2000, max_height_mm: 1200, 
+            colors: [
+              { name: "Melisa BO Bílá", hex: "#fdfdfd" },
+              { name: "Melisa BO Béžová", hex: "#e8d3a2" },
+              { name: "Melisa BO Hnědá", hex: "#8b5a2b" }
+            ] 
+          },
+          { name: "Skupina 3 (Stella BO, Melisa BO B/S)", surcharge_percent: 15, max_width_mm: 2000, max_height_mm: 1300, 
+            colors: [
+              { name: "Stella BO Bílá", hex: "#ffffff" },
+              { name: "Stella BO Šedá", hex: "#a9a9a9" },
+              { name: "Melisa BO B/S", hex: "#dfc19c" }
+            ] 
+          },
+          { name: "Skupina 4 (Tropic)", surcharge_percent: 20, max_width_mm: 1950, max_height_mm: 1700, 
+            colors: [
+              { name: "Tropic Zelená", hex: "#8fbc8f" },
+              { name: "Tropic Žlutá", hex: "#f0e68c" },
+              { name: "Tropic Modrá", hex: "#add8e6" }
+            ] 
+          },
+          { name: "Skupina 5 (Screen nehořlavá)", surcharge_percent: 45, max_width_mm: 1950, max_height_mm: 1200, 
+            colors: [
+              { name: "Screen Bílá", hex: "#eae0c8" },
+              { name: "Screen Šedá", hex: "#c0c0c0" },
+              { name: "Screen Černá", hex: "#222222" }
+            ] 
+          },
         ];
 
         const catRes = await db.query(`SELECT name FROM "Category" WHERE name = 'Textilní roletky'`);
@@ -1946,45 +1979,42 @@ async function startServer() {
 
         const fabricGroups = [
           { 
-            name: "Skupina 1", surcharge_percent: 0, 
-            max_width_mm: 1500, max_height_mm: 2300, 
+            name: "Skupina 1", surcharge_percent: 0, max_width_mm: 1500, max_height_mm: 2300, 
             colors: [
-              { name: "Alyssia", max_height_mm: 1500 },
-              { name: "Grace", max_height_mm: 1500 },
-              { name: "Samantha", max_height_mm: 2300 }
+              { name: "Alyssia Bílá", max_height_mm: 1500, hex: "#ffffff" },
+              { name: "Alyssia Krémová", max_height_mm: 1500, hex: "#fffdd0" },
+              { name: "Grace Bílá", max_height_mm: 1500, hex: "#f0f0f0" },
+              { name: "Samantha Hnědá", max_height_mm: 2300, hex: "#d2b48c" },
+              { name: "Samantha Šedá", max_height_mm: 2300, hex: "#a9a9a9" }
             ]
           },
           { 
-            name: "Skupina 2", surcharge_percent: 5, 
-            max_width_mm: 1500, max_height_mm: 1500, 
+            name: "Skupina 2", surcharge_percent: 5, max_width_mm: 1500, max_height_mm: 1500, 
             colors: [
-              { name: "Grace V", max_height_mm: 1500 },
-              { name: "Grace VIII", max_height_mm: 1500 }
+              { name: "Grace V", max_height_mm: 1500, hex: "#d3d3d3" },
+              { name: "Grace VIII", max_height_mm: 1500, hex: "#383e42" }
             ] 
           },
           { 
-            name: "Skupina 3", surcharge_percent: 15, 
-            max_width_mm: 1500, max_height_mm: 1500, 
+            name: "Skupina 3", surcharge_percent: 15, max_width_mm: 1500, max_height_mm: 1500, 
             colors: [
-              { name: "Alyssia II", max_height_mm: 1500 },
-              { name: "Grace II", max_height_mm: 1500 },
-              { name: "Grace IV", max_height_mm: 1500 }
+              { name: "Alyssia II", max_height_mm: 1500, hex: "#c2b280" },
+              { name: "Grace II", max_height_mm: 1500, hex: "#8fbc8f" },
+              { name: "Grace IV", max_height_mm: 1500, hex: "#f0e68c" }
             ] 
           },
           { 
-            name: "Skupina 4", surcharge_percent: 30, 
-            max_width_mm: 1500, max_height_mm: 2300, 
+            name: "Skupina 4", surcharge_percent: 30, max_width_mm: 1500, max_height_mm: 2300, 
             colors: [
-              { name: "Alyssia III", max_height_mm: 1500 },
-              { name: "Grace III", max_height_mm: 2300 },
-              { name: "Grace VII", max_height_mm: 2300 }
+              { name: "Alyssia III", max_height_mm: 1500, hex: "#add8e6" },
+              { name: "Grace III", max_height_mm: 2300, hex: "#855e42" },
+              { name: "Grace VII", max_height_mm: 2300, hex: "#111111" }
             ] 
           },
           { 
-            name: "Skupina 5", surcharge_percent: 50, 
-            max_width_mm: 1500, max_height_mm: 1300, 
+            name: "Skupina 5", surcharge_percent: 50, max_width_mm: 1500, max_height_mm: 1300, 
             colors: [
-              { name: "Grace VI", max_height_mm: 1300 }
+              { name: "Grace VI", max_height_mm: 1300, hex: "#d4af37" }
             ] 
           },
         ];
@@ -2072,21 +2102,23 @@ async function startServer() {
           {
             id: "barva_profilu",
             name: "Barva boxu a vodících lišt",
-            type: "select",
+            hint: "Sladění barvy profilu s vaším oknem zajistí elegantní vzhled.",
+            type: "color_array",
             options: [
-              { label: "Bílá", value: "bila", priceVariant: 0, priceType: "fixed" },
-              { label: "Hnědá", value: "hneda", priceVariant: 0, priceType: "fixed" },
-              { label: "Stříbrná", value: "stribrna", priceVariant: 0, priceType: "fixed" }
+              { label: "Bílá", value: "bila", hex: "#ffffff", priceVariant: 0, priceType: "fixed", qapiRecommended: true },
+              { label: "Hnědá", value: "hneda", hex: "#45322e", priceVariant: 0, priceType: "fixed" },
+              { label: "Stříbrná", value: "stribrna", hex: "#a5a5a5", priceVariant: 0, priceType: "fixed" }
             ]
           },
           {
             id: "barva_retizku",
             name: "Barva řetízku",
-            type: "select",
+            hint: "Vyberte barvu ovládacího řetízku tak, aby ladila s profilem nebo látkou.",
+            type: "color_array",
             options: [
-              { label: "Bílá", value: "bila", priceVariant: 0, priceType: "fixed" },
-              { label: "Hnědá", value: "hneda", priceVariant: 0, priceType: "fixed" },
-              { label: "Šedá", value: "seda", priceVariant: 0, priceType: "fixed" }
+              { label: "Bílá", value: "bila", hex: "#ffffff", priceVariant: 0, priceType: "fixed", qapiRecommended: true },
+              { label: "Hnědá", value: "hneda", hex: "#45322e", priceVariant: 0, priceType: "fixed" },
+              { label: "Šedá", value: "seda", hex: "#a9a9a9", priceVariant: 0, priceType: "fixed" }
             ]
           },
           {
@@ -2104,11 +2136,12 @@ async function startServer() {
           {
             id: "barva_profilu",
             name: "Barva boxu a vodících lišt",
-            type: "select",
+            hint: "Sladění barvy profilu s vaším oknem zajistí elegantní vzhled.",
+            type: "color_array",
             options: [
-              { label: "Bílá", value: "bila", priceVariant: 0, priceType: "fixed" },
-              { label: "Hnědá", value: "hneda", priceVariant: 0, priceType: "fixed" },
-              { label: "Stříbrná", value: "stribrna", priceVariant: 0, priceType: "fixed" }
+              { label: "Bílá", value: "bila", hex: "#ffffff", priceVariant: 0, priceType: "fixed", qapiRecommended: true },
+              { label: "Hnědá", value: "hneda", hex: "#45322e", priceVariant: 0, priceType: "fixed" },
+              { label: "Stříbrná", value: "stribrna", hex: "#a5a5a5", priceVariant: 0, priceType: "fixed" }
             ]
           },
           {
@@ -2128,11 +2161,12 @@ async function startServer() {
           {
             id: "barva_retizku",
             name: "Barva řetízku a závaží",
-            type: "select",
+            hint: "Vyberte barvu ovládacího řetízku tak, aby ladila s profilem.",
+            type: "color_array",
             options: [
-              { label: "Bílá / transparentní", value: "bila", priceVariant: 0, priceType: "fixed" },
-              { label: "Hnědá / transparentní", value: "hneda", priceVariant: 0, priceType: "fixed" },
-              { label: "Šedá / transparentní", value: "seda", priceVariant: 0, priceType: "fixed" }
+              { label: "Bílá / transparentní", value: "bila", hex: "#ffffff", priceVariant: 0, priceType: "fixed", qapiRecommended: true },
+              { label: "Hnědá / transparentní", value: "hneda", hex: "#45322e", priceVariant: 0, priceType: "fixed" },
+              { label: "Šedá / transparentní", value: "seda", hex: "#a9a9a9", priceVariant: 0, priceType: "fixed" }
             ]
           },
           {
