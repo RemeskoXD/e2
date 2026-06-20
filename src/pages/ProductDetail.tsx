@@ -640,7 +640,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
             <div className="space-y-6">
               {/* Dimensions */}
               <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100">
-                <h3 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-3">
+                <h3 className="text-base font-bold text-gray-900 mb-1 flex items-center gap-3">
                   <span className="w-8 h-8 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center text-sm text-[#CCAD8A]">1</span>
                   Zadejte rozměry
                   {measureImg && (
@@ -649,13 +649,14 @@ export default function ProductDetail({ productId }: { productId: string }) {
                         setLightboxImages(allImages);
                         setLightboxIndex(allImages.indexOf(measureImg));
                       }}
-                      className="ml-auto flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors"
+                      className="ml-auto flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors shadow-sm"
                       title="Jak zaměřit"
                     >
                       ?
                     </button>
                   )}
                 </h3>
+                <p className="text-[11px] text-gray-500 mb-4">Zadejte přesné výrobní rozměry v milimetrech.</p>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="relative">
                     <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider absolute top-2 left-3 z-10">
@@ -1060,10 +1061,13 @@ export default function ProductDetail({ productId }: { productId: string }) {
                 <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 space-y-6">
                   {visibleParameters.map(param => (
                     <div key={param.id} className="pt-4 first:pt-0 border-t first:border-0 border-gray-200/50">
-                      <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+                      <h3 className={`text-sm font-bold text-gray-900 flex items-center gap-2 ${param.hint ? 'mb-1' : 'mb-3'}`}>
                         <span className="w-1.5 h-1.5 rounded-full bg-[#CCAD8A]"></span>
                         {param.name}
                       </h3>
+                      {param.hint && (
+                        <p className="text-xs text-gray-500 mb-3 leading-relaxed">{param.hint}</p>
+                      )}
                       
                       {param.type === 'select' ? (
                         <div className="relative">
@@ -1083,7 +1087,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                               const unit = opt.priceType === 'per_m2' ? ' Kč/m²' : opt.priceType === 'per_bm' ? ' Kč/bm šířky' : opt.priceType === 'per_bm_height' ? ' Kč/bm výšky' : ' Kč';
                               return (
                                 <option key={opt.value} value={opt.value}>
-                                  {opt.label} {opt.priceVariant ? `(+${opt.priceVariant}${unit})` : ''}
+                                  {opt.label} {opt.qapiRecommended ? '⭐ Doporučujeme' : ''} {opt.priceVariant ? `(+${opt.priceVariant}${unit})` : ''}
                                 </option>
                               );
                             })}
@@ -1145,15 +1149,32 @@ export default function ProductDetail({ productId }: { productId: string }) {
                           )}
                         </div>
                       ) : null}
-                      {selectedParameters[param.id] && param.options.find(o => o.value === selectedParameters[param.id])?.priceVariant ? (() => {
-                         const opt = param.options.find(o => o.value === selectedParameters[param.id])!;
+                      {selectedParameters[param.id] && (() => {
+                         const opt = param.options.find(o => o.value === selectedParameters[param.id]);
+                         if (!opt) return null;
                          const unit = opt.priceType === 'per_m2' ? ' Kč/m²' : opt.priceType === 'per_bm' ? ' Kč/bm šířky' : opt.priceType === 'per_bm_height' ? ' Kč/bm výšky' : ' Kč';
+                         
                          return (
-                           <p className="text-xs text-gray-500 mt-2">
-                             Příplatek za volbu: +{opt.priceVariant}{unit}
-                           </p>
+                           <div className="mt-2 space-y-2">
+                             {opt.qapiRecommended && (
+                               <div className="inline-flex items-center gap-1.5 bg-yellow-50 text-yellow-700 text-xs font-bold px-2.5 py-1 rounded-md border border-yellow-200 shadow-sm">
+                                 ⭐ QAPI Doporučuje
+                               </div>
+                             )}
+                             {opt.hint && (
+                               <div className="text-sm text-gray-600 bg-blue-50/60 p-3 rounded-xl border border-blue-100/80 flex items-start gap-2.5 shadow-sm">
+                                 <span className="text-blue-500 font-bold mt-0.5 text-base leading-none">ⓘ</span>
+                                 <span className="leading-relaxed">{opt.hint}</span>
+                               </div>
+                             )}
+                             {opt.priceVariant ? (
+                               <p className="text-xs text-gray-500">
+                                 Příplatek k základní ceně: <strong className="text-gray-700">+{opt.priceVariant}{unit}</strong>
+                               </p>
+                             ) : null}
+                           </div>
                          );
-                      })() : null}
+                      })()}
                     </div>
                   ))}
                 </div>

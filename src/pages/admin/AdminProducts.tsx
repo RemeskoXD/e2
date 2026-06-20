@@ -46,12 +46,15 @@ export interface ParameterOption {
   colorCode?: string;
   img?: string;
   priceVariant?: number;
-  priceType?: 'fixed' | 'per_m2' | 'per_bm';
+  priceType?: 'fixed' | 'per_m2' | 'per_bm' | 'per_bm_height';
+  hint?: string;
+  qapiRecommended?: boolean;
 }
 
 export interface ProductParameter {
   id: string;
   name: string;
+  hint?: string;
   type: 'select' | 'color_array' | 'numeric';
   options: ParameterOption[];
   condition?: {

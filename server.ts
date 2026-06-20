@@ -2427,9 +2427,10 @@ async function startServer() {
           {
             id: "typ_okna",
             name: "Typ okna (určuje profil sítě)",
+            hint: "Typ okna je klíčový pro výběr správného tvaru rámu sítě. Plastová okna mají jinou tloušťku rámu než dřevěná EURO okna. Pokud si nejste jistí, změřte tloušťku rámu podle našeho návodu.",
             type: "select",
             options: [
-              { label: "Plastové okno (profil ISSO OE 19x8)", value: "pvc" },
+              { label: "Plastové okno (profil ISSO OE 19x8)", value: "pvc", qapiRecommended: true },
               { label: "Dřevěné EURO okno / plast s okapničkou (profil OE 24x24)", value: "euro" },
               { label: "Hliníkové okno (profil OE 32x11 LUX)", value: "hlinik" }
             ]
@@ -2485,13 +2486,14 @@ async function startServer() {
           {
             id: "sitovina",
             name: "Typ síťoviny",
+            hint: "Vyberte si materiál síťoviny podle vašich potřeb. Skelné vlákno je zlatý standard. Pet screen je silnější verze odolná proti drápkům. Protipylová síťovina uleví alergikům a transparentní zase zajistí maximální neviditelnost.",
             type: "select",
             options: [
-              { label: "Skelné vlákno - šedá", value: "zaklad_seda" },
+              { label: "Skelné vlákno - šedá", value: "zaklad_seda", qapiRecommended: true, hint: "Nejuniverzálnější volba. Šedá barva dokonale splyne s oknem a propouští nejvíce světla." },
               { label: "Skelné vlákno - černá", value: "zaklad_cerna" },
-              { label: "Transparentní síťovina - černá", value: "transparentni", priceVariant: 142, priceType: "per_m2" },
-              { label: "Protipylová síťovina - černá", value: "protipylova", priceVariant: 431, priceType: "per_m2" },
-              { label: "Pet screen (odolná) - šedá", value: "petscreen_seda", priceVariant: 475, priceType: "per_m2" },
+              { label: "Transparentní síťovina - černá", value: "transparentni", priceVariant: 142, priceType: "per_m2", hint: "Extrémně tenké vlákno. Zevnitř i zvenku je síť téměř nepostřehnutelná." },
+              { label: "Protipylová síťovina - černá", value: "protipylova", priceVariant: 431, priceType: "per_m2", hint: "Hustší tkaní zachytí většinu pylu a prachu. Ideální do ložnice alergiků." },
+              { label: "Pet screen (odolná) - šedá", value: "petscreen_seda", priceVariant: 475, priceType: "per_m2", hint: "Vysoce odolná proti protržení kočkou nebo psem. Mírně snižuje světelnost." },
               { label: "Pet screen (odolná) - černá", value: "petscreen_cerna", priceVariant: 475, priceType: "per_m2" },
               { label: "Síťovina s nanovláknem - černá (jen pro EURO a Hliníková okna)", value: "nano", priceVariant: 1078, priceType: "per_m2" }
             ]
@@ -2499,6 +2501,7 @@ async function startServer() {
           {
             id: "uchyceni_pvc",
             name: "Výška otočného držáku",
+            hint: "Otočné držáky fixují síť za okenní těsnění. Správnou velikost vyberete tak, že změříte hloubku zapuštění rámu podle našeho návodu. (Pokud je zapuštění 15 mm, vyberte držák 15 mm).",
             type: "select",
             condition: { dependsOnParamId: "typ_okna", allowedValues: ["pvc"] },
             options: [
@@ -2617,13 +2620,14 @@ async function startServer() {
           {
             id: "typ_dveri",
             name: "Typ dveřní sítě",
+            hint: "Bez rámu se síť montuje přímo na rám dveří pomocí pantů. Verze 's rámem' obsahuje vlastní obvodový rám sítě, který se instaluje do otvoru (je tak stabilnější a vypadá velmi elegantně).",
             type: "select",
             options: [
               { label: "Jednokřídlé bez rámu (DE 50x20)", value: "bez_ramu_de50" },
-              { label: "Jednokřídlé bez rámu (DE 40x20 Lux)", value: "bez_ramu_de40" },
+              { label: "Jednokřídlé bez rámu (DE 40x20 Lux)", value: "bez_ramu_de40", qapiRecommended: true, hint: "Oblíbená volba, pevnější profil 40x20." },
               { label: "Dvoukřídlé bez rámu (DE 40x20 Lux)", value: "bez_ramu_de40_dvou" },
-              { label: "Jednokřídlé s rámem R3 (DE 40x20 Lux + R3)", value: "ram_r3_de40" },
-              { label: "Jednokřídlé s rámem R4 (DE 40x20 Lux + R4)", value: "ram_r4_de40" },
+              { label: "Jednokřídlé s rámem R3 (DE 40x20 Lux + R3)", value: "ram_r3_de40", hint: "Vlastní rám R3 je vhodný, pokud nechcete vrtat panty do rámu vlastních dveří." },
+              { label: "Jednokřídlé s rámem R4 (DE 40x20 Lux + R4)", value: "ram_r4_de40", hint: "Vlastní rám R4 má širší lemování, ideální na hrubší fasádu." },
               { label: "Dvoukřídlé s rámem R3 (DE 40x20 Lux + R3)", value: "ram_r3_de40_dvou" },
               { label: "Dvoukřídlé s rámem R4 (DE 40x20 Lux + R4)", value: "ram_r4_de40_dvou" }
             ]
@@ -2631,10 +2635,11 @@ async function startServer() {
           {
             id: "barva",
             name: "Barva profilu a rohy",
+            hint: "Vyberte povrchovou úpravu. Hliníkové (Al) rohy výrazně prodlužují životnost celé konstrukce sítě oproti běžným plastovým rohům.",
             type: "select",
             options: [
               { label: "Základní (bílá, hnědá, RAL 7016, 8003, 9006)", value: "zaklad" },
-              { label: "Základní s hliníkovými rohy", value: "zaklad_al_rohy" },
+              { label: "Základní s hliníkovými rohy", value: "zaklad_al_rohy", qapiRecommended: true, hint: "Pevné hliníkové rohy doporučujeme pro každodenně používané dveřní sítě." },
               { label: "RAL 7016 struktura / DB 703", value: "ral_struktura" },
               { label: "RAL 7016 struktura / DB 703 s hliníkovými rohy", value: "ral_struktura_al_rohy" },
               { label: "Nestandardní lakování RAL", value: "ral_nestandard" },
