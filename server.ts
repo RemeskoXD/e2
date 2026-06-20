@@ -2303,20 +2303,21 @@ async function startServer() {
           {
             id: "model",
             name: "Model",
-            type: "select",
+            hint: "Každý model má jiný způsob stahování a instalace. Nejprodávanější je PM2 (obousměrně stahovací), pro dvě různé látky (den a noc) zvolte PM4/PM5. Pro střešní okna PS3.",
+            type: "color_array",
             options: [
-              { label: "PM1", value: "PM1" },
-              { label: "PM2", value: "PM2" },
-              { label: "PM3", value: "PM3" },
-              { label: "PM3M", value: "PM3M", priceVariant: 200, priceType: "fixed" },
-              { label: "PM4", value: "PM4" },
-              { label: "PM5", value: "PM5" },
-              { label: "PP1", value: "PP1", priceVariant: 255, priceType: "fixed" },
-              { label: "PP2", value: "PP2", priceVariant: 425, priceType: "fixed" },
-              { label: "PS3", value: "PS3" },
-              { label: "AM1", value: "AM1", priceVariant: 1079, priceType: "fixed" },
-              { label: "AM2", value: "AM2", priceVariant: 1733, priceType: "fixed" },
-              { label: "AP1", value: "AP1", priceVariant: 1079, priceType: "fixed" }
+              { label: "PM1", value: "PM1", hint: "Základní model pevně uchycený nahoře, stahuje se shora dolů.", img: "/images/icon_pm1.png" },
+              { label: "PM2", value: "PM2", qapiRecommended: true, hint: "Nejoblíbenější! Lze stahovat shora i zespoda, látka plave na okně libovolně.", img: "/images/icon_pm2.png" },
+              { label: "PM3", value: "PM3", hint: "Podobné jako PM2, ale se dvěma středovými profily.", img: "/images/icon_pm2.png" },
+              { label: "PM3M", value: "PM3M", priceVariant: 200, priceType: "fixed", hint: "Model s pohodlnými magnety.", img: "/images/icon_pm2.png" },
+              { label: "PM4", value: "PM4", hint: "Základní 'Den a Noc'. Nahoře i dole upevněno, mezi tím dvě látky.", img: "/images/icon_den_noc.png" },
+              { label: "PM5", value: "PM5", hint: "Nejflexibilnější 'Den a Noc'. Plave na okně a obsahuje dvě látky.", img: "/images/icon_den_noc.png" },
+              { label: "PP1", value: "PP1", priceVariant: 255, priceType: "fixed", hint: "Zavěšené na lanku.", img: "/images/icon_pm1.png" },
+              { label: "PP2", value: "PP2", priceVariant: 425, priceType: "fixed", hint: "Zavěšené na lanku (obousměrně stahovací).", img: "/images/icon_pm2.png" },
+              { label: "PS3", value: "PS3", hint: "Speciálně navrženo do střešních oken s vodicími lištami.", img: "/images/icon_ps3.png" },
+              { label: "AM1", value: "AM1", priceVariant: 1079, priceType: "fixed", hint: "Atypický tvar (jednostranný úkos)." },
+              { label: "AM2", value: "AM2", priceVariant: 1733, priceType: "fixed", hint: "Atypický tvar (oboustranný úkos)." },
+              { label: "AP1", value: "AP1", priceVariant: 1079, priceType: "fixed", hint: "Atypický tvar." }
             ]
           },
           {
@@ -2365,6 +2366,7 @@ async function startServer() {
           {
             id: "prodlouzeni_ovladani",
             name: "Prodloužení ovládání",
+            hint: "Pokud máte okna příliš vysoko, doporučujeme zakoupit prodloužené ovládání, kterým na madla pohodlně dosáhnete i ze země.",
             type: "select",
             options: [
               { label: "Ne", value: "ne" },
@@ -2382,8 +2384,8 @@ async function startServer() {
         }
 
         const title = "Plisé žaluzie Lagarta";
-        const desc = "Plisé žaluzie Lagarta s dokonalým dynamickým výpočtem na milimetry dle 5 skupin látek.";
-        const img = "/img/placeholder.jpg"; // Use existing or placeholder
+        const desc = "<p>Proměňte svá okna s **Plisé žaluziemi Lagarta**, které nabízejí dokonalou harmonii mezi moderním designem a praktickou ochranou před sluncem. Na rozdíl od klasických žaluzií je plisé tvořeno elegantní skládanou látkou, kterou můžete stahovat jak shora dolů, tak zespoda nahoru (dle zvoleného modelu).</p><p>Díky možnosti volby z <strong>5 cenových skupin látek</strong> – od lehkých průsvitných materiálů až po zatemňovací (Blackout) nebo luxusní strukturované vzory – získáte přesně ten styl, který padne do vašeho interiéru. Vyberte si prémiový systém s magnetickým zámkem nebo dvoulátkový systém 'Den a Noc', a posuňte stínění na novou úroveň.</p>";
+        const img = "/images/icon_pm2.png"; // temporary until real cover exists
 
         await db.query(
           `INSERT INTO "Product" 

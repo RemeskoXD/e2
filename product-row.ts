@@ -71,12 +71,21 @@ export function mapProductRow(row: Record<string, unknown>) {
   const old_display =
     oldPrice !== null ? computeRetailCzk(oldPrice, supplier, commission) : null;
   const dim = readDimConstraints(row);
+  const parseJsonArr = (val: any) => {
+    if (Array.isArray(val)) return val;
+    if (typeof val === 'string') {
+      try { return JSON.parse(val) || []; } catch { return []; }
+    }
+    return [];
+  };
+
   return {
     ...row,
-    title: String(row.name ?? row.title ?? ""),
-    category: String(row.categoryId ?? row.category ?? ""),
+    id: String(row.id),
+    title: String(row.name ?? row.title ?? optStrCol(row, "title") ?? ""),
+    category: String(row.categoryId ?? row.category ?? optStrCol(row, "category") ?? ""),
     img: String(row.image ?? row.img ?? ""),
-    desc: String(row.description ?? row.desc ?? ""),
+    desc: String(row.description ?? row.desc ?? optStrCol(row, "desc") ?? ""),
     price,
     oldPrice: oldPrice !== null ? oldPrice : undefined,
     supplier_markup_percent: supplier,
@@ -87,11 +96,11 @@ export function mapProductRow(row: Record<string, unknown>) {
     fabric_group: optIntCol(row, "fabric_group"),
     validation_profile: optStrCol(row, "validation_profile"),
     hidden: Boolean(row.hidden),
-    gallery: Array.isArray(row.gallery) ? row.gallery : [],
-    colors: Array.isArray(row.colors) ? row.colors : [],
-    extras: Array.isArray(row.extras) ? row.extras : [],
-    parameters: Array.isArray(row.parameters) ? row.parameters : [],
-    fabric_groups_config: Array.isArray(row.fabric_groups_config) ? row.fabric_groups_config : [],
+    gallery: parseJsonArr(row.gallery),
+    colors: parseJsonArr(row.colors),
+    extras: parseJsonArr(row.extras),
+    parameters: parseJsonArr(row.parameters),
+    fabric_groups_config: parseJsonArr(row.fabric_groups_config),
     slug: optStrCol(row, "slug"),
     review_count: optIntCol(row, "review_count") || 0,
     avg_rating: row.avg_rating ? Number(row.avg_rating) : null,
