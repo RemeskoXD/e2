@@ -2538,8 +2538,17 @@ async function startServer() {
               { label: "Antracit (RAL 7016)", value: "antracit", hex: "#383e42" },
               { label: "Černá (RAL 9005)", value: "cerna", hex: "#111111" },
               { label: "Imitace dřeva (zlatý dub, ořech, winchester)", value: "imitace", priceVariant: 300, priceType: "fixed", hex: "#8b5a2b", hint: "Přesný odstín imitace s vámi doladíme po objednávce." },
-              { label: "Vlastní lakování RAL", value: "ral", hint: "Můžete si vybrat jakoukoliv barvu ze vzorníku RAL. Kód RAL prosím uveďte do poznámky." }
+              { label: "Vlastní lakování RAL", value: "ral", hint: "Můžete si vybrat jakoukoliv barvu ze vzorníku RAL." }
             ]
+          },
+          {
+            id: "vlastni_ral_kod",
+            name: "Zadejte požadovaný kód RAL",
+            type: "text",
+            condition: {
+              dependsOnParamId: "barva_profilu",
+              allowedValues: ["ral"]
+            }
           },
           {
             id: "lakovani_profilu_1",

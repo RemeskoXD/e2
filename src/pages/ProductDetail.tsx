@@ -1267,6 +1267,19 @@ export default function ProductDetail({ productId }: { productId: string }) {
                             <p className="text-[10px] text-gray-400 mt-1">min: {param.numericSettings.min}, max: {param.numericSettings.max}</p>
                           )}
                         </div>
+                      ) : param.type === 'text' ? (
+                        <div className="relative">
+                          <input
+                            type="text"
+                            value={selectedParameters[param.id] || ''}
+                            onChange={(e) => {
+                              setSelectedParameters(prev => ({ ...prev, [param.id]: e.target.value }));
+                              setQuote(null);
+                            }}
+                            className="w-full border border-gray-200 rounded-xl px-3 py-3 focus:ring-2 focus:ring-[#CCAD8A] focus:border-[#CCAD8A] outline-none transition-all font-medium text-sm text-gray-700 bg-white"
+                            placeholder="Zadejte kód RAL..."
+                          />
+                        </div>
                       ) : null}
                       {selectedParameters[param.id] && (() => {
                          const opt = param.options.find(o => o.value === selectedParameters[param.id]);

@@ -137,6 +137,11 @@ export async function computeProductQuote(
     for (const p of pParams) {
       const val = paramsObj[p.id];
       if (val) {
+        if (p.type === 'text') {
+          paramsNotes.push(`+ ${p.name}: ${val}`);
+          continue;
+        }
+        
         const opt = p.options?.find((o: any) => o.value === val);
         if (opt && opt.priceVariant) {
           const rawPrice = Number(opt.priceVariant) || 0;
@@ -157,6 +162,10 @@ export async function computeProductQuote(
 
           parametersSurcharge += Math.round(calculatedPrice);
           paramsNotes.push(`+ ${p.name}: ${opt.label} (${calcNote} = ${Math.round(calculatedPrice)} Kč)`);
+        } else if (p.type === 'numeric') {
+           paramsNotes.push(`+ ${p.name}: ${val}`);
+        } else if (opt) {
+           paramsNotes.push(`+ ${p.name}: ${opt.label}`);
         }
       }
     }
