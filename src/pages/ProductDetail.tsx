@@ -4,6 +4,7 @@ import { ShoppingCart, Ruler, Info, Check, AlertCircle, Star, Truck, PackageChec
 import { useCart } from '../context/CartContext';
 import { formatCzk } from '../lib/money';
 import { sanitizeGuideHtml } from '../lib/measureGuide';
+import CustomSelect from '../components/CustomSelect';
 import ReviewModal from '../components/ReviewModal';
 
 type Review = {
@@ -1109,27 +1110,28 @@ export default function ProductDetail({ productId }: { productId: string }) {
                       
                       {param.type === 'select' ? (
                         <div className="relative">
-                          <select
+                          <CustomSelect
                             value={selectedParameters[param.id] || ''}
-                            onChange={(e) => {
-                              const val = e.target.value;
+                            onChange={(val) => {
                               setSelectedParameters(prev => ({ ...prev, [param.id]: val }));
                               setQuote(null);
                               const opt = param.options.find(o => o.value === val);
                               if (opt?.img) setMainImg(opt.img);
                             }}
-                            className="w-full border border-gray-200 rounded-xl px-3 py-3 focus:ring-2 focus:ring-[#CCAD8A] focus:border-[#CCAD8A] outline-none transition-all font-medium text-sm text-gray-700 bg-white"
-                          >
-                            <option value="" disabled>-- Vyberte --</option>
-                            {param.options.filter(opt => !opt.hidden).map(opt => {
+                            options={param.options.filter(opt => !opt.hidden).map(opt => {
                               const unit = opt.priceType === 'per_m2' ? ' Kč/m²' : opt.priceType === 'per_bm' ? ' Kč/bm šířky' : opt.priceType === 'per_bm_height' ? ' Kč/bm výšky' : ' Kč';
-                              return (
-                                <option key={opt.value} value={opt.value}>
-                                  {opt.label} {opt.qapiRecommended ? '⭐ Doporučujeme' : ''} {opt.priceVariant ? `(+${opt.priceVariant}${unit})` : ''}
-                                </option>
-                              );
+                              return {
+                                value: opt.value,
+                                label: (
+                                  <span className="flex items-center">
+                                    {opt.label}
+                                    {opt.qapiRecommended && <span className="text-yellow-500 text-xs ml-1.5 font-bold">⭐ Doporučujeme</span>}
+                                    {opt.priceVariant ? <span className="text-gray-400 ml-1.5">(+{opt.priceVariant}{unit})</span> : ''}
+                                  </span>
+                                )
+                              };
                             })}
-                          </select>
+                          />
                         </div>
                       ) : param.type === 'color_array' ? (
                         <div className="flex flex-wrap gap-4 items-start">
