@@ -452,6 +452,12 @@ export async function computeProductQuote(
     let fgIndex = body.fabric_group_config_index;
     if (typeof fgIndex !== 'number') fgIndex = 0; // Default to first fabric group
     
+    if (fgIndex === 0) {
+      if (!['PM1', 'PM2', 'PM3', 'PM3M', 'PS3'].includes(model)) {
+         return { ok: false, status: 400, body: { error: `Model ${model} nelze vyrobit z látek Cenové skupiny 1.` } };
+      }
+    }
+    
     const configs = Array.isArray(product.fabric_groups_config) ? product.fabric_groups_config : [];
     const cfg = configs[fgIndex] as any;
     if (cfg && cfg.matrix) {
@@ -462,6 +468,10 @@ export async function computeProductQuote(
       const tH = heights.find(h => h >= hR);
       if (tW && tH && cfg.matrix[`${tW}_${tH}`]) {
         lagartaPrice = cfg.matrix[`${tW}_${tH}`];
+        if (model === 'PM4' || model === 'PM5') {
+          lagartaPrice *= 2;
+          screenUnionCatalogNotes.push(`Modely PM4 a PM5 (Den a Noc) se počítají jako dvě samostatné žaluzie.`);
+        }
       } else {
         return { ok: false, status: 400, body: { error: `Pro rozměr ${wR}x${hR} neexistuje cena v ceníku vybrané skupiny látek.` } };
       }
@@ -479,10 +489,10 @@ export async function computeProductQuote(
       return { ok: false, status: 400, body: { error: `Model AP1 nelze vyrobit v provedení Living Blackout.` } };
     }
 
-    if (model === 'PS3' && body?.selected_parameters?.barva_profilu) {
+    if (['PS3', 'PM4', 'PM5'].includes(model) && body?.selected_parameters?.barva_profilu) {
        const b = body.selected_parameters.barva_profilu;
        if (b === 'kremova' || b === 'cerna') {
-         return { ok: false, status: 400, body: { error: `Pro model PS3 nejsou barvy Krémová a Černá dostupné v základním vzorníku.` } };
+         return { ok: false, status: 400, body: { error: `Pro model ${model} nejsou barvy Krémová a Černá dostupné v základním vzorníku.` } };
        }
     }
 
