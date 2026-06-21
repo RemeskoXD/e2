@@ -936,9 +936,31 @@ async function startServer() {
             line_total_czk: lineTotal,
             options,
           });
-        }
+        }        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        const prefix = `Q-${yyyy}${mm}${dd}`;
 
-        const orderNo = `Q-${Date.now()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+        const lastOrderRes = await client.query(
+          `SELECT order_no FROM "Order" WHERE order_no LIKE $1 ORDER BY id DESC LIMIT 1`,
+          [`${prefix}%`]
+        );
+        let sequence = 1;
+        if (lastOrderRes.rows.length > 0) {
+           const lastNo = lastOrderRes.rows[0].order_no;
+           const lastSeqStr = lastNo.slice(-4);
+           const lastSeqNum = parseInt(lastSeqStr, 10);
+           if (!isNaN(lastSeqNum)) {
+               sequence = lastSeqNum + 1;
+           } else {
+               const countRes = await client.query(`SELECT COUNT(*) as count FROM "Order" WHERE order_no LIKE $1`, [`${prefix}%`]);
+               sequence = parseInt(countRes.rows[0].count, 10) + 1;
+           }
+        }
+        const seqStr = String(sequence).padStart(4, '0');
+        const orderNo = `${prefix}${seqStr}`;
+
         const orderIns = await client.query(
           `INSERT INTO "Order" (order_no, customer_name, total_amount, status, items_count, customer_email, customer_phone, customer_note)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
@@ -1184,10 +1206,10 @@ async function startServer() {
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
 
-        sheet['B3'] = { v: order.customer_name, t: 's' };
+        sheet['B3'] = { v: "Ropemi s.r.o., Varšavská 715/36, Vinohrady, 120 00 Praha 2", t: 's' };
         sheet['F3'] = { v: new Date(order.date).toLocaleDateString('cs-CZ'), t: 's' };
         sheet['J3'] = { v: order.order_no, t: 's' };
-        sheet['B5'] = { v: order.customer_phone || order.customer_email || '', t: 's' };
+        sheet['B5'] = { v: "+420 774 060 193", t: 's' };
 
         let currentRow = 8;
         lagartaItems.forEach((item: any, index: number) => {
@@ -1220,16 +1242,11 @@ async function startServer() {
           if (strana === 'prava') stranaLetter = 'P';
           else if (strana === 'leva') stranaLetter = 'L';
           
-          const typOvladani = params.typ_ovladani || '';
-          let typLetter = '';
-          if (typOvladani === 'madlo') typLetter = 'a';
-          else if (typOvladani === 'provazek') typLetter = 'b';
+          const typLetter = 'a'; // Zákazník už nevybírá, vždy je to Madlo
           
           let ovladani = '';
-          if (stranaLetter && typLetter) ovladani = `${stranaLetter} ${typLetter}`;
-          else if (stranaLetter) ovladani = stranaLetter;
-          else if (typLetter) ovladani = typLetter;
-          else ovladani = params.ovladani || ''; // fallback pro starší objednávky
+          if (stranaLetter) ovladani = `${stranaLetter} ${typLetter}`;
+          else ovladani = typLetter;
 
           const montaz = params.typ_uchyceni || params.montaz || '';
           
@@ -2628,16 +2645,7 @@ async function startServer() {
               { label: "Ano", value: "ano", priceVariant: 327, priceType: "per_bm_height" }
             ]
           },
-          {
-            id: "typ_ovladani",
-            name: "Typ ovládání",
-            hint: "Vyberte způsob ovládání žaluzie.",
-            type: "select",
-            options: [
-              { label: "Madlo", value: "madlo", img: "/images/icon_madlo.png" },
-              { label: "Provázek", value: "provazek", img: "/images/icon_provazek.png" }
-            ]
-          },
+
           {
             id: "strana_ovladani",
             name: "Strana ovládání",
