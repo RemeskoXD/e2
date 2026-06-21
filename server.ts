@@ -2604,6 +2604,16 @@ async function startServer() {
             ]
           },
           {
+            id: "strana_ovladani",
+            name: "Strana ovládání",
+            hint: "Zvolte, na které straně chcete mít ovládací mechanismus.",
+            type: "select",
+            options: [
+              { label: "Pravá", value: "prava" },
+              { label: "Levá", value: "leva" }
+            ]
+          },
+          {
             id: "prodlouzeni_ovladani",
             name: "Prodloužení ovládání",
             hint: "Pokud máte okna příliš vysoko, doporučujeme zakoupit prodloužené ovládání, kterým na madla pohodlně dosáhnete i ze země.",
