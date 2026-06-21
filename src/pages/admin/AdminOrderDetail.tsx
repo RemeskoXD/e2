@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, FileSpreadsheet } from 'lucide-react';
 import { formatCzk } from '../../lib/money';
 
 type OrderItemRow = {
@@ -158,6 +158,19 @@ export default function AdminOrderDetail({ orderId }: { orderId: number }) {
           >
             {saving ? 'Ukládám…' : 'Uložit stav'}
           </button>
+          {items.some(it => (it.product_title || '').toLowerCase().includes('lagarta')) && (
+            <button
+              type="button"
+              onClick={() => {
+                const t = token();
+                window.open(`/api/admin/orders/${order.id}/export-lagarta?token=${t}`, '_blank');
+              }}
+              className="bg-white text-green-700 border border-green-200 font-bold px-4 py-2 rounded-lg hover:bg-green-50 flex items-center gap-2"
+            >
+              <FileSpreadsheet size={18} />
+              Exportovat Lagarta Excel
+            </button>
+          )}
         </div>
       </div>
 

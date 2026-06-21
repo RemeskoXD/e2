@@ -8,6 +8,7 @@ import { Pool } from "pg";
 import path from "path";
 import fs from "fs";
 import crypto from "crypto";
+import * as XLSX from "xlsx";
 import { mapProductRow, num, optIntCol, optStrCol, parseDimBody } from "./product-row";
 import { computeProductQuote } from "./quote-compute";
 import { sendOrderEmails } from "./order-email";
@@ -546,7 +547,9 @@ async function startServer() {
     res: express.Response,
     next: express.NextFunction
   ) => {
-    const token = req.headers.authorization?.split(" ")[1];
+    const headerToken = req.headers.authorization?.split(" ")[1];
+    const queryToken = req.query.token as string;
+    const token = headerToken || queryToken;
     if (token === ADMIN_TOKEN) {
       next();
     } else {
@@ -1137,6 +1140,114 @@ async function startServer() {
         res.json({ ...(o.rows[0] as Record<string, unknown>), items: items.rows });
       } catch {
         res.status(500).json({ error: "Server error" });
+      }
+    });
+  });
+
+  app.get("/api/admin/orders/:id/export-lagarta", requireAdmin, async (req, res) => {
+    await withDb(res, async (db) => {
+      try {
+        const id = Number(req.params.id);
+        if (!Number.isFinite(id) || id < 1) {
+          res.status(400).json({ error: "Neplatné ID" });
+          return;
+        }
+        const o = await db.query('SELECT * FROM "Order" WHERE id = $1', [id]);
+        if (!o.rows[0]) {
+          res.status(404).json({ error: "Nenalezeno" });
+          return;
+        }
+        const order = o.rows[0];
+        const items = await db.query(
+          'SELECT * FROM "OrderItem" WHERE order_id = $1 ORDER BY id ASC',
+          [id]
+        );
+
+        const lagartaItems = items.rows.filter((item: any) => 
+          (item.product_title || '').toLowerCase().includes('lagarta')
+        );
+
+        if (lagartaItems.length === 0) {
+          res.status(404).json({ error: "Objednávka neobsahuje produkty Lagarta" });
+          return;
+        }
+
+        const templatePath = path.join(process.cwd(), 'public', 'formular', '02_formular_plise_zaluzie_Lagarta_z_QAPI.xls');
+        if (!fs.existsSync(templatePath)) {
+           res.status(404).json({ error: "Šablona formuláře nebyla nalezena." });
+           return;
+        }
+
+        const workbook = XLSX.readFile(templatePath);
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+
+        sheet['B3'] = { v: order.customer_name, t: 's' };
+        sheet['F3'] = { v: new Date(order.date).toLocaleDateString('cs-CZ'), t: 's' };
+        sheet['J3'] = { v: order.order_no, t: 's' };
+        sheet['B5'] = { v: order.customer_phone || order.customer_email || '', t: 's' };
+
+        let currentRow = 8;
+        lagartaItems.forEach((item: any, index: number) => {
+          const params = item.options?.selected_parameters || {};
+          const w = item.width_mm;
+          const h = item.height_mm;
+          const qty = item.quantity;
+          const model = params.model || '';
+          const barva_profilu = params.barva_profilu || '';
+          
+          let latkaHorni = '';
+          let latkaDolni = '';
+          
+          const pLatka = params.latka || '';
+          const pLatkaHorni = params.latka_horni || '';
+          const pLatkaDolni = params.latka_dolni || '';
+          
+          if (model === 'PM4' || model === 'PM5') {
+            latkaHorni = pLatkaHorni;
+            latkaDolni = pLatkaDolni;
+          } else {
+            latkaHorni = pLatka || pLatkaHorni;
+          }
+
+          const ovladani = params.strana_ovladani || params.ovladani || '';
+          const montaz = params.typ_uchyceni || params.montaz || '';
+
+          const writeCell = (colChar: string, val: any) => {
+            if (val == null || val === '') return;
+            const ref = `${colChar}${currentRow + 1}`;
+            sheet[ref] = { v: val, t: typeof val === 'number' ? 'n' : 's' };
+          };
+
+          writeCell('A', index + 1 + '.');
+          writeCell('B', w);
+          writeCell('C', h);
+          writeCell('D', qty);
+          writeCell('E', model);
+          writeCell('F', barva_profilu);
+          writeCell('G', latkaHorni);
+          writeCell('I', latkaDolni);
+          writeCell('K', ovladani);
+          writeCell('L', montaz);
+          
+          currentRow++;
+        });
+
+        const range = XLSX.utils.decode_range(sheet['!ref'] || 'A1:S50');
+        if (currentRow > range.e.r) {
+          range.e.r = currentRow;
+          sheet['!ref'] = XLSX.utils.encode_range(range);
+        }
+
+        const buf = XLSX.write(workbook, { type: 'buffer', bookType: 'xls' });
+
+        res.setHeader('Content-Disposition', `attachment; filename="Objednavka_Lagarta_${order.order_no}.xls"`);
+        res.setHeader('Content-Type', 'application/vnd.ms-excel');
+        res.send(buf);
+
+      } catch (err) {
+        console.error('Lagarta export error:', err);
+        res.status(500).json({ error: "Server error při generování Excelu" });
       }
     });
   });
