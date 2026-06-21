@@ -2541,6 +2541,45 @@ async function startServer() {
               { label: "Vlastní lakování RAL", value: "ral", hint: "Můžete si vybrat jakoukoliv barvu ze vzorníku RAL. Kód RAL prosím uveďte do poznámky." }
             ]
           },
+          {
+            id: "lakovani_profilu_1",
+            name: "Lakování profilů",
+            type: "select",
+            condition: {
+              dependsOnParamId: "model",
+              allowedValues: ["PM1", "PM3", "PS3"]
+            },
+            options: [
+              { label: "Ne", value: "ne" },
+              { label: "Ano", value: "ano", priceVariant: 157, priceType: "per_bm" }
+            ]
+          },
+          {
+            id: "lakovani_profilu_2",
+            name: "Lakování profilů",
+            type: "select",
+            condition: {
+              dependsOnParamId: "model",
+              allowedValues: ["PM2", "PM5"]
+            },
+            options: [
+              { label: "Ne", value: "ne" },
+              { label: "Ano", value: "ano", priceVariant: 236, priceType: "per_bm" }
+            ]
+          },
+          {
+            id: "lakovani_vodici_listy_ps3",
+            name: "Lakování vodící lišty (pouze pro PS3)",
+            type: "select",
+            condition: {
+              dependsOnParamId: "model",
+              allowedValues: ["PS3"]
+            },
+            options: [
+              { label: "Ne", value: "ne" },
+              { label: "Ano", value: "ano", priceVariant: 327, priceType: "per_bm_height" }
+            ]
+          },
 
           {
             id: "vodici_lista_ps3",
