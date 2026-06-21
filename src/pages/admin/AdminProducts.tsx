@@ -1,5 +1,5 @@
 import { useState, useEffect, type FormEvent } from 'react';
-import { Plus, Search, Edit2, Trash2, Terminal, ChevronDown, ChevronRight, X, ExternalLink, Table, Image as ImageIcon, Upload, GripVertical } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Terminal, ChevronDown, ChevronRight, X, ExternalLink, Table, Image as ImageIcon, Upload, GripVertical, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import {
   DndContext,
@@ -1943,17 +1943,32 @@ export default function AdminProducts() {
                                       <option value="per_bm">Za bm</option>
                                     </select>
                                   </div>
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const newParams = structuredClone(formData.parameters || []);
-                                      newParams[pIdx].options = newParams[pIdx].options.filter((_, i) => i !== oIdx);
-                                      setFormData(prev => ({ ...prev, parameters: newParams }));
-                                    }}
-                                    className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded"
-                                  >
-                                    <Trash2 size={16} />
-                                  </button>
+                                  <div className="flex gap-1 items-center">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const newParams = structuredClone(formData.parameters || []);
+                                        newParams[pIdx].options[oIdx].hidden = !newParams[pIdx].options[oIdx].hidden;
+                                        setFormData(prev => ({ ...prev, parameters: newParams }));
+                                      }}
+                                      className={`p-1.5 rounded transition-colors ${opt.hidden ? 'text-gray-400 bg-gray-100 hover:bg-gray-200' : 'text-green-600 hover:bg-green-50'}`}
+                                      title={opt.hidden ? "Skryto (kliknutím zobrazíte)" : "Zobrazeno (kliknutím skryjete)"}
+                                    >
+                                      {opt.hidden ? <EyeOff size={16} /> : <Eye size={16} />}
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const newParams = structuredClone(formData.parameters || []);
+                                        newParams[pIdx].options = newParams[pIdx].options.filter((_, i) => i !== oIdx);
+                                        setFormData(prev => ({ ...prev, parameters: newParams }));
+                                      }}
+                                      className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded"
+                                      title="Odstranit možnost"
+                                    >
+                                      <Trash2 size={16} />
+                                    </button>
+                                  </div>
                                 </SortableOptionItem>
                               ))}
                             </div>

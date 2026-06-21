@@ -431,19 +431,11 @@ export async function computeProductQuote(
       'PP1': { minW: 160, maxW: 2300, minH: 300, maxH: 2600 },
       'PP2': { minW: 160, maxW: 2300, minH: 300, maxH: 2600 },
       'PS3': { minW: 200, maxW: 1500, minH: 300, maxH: 1500 },
-      'AM1': { minW: 200, maxW: 1500, minH: 300, maxH: 1500 },
-      'AM2': { minW: 200, maxW: 1500, minH: 300, maxH: 1500 },
-      'AP1': { minW: 200, maxW: 2000, minH: 300, maxH: 1000 },
     };
     const lim = limits[model];
     if (lim) {
       if (wR < lim.minW || wR > lim.maxW || hR < lim.minH || hR > lim.maxH) {
-         // Speciální výjimka u AP1 dle ceníku
-         if (model === 'AP1' && wR >= 200 && wR <= 1000 && hR >= 300 && hR <= 2000) {
-            // ok
-         } else {
-            return { ok: false, status: 400, body: { error: `Model ${model} lze vyrobit pouze v šířce ${lim.minW}-${lim.maxW} mm a výšce ${lim.minH}-${lim.maxH} mm.` } };
-         }
+         return { ok: false, status: 400, body: { error: `Model ${model} lze vyrobit pouze v šířce ${lim.minW}-${lim.maxW} mm a výšce ${lim.minH}-${lim.maxH} mm.` } };
       }
     }
 
@@ -480,10 +472,6 @@ export async function computeProductQuote(
     // Fabric-specific rules
     const fabricS = String(body?.fabric ?? body?.latka ?? "").toLowerCase();
     const isBlackoutOrBamboo = fabricS.includes("blackout") || fabricS.includes("bamboo");
-
-    if (model === 'AP1' && fabricS.includes("living blackout")) {
-      return { ok: false, status: 400, body: { error: `Model AP1 nelze vyrobit v provedení Living Blackout.` } };
-    }
 
     if (['PS3', 'PM4', 'PM5'].includes(model) && body?.selected_parameters?.barva_profilu) {
        const b = body.selected_parameters.barva_profilu;

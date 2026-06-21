@@ -2392,15 +2392,12 @@ async function startServer() {
               { label: "PM1", value: "PM1", hint: "Základní model pevně uchycený nahoře, stahuje se shora dolů.", img: "/images/icon_pm1.png" },
               { label: "PM2", value: "PM2", qapiRecommended: true, hint: "Nejoblíbenější! Lze stahovat shora i zespoda, látka plave na okně libovolně.", img: "/images/icon_pm2.png" },
               { label: "PM3", value: "PM3", hint: "Podobné jako PM2, ale se dvěma středovými profily.", img: "/images/icon_pm2.png" },
-              { label: "PM3M", value: "PM3M", priceVariant: 200, priceType: "fixed", hint: "Model s pohodlnými magnety.", img: "/images/icon_pm2.png" },
-              { label: "PM4", value: "PM4", hint: "Základní 'Den a Noc'. Nahoře i dole upevněno, mezi tím dvě látky.", img: "/images/icon_den_noc.png" },
-              { label: "PM5", value: "PM5", hint: "Nejflexibilnější 'Den a Noc'. Plave na okně a obsahuje dvě látky.", img: "/images/icon_den_noc.png" },
-              { label: "PP1", value: "PP1", priceVariant: 255, priceType: "fixed", hint: "Zavěšené na lanku.", img: "/images/icon_pm1.png" },
-              { label: "PP2", value: "PP2", priceVariant: 425, priceType: "fixed", hint: "Zavěšené na lanku (obousměrně stahovací).", img: "/images/icon_pm2.png" },
-              { label: "PS3", value: "PS3", hint: "Speciálně navrženo do střešních oken s vodicími lištami.", img: "/images/icon_ps3.png" },
-              { label: "AM1", value: "AM1", priceVariant: 1079, priceType: "fixed", hint: "Atypický tvar (jednostranný úkos).", img: "/images/icon_am1.png" },
-              { label: "AM2", value: "AM2", priceVariant: 1733, priceType: "fixed", hint: "Atypický tvar (oboustranný úkos).", img: "/images/icon_am2.png" },
-              { label: "AP1", value: "AP1", priceVariant: 1079, priceType: "fixed", hint: "Atypický tvar v šikmině.", img: "/images/icon_ap1.png" }
+              { label: "PM3M", value: "PM3M", priceVariant: 200, priceType: "fixed", hint: "Model s pohodlnými magnety.", img: "/images/icon_pm2.png", hidden: true },
+              { label: "PM4", value: "PM4", hint: "Základní 'Den a Noc'. Nahoře i dole upevněno, mezi tím dvě látky.", img: "/images/icon_den_noc.png", hidden: true },
+              { label: "PM5", value: "PM5", hint: "Nejflexibilnější 'Den a Noc'. Plave na okně a obsahuje dvě látky.", img: "/images/icon_den_noc.png", hidden: true },
+              { label: "PP1", value: "PP1", priceVariant: 255, priceType: "fixed", hint: "Zavěšené na lanku.", img: "/images/icon_pm1.png", hidden: true },
+              { label: "PP2", value: "PP2", priceVariant: 425, priceType: "fixed", hint: "Zavěšené na lanku (obousměrně stahovací).", img: "/images/icon_pm2.png", hidden: true },
+              { label: "PS3", value: "PS3", hint: "Speciálně navrženo do střešních oken s vodicími lištami.", img: "/images/icon_ps3.png" }
             ]
           },
           {

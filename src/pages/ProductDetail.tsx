@@ -1121,7 +1121,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                             className="w-full border border-gray-200 rounded-xl px-3 py-3 focus:ring-2 focus:ring-[#CCAD8A] focus:border-[#CCAD8A] outline-none transition-all font-medium text-sm text-gray-700 bg-white"
                           >
                             <option value="" disabled>-- Vyberte --</option>
-                            {param.options.map(opt => {
+                            {param.options.filter(opt => !opt.hidden).map(opt => {
                               const unit = opt.priceType === 'per_m2' ? ' Kč/m²' : opt.priceType === 'per_bm' ? ' Kč/bm šířky' : opt.priceType === 'per_bm_height' ? ' Kč/bm výšky' : ' Kč';
                               return (
                                 <option key={opt.value} value={opt.value}>
@@ -1133,7 +1133,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                         </div>
                       ) : param.type === 'color_array' ? (
                         <div className="flex flex-wrap gap-4 items-start">
-                          {param.options.map(opt => {
+                          {param.options.filter(opt => !opt.hidden).map(opt => {
                             const isSelected = selectedParameters[param.id] === opt.value;
                             const bgColor = opt.hex || opt.colorCode;
                             const titleText = `${opt.label} ${opt.priceVariant ? `(+${opt.priceVariant}${opt.priceType === 'per_m2' ? ' Kč/m²' : opt.priceType === 'per_bm' ? ' Kč/bm šířky' : opt.priceType === 'per_bm_height' ? ' Kč/bm výšky' : ' Kč'})` : ''}`;
