@@ -2568,20 +2568,6 @@ async function startServer() {
             ]
           },
           {
-            id: "lakovani_vodici_listy_ps3",
-            name: "Lakování vodící lišty (pouze pro PS3)",
-            type: "select",
-            condition: {
-              dependsOnParamId: "model",
-              allowedValues: ["PS3"]
-            },
-            options: [
-              { label: "Ne", value: "ne" },
-              { label: "Ano", value: "ano", priceVariant: 327, priceType: "per_bm_height" }
-            ]
-          },
-
-          {
             id: "vodici_lista_ps3",
             name: "Vodící lišta pro model PS3",
             hint: "Vodící lišta pomáhá stabilizovat žaluzii ve střešním okně. Pokud zvolíte barvu RAL, bude i lišta lakována do RAL a automaticky se připočte lakování.",
@@ -2593,6 +2579,19 @@ async function startServer() {
             options: [
               { label: "Ne", value: "ne" },
               { label: "Ano", value: "ano", priceVariant: 311, priceType: "per_bm_height" }
+            ]
+          },
+          {
+            id: "lakovani_vodici_listy_ps3",
+            name: "Lakování vodící lišty",
+            type: "select",
+            condition: {
+              dependsOnParamId: "vodici_lista_ps3",
+              allowedValues: ["ano"]
+            },
+            options: [
+              { label: "Ne", value: "ne" },
+              { label: "Ano", value: "ano", priceVariant: 327, priceType: "per_bm_height" }
             ]
           },
           {
