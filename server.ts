@@ -2288,12 +2288,41 @@ async function startServer() {
           { 
             name: "Cenová skupina 3 (Bamboo, Living, Basic Blackout, Honeycomb)", surcharge_percent: 0, matrix: m.g3, 
             colors: [
-              { name: "Bamboo Natural", hex: "#e3dac9" },
-              { name: "Bamboo Dark", hex: "#6b4423" },
-              { name: "Blackout Bílá", hex: "#f0f0f0" },
-              { name: "Blackout Šedá", hex: "#808080" },
-              { name: "Honeycomb Bílá", hex: "#fdfdfd" },
-              { name: "Honeycomb Béžová", hex: "#e8d3a2" }
+              // Bamboo
+              { name: "Bamboo 1069", hex: "#e3dac9" },
+              { name: "Bamboo 1096", hex: "#e3dac9" },
+              { name: "Bamboo 5175", hex: "#e3dac9" },
+              { name: "Bamboo 8134", hex: "#e3dac9" },
+              { name: "Bamboo 8173", hex: "#e3dac9" },
+              { name: "Bamboo 9125", hex: "#e3dac9" },
+              { name: "Bamboo 9155", hex: "#e3dac9" },
+              // Bamboo Reflex
+              { name: "Bamboo Reflex 2275", hex: "#d5cbb8" },
+              { name: "Bamboo Reflex 2276", hex: "#d5cbb8" },
+              { name: "Bamboo Reflex 2294", hex: "#d5cbb8" },
+              { name: "Bamboo Reflex 2295", hex: "#d5cbb8" },
+              { name: "Bamboo Reflex 4139", hex: "#d5cbb8" },
+              { name: "Bamboo Reflex 5175", hex: "#d5cbb8" },
+              { name: "Bamboo Reflex 9125", hex: "#d5cbb8" },
+              { name: "Bamboo Reflex 9155", hex: "#d5cbb8" },
+              { name: "Bamboo Reflex 1069", hex: "#d5cbb8" },
+              // Living
+              { name: "Living 1122", hex: "#c0c0c0" },
+              { name: "Living 2465", hex: "#c0c0c0" },
+              { name: "Living 2474", hex: "#c0c0c0" },
+              { name: "Living 8190", hex: "#c0c0c0" },
+              { name: "Living 9298", hex: "#c0c0c0" },
+              { name: "Living 9306", hex: "#c0c0c0" },
+              // Basic Blackout
+              { name: "Basic Blackout 1029", hex: "#808080" },
+              { name: "Basic Blackout 2320", hex: "#808080" },
+              { name: "Basic Blackout 9090", hex: "#808080" },
+              { name: "Basic Blackout 9178", hex: "#808080" },
+              // Honeycomb
+              { name: "HoneyComb Silver stripe 301", hex: "#fdfdfd" },
+              { name: "HoneyComb Silver stripe 302", hex: "#fdfdfd" },
+              { name: "HoneyComb Silver stripe 318", hex: "#fdfdfd" },
+              { name: "HoneyComb Silver stripe 320", hex: "#fdfdfd" }
             ] 
           },
           { 
