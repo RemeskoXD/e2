@@ -1192,28 +1192,52 @@ async function startServer() {
         let currentRow = 8;
         lagartaItems.forEach((item: any, index: number) => {
           const params = item.options?.selected_parameters || {};
-          const w = item.width_mm;
-          const h = item.height_mm;
+          const w = item.width_mm || 0;
+          const h = item.height_mm || 0;
           const qty = item.quantity;
           const model = params.model || '';
-          const barva_profilu = params.barva_profilu || '';
+          
+          let barva_profilu = params.barva_profilu || '';
+          if (barva_profilu === 'ral' && params.vlastni_ral_kod) {
+            barva_profilu = `RAL ${params.vlastni_ral_kod}`;
+          }
+
+          const pLatka = item.options?.latka || item.options?.fabric || params.latka || '';
+          const pLatkaHorni = params.latka_horni || pLatka;
+          const pLatkaDolni = params.latka_dolni || '';
           
           let latkaHorni = '';
           let latkaDolni = '';
-          
-          const pLatka = params.latka || '';
-          const pLatkaHorni = params.latka_horni || '';
-          const pLatkaDolni = params.latka_dolni || '';
-          
           if (model === 'PM4' || model === 'PM5') {
             latkaHorni = pLatkaHorni;
             latkaDolni = pLatkaDolni;
           } else {
-            latkaHorni = pLatka || pLatkaHorni;
+            latkaHorni = pLatkaHorni;
           }
 
-          const ovladani = params.strana_ovladani || params.ovladani || '';
+          const strana = params.strana_ovladani || '';
+          let stranaLetter = '';
+          if (strana === 'prava') stranaLetter = 'P';
+          else if (strana === 'leva') stranaLetter = 'L';
+          
+          const typOvladani = params.typ_ovladani || '';
+          let typLetter = '';
+          if (typOvladani === 'madlo') typLetter = 'a';
+          else if (typOvladani === 'provazek') typLetter = 'b';
+          
+          let ovladani = '';
+          if (stranaLetter && typLetter) ovladani = `${stranaLetter} ${typLetter}`;
+          else if (stranaLetter) ovladani = stranaLetter;
+          else if (typLetter) ovladani = typLetter;
+          else ovladani = params.ovladani || ''; // fallback pro starší objednávky
+
           const montaz = params.typ_uchyceni || params.montaz || '';
+          
+          const m2 = ((w * h) / 1000000).toFixed(2);
+          const addr = [order.delivery_street, order.delivery_city, order.delivery_zip].filter(Boolean).join(', ');
+          const customerDetails = `${order.customer_name}, Tel: ${order.customer_phone || '-'}, E-mail: ${order.customer_email || '-'}, Adresa: ${addr || '-'}`;
+          let poznamka = `${customerDetails} | Plocha: ${m2} m²`;
+          if (params.poznamka) poznamka += ` | Poznámka zákazníka: ${params.poznamka}`;
 
           const writeCell = (colChar: string, val: any) => {
             if (val == null || val === '') return;
@@ -1231,6 +1255,7 @@ async function startServer() {
           writeCell('I', latkaDolni);
           writeCell('K', ovladani);
           writeCell('L', montaz);
+          writeCell('M', poznamka);
           
           currentRow++;
         });
@@ -2604,9 +2629,19 @@ async function startServer() {
             ]
           },
           {
+            id: "typ_ovladani",
+            name: "Typ ovládání",
+            hint: "Vyberte způsob ovládání žaluzie.",
+            type: "select",
+            options: [
+              { label: "Madlo", value: "madlo", img: "/images/icon_madlo.png" },
+              { label: "Provázek", value: "provazek", img: "/images/icon_provazek.png" }
+            ]
+          },
+          {
             id: "strana_ovladani",
             name: "Strana ovládání",
-            hint: "Zvolte, na které straně chcete mít ovládací mechanismus.",
+            hint: "Zvolte, na které straně chcete mít ovládací mechanismus (platí zejména pro provázek).",
             type: "select",
             options: [
               { label: "Pravá", value: "prava" },
