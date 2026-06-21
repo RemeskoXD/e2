@@ -1265,7 +1265,11 @@ async function startServer() {
           if (stranaLetter) ovladani = `${stranaLetter} ${typLetter}`;
           else ovladani = typLetter;
 
-          const montaz = params.typ_uchyceni || params.montaz || '';
+          let montaz = '';
+          const typUchyceni = params.typ_uchyceni || '';
+          if (typUchyceni === 'zasklivaci_lista') montaz = 'a';
+          else if (typUchyceni === 'konzola') montaz = 'b';
+          else montaz = params.montaz || '';
           
           const m2 = ((w * h) / 1000000).toFixed(2);
           const addr = [order.delivery_street, order.delivery_city, order.delivery_zip].filter(Boolean).join(', ');
@@ -2667,6 +2671,16 @@ async function startServer() {
             ]
           },
 
+          {
+            id: "typ_uchyceni",
+            name: "Typ uchycení",
+            hint: "**Zasklívací lišty (Varianta a)** - Nejelegantnější montáž přímo k oknu (doporučujeme u rovných lišt). Žaluzie krásně splyne se sklem a nepřekáží při manipulaci s oknem.\n\n**Pomocí konzoly (Varianta b)** - Doporučujeme, pokud máte velmi úzké (méně než 15 mm) nebo výrazně zaoblené zasklívací lišty, případně trojskla s plytkou lištou. Montuje se na rám okna.",
+            type: "select",
+            options: [
+              { label: "Zasklívací lišty", value: "zasklivaci_lista", img: "/images/icon_uchyceni_a.png" },
+              { label: "Pomocí konzoly", value: "konzola", img: "/images/icon_uchyceni_b.png" }
+            ]
+          },
           {
             id: "strana_ovladani",
             name: "Strana ovládání",
