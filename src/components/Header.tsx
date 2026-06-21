@@ -148,7 +148,7 @@ export default function Header({
       </div>
 
       {/* Navigation Bar */}
-      <div className="bg-[#EAE0D3] border-b-[3px] border-[#132333]">
+      <div className="bg-[#EAE0D3] border-b-[3px] border-[#13233330]">
         <div className="container mx-auto px-6 overflow-x-auto hide-scroll-bar">
           <nav className="flex items-center space-x-8 py-3 text-[14px] font-bold whitespace-nowrap text-[#5a4835]">
             <a
