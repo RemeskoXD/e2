@@ -2254,11 +2254,35 @@ async function startServer() {
           { 
             name: "Cenová skupina 2 (Basic Semi, Stripes, Wood, Press Reflex)", surcharge_percent: 0, matrix: m.g2, 
             colors: [
-              { name: "Wood Oak (Imitace dřeva)", hex: "#dfc19c" },
-              { name: "Wood Walnut", hex: "#8b5a2b" },
-              { name: "Stripes White", hex: "#f8f8f8" },
-              { name: "Stripes Grey", hex: "#b0b0b0" },
-              { name: "Sand", hex: "#c2b280" }
+              // Basic Semi
+              { name: "Basic Semi 001B", hex: "#e0e0e0" },
+              { name: "Basic Semi 004B", hex: "#e0e0e0" },
+              { name: "Basic Semi 008B", hex: "#e0e0e0" },
+              // Stripes
+              { name: "Stripes 1029", hex: "#d0d0d0" },
+              { name: "Stripes 2087", hex: "#d0d0d0" },
+              { name: "Stripes 2365", hex: "#d0d0d0" },
+              { name: "Stripes 5123", hex: "#d0d0d0" },
+              { name: "Stripes 5177", hex: "#d0d0d0" },
+              { name: "Stripes 9084", hex: "#d0d0d0" },
+              { name: "Stripes 9147", hex: "#d0d0d0" },
+              // Wood
+              { name: "Wood 1006", hex: "#c19a6b" },
+              { name: "Wood 2087", hex: "#c19a6b" },
+              { name: "Wood 2178", hex: "#c19a6b" },
+              { name: "Wood 327", hex: "#c19a6b" },
+              { name: "Wood 9091", hex: "#c19a6b" },
+              // Press Reflex
+              { name: "Press Reflex 1029", hex: "#b0c4de" },
+              { name: "Press Reflex 2454", hex: "#b0c4de" },
+              { name: "Press Reflex 2456", hex: "#b0c4de" },
+              { name: "Press Reflex 4203", hex: "#b0c4de" },
+              { name: "Press Reflex 4205", hex: "#b0c4de" },
+              { name: "Press Reflex 6128", hex: "#b0c4de" },
+              { name: "Press Reflex 6130", hex: "#b0c4de" },
+              { name: "Press Reflex 9236", hex: "#b0c4de" },
+              { name: "Press Reflex 9282", hex: "#b0c4de" },
+              { name: "Press Reflex 9283", hex: "#b0c4de" }
             ] 
           },
           { 
