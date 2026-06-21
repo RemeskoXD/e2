@@ -1,46 +1,51 @@
-import { Truck, Award, ShieldCheck, Headphones } from 'lucide-react';
+import { Truck, Award, Headphones, ShieldCheck } from 'lucide-react';
 
 export default function Benefits() {
   return (
-    <div className="bg-white border-b border-gray-200">
-      <div className="container mx-auto px-6">
-        <div className="py-8 flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-gray-100 gap-y-8">
-          <div className="flex-1 flex flex-col md:flex-row items-center gap-4 justify-center group lg:justify-start lg:pl-0">
-            <div className="w-12 h-12 rounded-full bg-[#132333]/5 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-              <Truck size={24} className="text-[#CCAD8A]" />
+    <div className="relative z-20 -mt-10 sm:-mt-16 w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] py-6 px-6 sm:px-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-4">
+          
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-[#CCAD8A]/10 flex items-center justify-center shrink-0">
+              <Truck size={22} className="text-[#132333]" strokeWidth={2} />
             </div>
-            <div className="text-center md:text-left">
-              <h4 className="font-bold text-[#132333] text-sm md:text-base">Doprava zdarma</h4>
-              <p className="text-xs text-gray-500">Nad 5 000 Kč</p>
-            </div>
-          </div>
-          <div className="flex-1 flex flex-col md:flex-row items-center gap-4 justify-center group pt-8 md:pt-0 lg:pl-8">
-            <div className="w-12 h-12 rounded-full bg-[#132333]/5 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-              <Award size={24} className="text-[#CCAD8A]" />
-            </div>
-            <div className="text-center md:text-left">
-              <h4 className="font-bold text-[#132333] text-sm md:text-base">Česká výroba</h4>
-              <p className="text-xs text-gray-500">Kvalita na prvním místě</p>
+            <div>
+              <h4 className="font-extrabold text-[#132333] text-sm md:text-[15px]">Doprava zdarma</h4>
+              <p className="text-[13px] text-gray-500 mt-0.5">Od 5 000 Kč</p>
             </div>
           </div>
-          <div className="flex-1 flex flex-col md:flex-row items-center gap-4 justify-center group pt-8 md:pt-0 lg:pl-8">
-            <div className="w-12 h-12 rounded-full bg-[#132333]/5 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-              <Headphones size={24} className="text-[#CCAD8A]" />
+
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-[#CCAD8A]/10 flex items-center justify-center shrink-0">
+              <Award size={22} className="text-[#132333]" strokeWidth={2} />
             </div>
-            <div className="text-center md:text-left">
-              <h4 className="font-bold text-[#132333] text-sm md:text-base">Odborná podpora</h4>
-              <p className="text-xs text-gray-500">Vždy poradíme s výběrem</p>
-            </div>
-          </div>
-          <div className="flex-1 flex flex-col md:flex-row items-center gap-4 justify-center group pt-8 md:pt-0 lg:pl-8">
-            <div className="w-12 h-12 rounded-full bg-[#132333]/5 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-              <ShieldCheck size={24} className="text-[#CCAD8A]" />
-            </div>
-            <div className="text-center md:text-left">
-              <h4 className="font-bold text-[#132333] text-sm md:text-base">Bezpečná platba</h4>
-              <p className="text-xs text-gray-500">Spolehlivý nákup online</p>
+            <div>
+              <h4 className="font-extrabold text-[#132333] text-sm md:text-[15px]">Certifikovaný dodavatel</h4>
+              <p className="text-[13px] text-gray-500 mt-0.5">Oficiální partner</p>
             </div>
           </div>
+
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-[#CCAD8A]/10 flex items-center justify-center shrink-0">
+              <Headphones size={22} className="text-[#132333]" strokeWidth={2} />
+            </div>
+            <div>
+              <h4 className="font-extrabold text-[#132333] text-sm md:text-[15px]">Odborná podpora</h4>
+              <p className="text-[13px] text-gray-500 mt-0.5">Vždy k dispozici</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-[#CCAD8A]/10 flex items-center justify-center shrink-0">
+              <ShieldCheck size={22} className="text-[#132333]" strokeWidth={2} />
+            </div>
+            <div>
+              <h4 className="font-extrabold text-[#132333] text-sm md:text-[15px]">Kvalitní materiály</h4>
+              <p className="text-[13px] text-gray-500 mt-0.5">Které dlouho vydrží</p>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
