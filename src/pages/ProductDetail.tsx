@@ -487,6 +487,26 @@ export default function ProductDetail({ productId }: { productId: string }) {
       activeMaxH = 1800;
       activeMaxArea = 3.24;
     }
+  } else if (prof === "plise_lagarta") {
+    const model = selectedParameters['model'] || 'PM1';
+    const lagartaLimits: Record<string, { minW: number, maxW: number, minH: number, maxH: number }> = {
+      'PM1': { minW: 160, maxW: 1500, minH: 300, maxH: 2500 },
+      'PM2': { minW: 200, maxW: 1000, minH: 300, maxH: 2500 },
+      'PM3': { minW: 200, maxW: 1500, minH: 300, maxH: 2500 },
+      'PM3M': { minW: 200, maxW: 1500, minH: 300, maxH: 2500 },
+      'PM5': { minW: 200, maxW: 1500, minH: 300, maxH: 2500 },
+      'PM4': { minW: 200, maxW: 1500, minH: 300, maxH: 2200 },
+      'PP1': { minW: 160, maxW: 2300, minH: 300, maxH: 2600 },
+      'PP2': { minW: 160, maxW: 2300, minH: 300, maxH: 2600 },
+      'PS3': { minW: 200, maxW: 1500, minH: 300, maxH: 1500 },
+    };
+    const lim = lagartaLimits[model];
+    if (lim) {
+      activeMinW = lim.minW;
+      activeMaxW = lim.maxW;
+      activeMinH = lim.minH;
+      activeMaxH = lim.maxH;
+    }
   }
 
   const productTitleBlock = (
