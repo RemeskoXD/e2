@@ -2328,10 +2328,23 @@ async function startServer() {
           { 
             name: "Cenová skupina 4 (Zebra, Grass, Parquet)", surcharge_percent: 0, matrix: m.g4, 
             colors: [
-              { name: "Zebra (Pruhovaná)", hex: "#555555" },
-              { name: "Grass (Svěží zelená)", hex: "#8fbc8f" },
-              { name: "Grass (Přírodní písková)", hex: "#d2b48c" },
-              { name: "Parquet Brown", hex: "#855e42" }
+              // Zebra
+              { name: "Zebra 6100", hex: "#e5e4e2" },
+              { name: "Zebra 6101", hex: "#e5e4e2" },
+              { name: "Zebra 6108", hex: "#e5e4e2" },
+              { name: "Zebra 6110", hex: "#e5e4e2" },
+              { name: "Zebra 6112", hex: "#e5e4e2" },
+              { name: "Zebra 6117", hex: "#e5e4e2" },
+              // Grass
+              { name: "Grass 6600", hex: "#98fb98" },
+              { name: "Grass 6601", hex: "#98fb98" },
+              { name: "Grass 6604", hex: "#98fb98" },
+              { name: "Grass 6605", hex: "#98fb98" },
+              { name: "Grass 6607", hex: "#98fb98" },
+              { name: "Grass 6608", hex: "#98fb98" },
+              // Parquet
+              { name: "Parquet 8940", hex: "#d2b48c" },
+              { name: "Parquet 8942", hex: "#d2b48c" }
             ] 
           },
           { 
