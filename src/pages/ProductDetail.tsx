@@ -22,6 +22,9 @@ type Product = {
   title: string;
   category: string;
   price: number;
+  badge?: string;
+  in_stock?: boolean;
+  is_action?: boolean;
   img: string;
   desc: string;
   gallery?: string[];
@@ -488,9 +491,26 @@ export default function ProductDetail({ productId }: { productId: string }) {
 
   const productTitleBlock = (
     <>
-      <span className="text-[#CCAD8A] text-xs font-bold uppercase tracking-widest bg-[#CCAD8A]/10 px-3 py-1 rounded-full inline-block mb-3">
-        {product.category}
-      </span>
+      <div className="flex flex-wrap items-center gap-2 mb-3">
+        <span className="text-[#CCAD8A] text-xs font-bold uppercase tracking-widest bg-[#CCAD8A]/10 px-3 py-1 rounded-full inline-block">
+          {product.category}
+        </span>
+        {product.is_action && (
+          <span className="text-white text-xs font-bold uppercase tracking-widest bg-[#E53935] px-3 py-1 rounded-full inline-block">
+            AKCE
+          </span>
+        )}
+        {product.in_stock && (
+          <span className="text-white text-xs font-bold uppercase tracking-widest bg-green-600 px-3 py-1 rounded-full inline-block">
+            Skladem
+          </span>
+        )}
+        {product.badge && product.badge !== 'Akce' && product.badge !== 'Skladem' && product.badge !== 'AKCE' && (
+          <span className="text-[#132333] text-xs font-bold uppercase tracking-widest bg-[#CCAD8A] px-3 py-1 rounded-full inline-block">
+            {product.badge}
+          </span>
+        )}
+      </div>
       <h1 className="text-3xl sm:text-4xl font-extrabold text-[#132333] leading-tight">{product.title}</h1>
       <p className="text-sm text-gray-500 mt-4 leading-relaxed font-light">
         {product.desc ? (product.desc.replace(/<[^>]+>/g, '').split(/(?<=\.)\s+/)[0] + (product.desc.replace(/<[^>]+>/g, '').split(/(?<=\.)\s+/)[0].endsWith('.') ? '' : '.')) : "Kvalitní a elegantní řešení pro vaše okna."} Užívejte si dokonalou regulaci světla a soukromí s produkty přesně na míru.

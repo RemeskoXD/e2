@@ -96,6 +96,8 @@ interface Product {
   extras?: { id: string; name: string; price: number }[];
   parameters?: ProductParameter[];
   fabric_groups_config?: FabricGroupConfigItem[] | null;
+  in_stock?: boolean;
+  is_action?: boolean;
 }
 
 /** Formulář v modalu — prázdné numerické pole jako '' před odesláním na API. */
@@ -202,6 +204,8 @@ export default function AdminProducts() {
     gallery: [],
     extras: [],
     parameters: [],
+    in_stock: false,
+    is_action: false,
   });
 
   const fetchData = async () => {
@@ -334,6 +338,8 @@ export default function AdminProducts() {
         fabric_group: product.fabric_group != null ? String(product.fabric_group) : '',
         validation_profile: product.validation_profile ?? '',
         hidden: Boolean(product.hidden),
+        in_stock: Boolean(product.in_stock),
+        is_action: Boolean(product.is_action),
         gallery: product.gallery || [],
         extras: product.extras || [],
         parameters: product.parameters || [],
@@ -359,6 +365,8 @@ export default function AdminProducts() {
         fabric_group: '',
         validation_profile: '',
         hidden: false,
+        in_stock: false,
+        is_action: false,
         gallery: [],
         extras: [],
         parameters: [],
@@ -902,13 +910,35 @@ export default function AdminProducts() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Štítek (např. Akce, Bestseller)</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Štítek (např. Bestseller)</label>
                   <input
                     type="text"
                     value={formData.badge || ''}
                     onChange={(e) => setFormData({ ...formData, badge: e.target.value })}
                     className="w-full px-4 py-2.5 bg-gray-50 text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#CCAD8A] transition-all"
                   />
+                  
+                  <div className="flex flex-wrap gap-6 mt-4">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.in_stock}
+                        onChange={(e) => setFormData({ ...formData, in_stock: e.target.checked })}
+                        className="w-5 h-5 text-green-600 rounded border-gray-300 focus:ring-green-500"
+                      />
+                      <span className="text-sm font-bold text-gray-700">Skladem</span>
+                    </label>
+
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.is_action}
+                        onChange={(e) => setFormData({ ...formData, is_action: e.target.checked })}
+                        className="w-5 h-5 text-red-600 rounded border-gray-300 focus:ring-red-500"
+                      />
+                      <span className="text-sm font-bold text-gray-700">AKCE</span>
+                    </label>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Obrázek (URL nebo nahrát)</label>

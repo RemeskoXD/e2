@@ -9,6 +9,8 @@ interface Product {
   price: number;
   oldPrice?: number;
   badge?: string;
+  in_stock?: boolean;
+  is_action?: boolean;
   img: string;
   desc: string;
   supplier_markup_percent?: number;
@@ -115,15 +117,27 @@ export default function FeaturedProducts() {
                 
                 {/* Product Image */}
                 <div className="h-64 bg-gray-50 flex items-center justify-center relative overflow-hidden">
-                  {/* Badge */}
-                  {product.badge && (
-                    <span className={`absolute top-4 left-4 text-[10px] font-bold px-3 py-1.5 rounded uppercase tracking-wider z-10 shadow-sm
-                      ${product.badge === 'Akce' || product.badge === 'Sleva' ? 'bg-[#E53935] text-white' : 
-                        product.badge === 'Bestseller' ? 'bg-[#CCAD8A] text-[#132333]' : 
-                        'bg-[#132333] text-white'}`}>
-                      {product.badge}
-                    </span>
-                  )}
+                  {/* Badges */}
+                  <div className="absolute top-4 left-4 z-10 flex flex-col items-start gap-2">
+                    {product.is_action && (
+                      <span className="text-[10px] font-bold px-3 py-1.5 rounded uppercase tracking-wider shadow-sm bg-[#E53935] text-white">
+                        AKCE
+                      </span>
+                    )}
+                    {product.in_stock && (
+                      <span className="text-[10px] font-bold px-3 py-1.5 rounded uppercase tracking-wider shadow-sm bg-green-600 text-white">
+                        Skladem
+                      </span>
+                    )}
+                    {product.badge && product.badge !== 'Akce' && product.badge !== 'Skladem' && product.badge !== 'AKCE' && (
+                      <span className={`text-[10px] font-bold px-3 py-1.5 rounded uppercase tracking-wider shadow-sm
+                        ${product.badge === 'Sleva' ? 'bg-[#E53935] text-white' : 
+                          product.badge === 'Bestseller' ? 'bg-[#CCAD8A] text-[#132333]' : 
+                          'bg-[#132333] text-white'}`}>
+                        {product.badge}
+                      </span>
+                    )}
+                  </div>
                   
                   <img 
                     src={product.img} 

@@ -192,6 +192,8 @@ async function ensureSchema(db: Pool) {
     `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS extras JSONB DEFAULT '[]'::jsonb`,
     `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS parameters JSONB DEFAULT '[]'::jsonb`,
           `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS dimension_constraints JSONB DEFAULT NULL`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS in_stock BOOLEAN DEFAULT FALSE`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS is_action BOOLEAN DEFAULT FALSE`,
           `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS slug VARCHAR(255) UNIQUE`,
   ]) {
     await db.query(sql).catch(() => {});
@@ -1443,6 +1445,8 @@ async function startServer() {
           `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS extras JSONB DEFAULT '[]'::jsonb`,
           `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS parameters JSONB DEFAULT '[]'::jsonb`,
           `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS dimension_constraints JSONB DEFAULT NULL`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS in_stock BOOLEAN DEFAULT FALSE`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS is_action BOOLEAN DEFAULT FALSE`,
           `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS slug VARCHAR(255) UNIQUE`,
         ]) {
           await db.query(sql).catch(() => {});
@@ -1493,10 +1497,13 @@ async function startServer() {
           counter++;
         }
 
+        const in_stock_ins = Boolean(bodyRec.in_stock);
+        const is_action_ins = Boolean(bodyRec.is_action);
+
         const result = await db.query(
           `INSERT INTO "Product" (title, category, price, "oldPrice", badge, img, "desc", supplier_markup_percent, commission_percent,
-            width_mm_min, width_mm_max, height_mm_min, height_mm_max, max_area_m2, price_mode, fabric_group, validation_profile, hidden, gallery, colors, fabric_groups_config, extras, parameters, slug)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24) RETURNING *`,
+            width_mm_min, width_mm_max, height_mm_min, height_mm_max, max_area_m2, price_mode, fabric_group, validation_profile, hidden, gallery, colors, fabric_groups_config, extras, parameters, slug, in_stock, is_action)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26) RETURNING *`,
           [
             title,
             category,
@@ -1522,6 +1529,8 @@ async function startServer() {
             extras_ins,
             parameters_ins,
             slug,
+            in_stock_ins,
+            is_action_ins,
           ]
         );
         res.json(mapProductRow(result.rows[0] as Record<string, unknown>));
@@ -1571,11 +1580,14 @@ async function startServer() {
           counter++;
         }
 
+        const in_stock_upd = Boolean(bodyRec.in_stock);
+        const is_action_upd = Boolean(bodyRec.is_action);
+
         const result = await db.query(
           `UPDATE "Product" SET title=$1, category=$2, price=$3, "oldPrice"=$4, badge=$5, img=$6, "desc"=$7,
             supplier_markup_percent=$9, commission_percent=$10,
             width_mm_min=$11, width_mm_max=$12, height_mm_min=$13, height_mm_max=$14, max_area_m2=$15,
-            price_mode=$16, fabric_group=$17, validation_profile=$18, hidden=$19, gallery=$20, colors=$21, fabric_groups_config=$22, extras=$23, parameters=$24, slug=$25
+            price_mode=$16, fabric_group=$17, validation_profile=$18, hidden=$19, gallery=$20, colors=$21, fabric_groups_config=$22, extras=$23, parameters=$24, slug=$25, in_stock=$26, is_action=$27
            WHERE id=$8 RETURNING *`,
           [
             title,
@@ -1603,6 +1615,8 @@ async function startServer() {
             extras_upd,
             parameters_upd,
             slug,
+            in_stock_upd,
+            is_action_upd,
           ]
         );
         if (!result.rows[0]) {
@@ -3057,6 +3071,8 @@ async function startServer() {
           `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS extras JSONB DEFAULT '[]'::jsonb`,
           `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS parameters JSONB DEFAULT '[]'::jsonb`,
           `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS dimension_constraints JSONB DEFAULT NULL`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS in_stock BOOLEAN DEFAULT FALSE`,
+          `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS is_action BOOLEAN DEFAULT FALSE`,
           `ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS slug VARCHAR(255) UNIQUE`
         ];
 

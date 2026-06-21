@@ -19,6 +19,8 @@ type Product = {
   price: number;
   oldPrice?: number;
   badge?: string;
+  in_stock?: boolean;
+  is_action?: boolean;
   img: string;
   desc: string;
   supplier_markup_percent?: number;
@@ -541,11 +543,23 @@ export default function CategoryShop() {
                   className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:border-[#CCAD8A]/40 transition-all overflow-hidden flex flex-col"
                 >
                   <div className="h-52 bg-gray-100 overflow-hidden relative">
-                    {p.badge && (
-                      <span className="absolute top-3 left-3 z-10 text-[10px] font-bold px-2 py-1 rounded uppercase bg-[#CCAD8A] text-[#132333]">
-                        {p.badge}
-                      </span>
-                    )}
+                    <div className="absolute top-3 left-3 z-10 flex flex-col items-start gap-1">
+                      {p.is_action && (
+                        <span className="text-[10px] font-bold px-2 py-1 rounded uppercase bg-[#E53935] text-white">
+                          AKCE
+                        </span>
+                      )}
+                      {p.in_stock && (
+                        <span className="text-[10px] font-bold px-2 py-1 rounded uppercase bg-green-600 text-white">
+                          Skladem
+                        </span>
+                      )}
+                      {p.badge && p.badge !== 'Akce' && p.badge !== 'Skladem' && p.badge !== 'AKCE' && (
+                        <span className="text-[10px] font-bold px-2 py-1 rounded uppercase bg-[#CCAD8A] text-[#132333]">
+                          {p.badge}
+                        </span>
+                      )}
+                    </div>
                     <img
                       src={p.img}
                       alt={p.title}
