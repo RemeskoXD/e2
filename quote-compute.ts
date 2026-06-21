@@ -468,10 +468,6 @@ export async function computeProductQuote(
       const tH = heights.find(h => h >= hR);
       if (tW && tH && cfg.matrix[`${tW}_${tH}`]) {
         lagartaPrice = cfg.matrix[`${tW}_${tH}`];
-        if (model === 'PM4' || model === 'PM5') {
-          lagartaPrice *= 2;
-          screenUnionCatalogNotes.push(`Modely PM4 a PM5 (Den a Noc) se počítají jako dvě samostatné žaluzie.`);
-        }
       } else {
         return { ok: false, status: 400, body: { error: `Pro rozměr ${wR}x${hR} neexistuje cena v ceníku vybrané skupiny látek.` } };
       }

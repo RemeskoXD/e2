@@ -14,6 +14,7 @@ import { sendOrderEmails } from "./order-email";
 import { registerMeasureGuideRoutes } from "./server-measure-guide";
 
 import { seedIsoline } from "./seed-isoline";
+import m from "./scratch-matrices.js";
 
 const ADMIN_TOKEN =
   process.env.ADMIN_TOKEN?.trim() ||
@@ -2202,7 +2203,7 @@ async function startServer() {
       try {
         const slug = 'plise-zaluzie-lagarta';
         
-        const m = require('./scratch-matrices.js');
+
 
         const fabricGroups = [
           { 
