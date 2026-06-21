@@ -2599,13 +2599,13 @@ async function startServer() {
             type: "color_array",
             options: [
               { label: "Bílá (RAL 9016)", value: "bila", hex: "#ffffff", qapiRecommended: true },
-              { label: "Krémová (RAL 1015)", value: "kremova", hex: "#e6d6b8" },
+              { label: "Krémová (RAL 1015)", value: "kremova", hex: "#e6d6b8", excludedModels: ["PS3"] },
               { label: "Hnědá (RAL 8017)", value: "hneda", hex: "#45322e" },
               { label: "Stříbrná (RAL 9006)", value: "stribrna", hex: "#a5a5a5" },
               { label: "Antracit (RAL 7016)", value: "antracit", hex: "#383e42" },
-              { label: "Černá (RAL 9005)", value: "cerna", hex: "#111111" },
-              { label: "Imitace dřeva (zlatý dub, ořech, winchester)", value: "imitace", priceVariant: 300, priceType: "fixed", hex: "#8b5a2b", hint: "Přesný odstín imitace s vámi doladíme po objednávce." },
-              { label: "Vlastní lakování RAL", value: "ral", hint: "Můžete si vybrat jakoukoliv barvu ze vzorníku RAL." }
+              { label: "Černá (RAL 9005)", value: "cerna", hex: "#111111", excludedModels: ["PS3"] },
+              { label: "Imitace dřeva (zlatý dub, ořech, winchester)", value: "imitace", priceVariant: 300, priceType: "fixed", hex: "#8b5a2b", hint: "Přesný odstín imitace s vámi doladíme po objednávce.", excludedModels: ["PS3"] },
+              { label: "Vlastní lakování RAL", value: "ral", hint: "Můžete si vybrat jakoukoliv barvu ze vzorníku RAL.", excludedModels: ["PS3"] }
             ]
           },
           {

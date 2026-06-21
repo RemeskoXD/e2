@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { ShoppingCart, Ruler, Info, Check, AlertCircle, Star, Truck, PackageCheck } from 'lucide-react';
+import { ShoppingCart, Ruler, Info, Check, AlertCircle, Star, Truck, PackageCheck, Eye, X } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { formatCzk } from '../lib/money';
 import { sanitizeGuideHtml } from '../lib/measureGuide';
@@ -50,7 +50,7 @@ type Product = {
     id: string;
     name: string;
     type: 'select' | 'color_array';
-    options: { label: string; value: string; colorCode?: string; hex?: string; img?: string; priceVariant?: number; priceType?: 'fixed' | 'per_m2' | 'per_bm' | 'per_bm_height' }[];
+    options: { label: string; value: string; colorCode?: string; hex?: string; img?: string; priceVariant?: number; priceType?: 'fixed' | 'per_m2' | 'per_bm' | 'per_bm_height'; excludedModels?: string[] }[];
     condition?: {
       dependsOnParamId: string;
       allowedValues: string[];
@@ -110,6 +110,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [previewModalImg, setPreviewModalImg] = useState<string | null>(null);
   const [selectedExtras, setSelectedExtras] = useState<string[]>(() => {
     const ex = initialParams.get('extras');
     return ex ? ex.split(',') : [];
@@ -192,6 +193,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
     if (lamela && lamela !== '39') params.set('lamela', lamela);
     if (polyscreen) params.set('polyscreen', '1');
     if (bezLatky) params.set('bezLatky', '1');
+    if (ral) params.set('ral', '1');
     if (selectedExtras.length > 0) params.set('extras', selectedExtras.join(','));
     if (selectedFabricGroupConfigIndex !== null) params.set('fgc', selectedFabricGroupConfigIndex.toString());
     Object.entries(selectedParameters).forEach(([k, v]) => {
@@ -206,12 +208,11 @@ export default function ProductDetail({ productId }: { productId: string }) {
     if (newHash !== hash) {
       window.history.replaceState(null, '', newHash);
     }
-  }, [widthMm, heightMm, color, fabric, pliseModel, lamela, polyscreen, bezLatky, selectedExtras, selectedFabricGroupConfigIndex, selectedParameters]);
+  }, [widthMm, heightMm, color, fabric, pliseModel, lamela, polyscreen, bezLatky, ral, selectedExtras, selectedFabricGroupConfigIndex, selectedParameters]);
 
   const visibleParameters = useMemo(() => {
     if (!product?.parameters) return [];
     return product.parameters.filter(param => {
-      // Support for array of conditions (all must match if provided)
       if (param.conditions && Array.isArray(param.conditions)) {
         return param.conditions.every((cond: any) => {
           const parentVal = selectedParameters[cond.dependsOnParamId] || (cond.dependsOnParamId === 'model' ? pliseModel : null);
@@ -219,9 +220,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
           return cond.allowedValues.includes(parentVal);
         });
       }
-      // Fallback for single condition
       if (param.condition) {
-        // Allow fallback to generic hardcoded 'pliseModel' if it's the 'model' parameter
         const parentVal = selectedParameters[param.condition.dependsOnParamId] || (param.condition.dependsOnParamId === 'model' ? pliseModel : null);
         if (!parentVal) return false;
         return param.condition.allowedValues.includes(parentVal);
@@ -367,58 +366,6 @@ export default function ProductDetail({ productId }: { productId: string }) {
     const w = Math.round(Number(widthMm));
     const h = Math.round(Number(heightMm));
     
-    // Validace pro Isoline PRIM
-    if (product.title.toLowerCase().includes('isoline prim')) {
-      const area = (w * h) / 1000000;
-      if (area > 1.5) {
-        const ovladani = selectedParameters['ovladani_brzda'];
-        if (ovladani !== 'prevodovka') {
-          toast.error('Pro žaluzie nad 1.5 m² musíte zvolit "Převodovku s brzdou" (kvůli zachování záruky).', { duration: 5000 });
-          return;
-        }
-      }
-    }
-
-    // Validace pro Optima (běžná)
-    if (product.title === 'Textilní roletka Optima') {
-      if (w > 1950 && h > 1850) {
-        toast.error('Z důvodu výrobních rozměrů nelze vyrobit roletku, kde šířka i výška současně přesahují 1950 mm. U šířky > 1950 mm je výška limitována na 1850 mm.', { duration: 6000 });
-        return;
-      }
-    }
-    
-    // Společné ověření pro produkty Optima
-    if (product.title.toLowerCase().includes('optima')) {
-      
-      if (color && color.includes('12002') && h > 1100) {
-        toast.error('Látka Melisa BO 12002 má omezenou maximální výšku na 1100 mm.', { duration: 5000 });
-        return;
-      }
-
-      if (selectedFabricGroupConfigIndex !== null && product.fabric_groups_config && product.fabric_groups_config[selectedFabricGroupConfigIndex]) {
-        const groupConfig = product.fabric_groups_config[selectedFabricGroupConfigIndex];
-        let maxW = groupConfig.max_width_mm;
-        let maxH = groupConfig.max_height_mm;
-        
-        if (color) {
-          const selectedColorObj = groupConfig.colors.find(c => c.name === color);
-          if (selectedColorObj) {
-            if (selectedColorObj.max_width_mm) maxW = selectedColorObj.max_width_mm;
-            if (selectedColorObj.max_height_mm) maxH = selectedColorObj.max_height_mm;
-          }
-        }
-        
-        if (maxW && w > maxW) {
-           toast.error(`Vybraná látka se v této šířce nedá vyrobit (maximum je ${maxW} mm).`, { duration: 5000 });
-           return;
-        }
-        if (maxH && h > maxH) {
-           toast.error(`Vybraná látka se v této výšce nedá vyrobit (maximum je ${maxH} mm).`, { duration: 5000 });
-           return;
-        }
-      }
-    }
-
     addLine({
       productId: product.id,
       title: product.title,
@@ -628,15 +575,11 @@ export default function ProductDetail({ productId }: { productId: string }) {
         </a>
 
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start relative">
-          {/* Left Column: Images & Info (Sticky) */}
           <div className="w-full lg:w-[55%] space-y-8 lg:sticky lg:top-24">
-            
-            {/* Mobile Title (visible only on mobile) */}
             <div className="block lg:hidden mb-2">
               {productTitleBlock}
             </div>
 
-            {/* Images */}
             <div className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100">
             <div 
               className="rounded-2xl overflow-hidden border border-gray-100 bg-white shadow-sm aspect-[4/3] mb-4 relative group cursor-zoom-in"
@@ -672,42 +615,24 @@ export default function ProductDetail({ productId }: { productId: string }) {
             )}
           </div>
 
-
-          {/* Desktop Info (visible only on desktop) */}
           <div className="hidden lg:block mt-8">
             {productInfoBlock}
           </div>
         </div>
 
-        {/* Right Column: Calculator Widget */}
         <div className="w-full lg:w-[45%]">
             <div className="bg-white border border-gray-100 rounded-[2rem] p-6 lg:p-10 shadow-xl shadow-gray-200/40 relative overflow-hidden">
-              {/* Decorative background element */}
               <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#132333] via-[#CCAD8A] to-[#132333]"></div>
             
-          {/* Desktop Title (visible only on desktop) */}
           <div className="hidden lg:block mb-8">
             {productTitleBlock}
           </div>
 
             <div className="space-y-6">
-              {/* Dimensions */}
               <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100">
                 <h3 className="text-base font-bold text-gray-900 mb-1 flex items-center gap-3">
                   <span className="w-8 h-8 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center text-sm text-[#CCAD8A]">1</span>
                   Zadejte rozměry
-                  {measureImg && (
-                    <button 
-                      onClick={() => {
-                        setLightboxImages(allImages);
-                        setLightboxIndex(allImages.indexOf(measureImg));
-                      }}
-                      className="ml-auto flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors shadow-sm"
-                      title="Jak zaměřit"
-                    >
-                      ?
-                    </button>
-                  )}
                 </h3>
                 <p className="text-[11px] text-gray-500 mb-4">Zadejte přesné výrobní rozměry v milimetrech.</p>
                 <div className="grid grid-cols-2 gap-4">
@@ -758,22 +683,8 @@ export default function ProductDetail({ productId }: { productId: string }) {
                     {activeMaxH && <p className={`text-[10px] absolute bottom-2 right-3 transition-colors duration-200 ${Number(heightMm) > activeMaxH ? 'text-red-500 font-bold' : 'text-gray-400'}`}>min: {activeMinH}, max: {activeMaxH}</p>}
                   </div>
                 </div>
-                {widthMm && heightMm && (
-                  <div className="mt-3 text-sm text-gray-600 bg-gray-100 rounded-xl px-4 py-2 border border-gray-200">
-                    <strong>Plocha:</strong> {((Number(widthMm) * Number(heightMm)) / 1000000).toFixed(2)} m²
-                    {product?.title?.toLowerCase().includes('isoline') && ((Number(widthMm) * Number(heightMm)) / 1000000) < 0.5 && (
-                      <span className="text-[#CCAD8A] ml-2 font-medium">(účtováno 0.5 m²)</span>
-                    )}
-                    {activeMaxArea && ((Number(widthMm) * Number(heightMm)) / 1000000) > activeMaxArea && (
-                      <div className="text-red-500 font-bold mt-1 text-xs">
-                        Tato velikost překračuje maximální povolenou plochu pro tento profil ({activeMaxArea.toFixed(2)} m²). Přejděte na menší rozměr, jinak produkt nepůjde objednat!
-                      </div>
-                    )}
-                  </div>
-                )}
               </div>
 
-              {/* Color Palette or Fabric Groups */}
               {product?.fabric_groups_config && product.fabric_groups_config.length > 0 ? (
                 <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100">
                   <h3 className="text-base font-bold text-gray-900 mb-5 flex items-center gap-3">
@@ -781,7 +692,6 @@ export default function ProductDetail({ productId }: { productId: string }) {
                     {product.extras?.find((e: any) => e.key === 'colorSectionTitle')?.value || 'Vyberte látku'}
                   </h3>
                   
-                  {/* Select group */}
                   <div className="mb-4">
                     <label className="block text-xs font-semibold text-gray-600 mb-2">1. Skupina látek</label>
                     <div className="flex flex-wrap gap-2">
@@ -790,7 +700,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                           key={idx}
                           onClick={() => {
                             setSelectedFabricGroupConfigIndex(idx);
-                            setColor(''); // let user pick new color from group
+                            setColor('');
                           }}
                           className={`px-4 py-2 text-sm font-medium rounded-xl border-2 transition-all duration-200 outline-none ${
                             selectedFabricGroupConfigIndex === idx
@@ -815,72 +725,68 @@ export default function ProductDetail({ productId }: { productId: string }) {
                     </div>
                   </div>
                   
-                  {/* Show color palette for selected group */}
                   {selectedFabricGroupConfigIndex !== null && product.fabric_groups_config[selectedFabricGroupConfigIndex] && (
                     <div className="animate-in fade-in slide-in-from-top-2 duration-300">
                       <label className="block text-xs font-semibold text-gray-600 mb-3">2. Látka ze skupiny</label>
-                      {product.fabric_groups_config[selectedFabricGroupConfigIndex].colors.length > 0 ? (
-                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
-                          {product.fabric_groups_config[selectedFabricGroupConfigIndex].colors.map((cNameOrObj: any) => {
-                            const cName = typeof cNameOrObj === 'string' ? cNameOrObj : cNameOrObj.name;
-                            const cImg = typeof cNameOrObj === 'string' ? undefined : cNameOrObj.img;
-                            const cHex = typeof cNameOrObj === 'string' ? undefined : cNameOrObj.hex;
-                            return (
-                                <button
-                                  key={cName}
-                                  onClick={() => {
-                                    setColor(cName);
-                                  }}
-                                  className={`relative group overflow-hidden border-2 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#CCAD8A] ${
-                                  color === cName ? 'border-[#CCAD8A] shadow-md scale-105' : 'border-gray-200 hover:border-[#132333]'
-                                } ${cImg || cHex ? 'w-full aspect-square rounded-xl flex items-center justify-center bg-gray-50' : 'w-full px-2 py-3 text-sm font-medium rounded-xl text-gray-700 bg-white'}`}
-                                title={cName}
-                              >
-                                {cImg ? (
-                                  <>
-                                    <img src={cImg} alt={cName} className="w-full h-full object-cover" />
-                                    <div className="absolute inset-x-0 bottom-0 bg-black/60 pt-2 pb-1.5 px-1 flex items-end">
-                                      <span className="text-white text-[10px] sm:text-[11px] leading-tight font-medium w-full text-center drop-shadow-sm">{cName}</span>
+                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+                        {product.fabric_groups_config[selectedFabricGroupConfigIndex].colors.map((cNameOrObj: any) => {
+                          const cName = typeof cNameOrObj === 'string' ? cNameOrObj : cNameOrObj.name;
+                          const cImg = typeof cNameOrObj === 'string' ? undefined : cNameOrObj.img;
+                          const cHex = typeof cNameOrObj === 'string' ? undefined : cNameOrObj.hex;
+                          return (
+                              <button
+                                key={cName}
+                                onClick={() => setColor(cName)}
+                                className={`relative group overflow-hidden border-2 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#CCAD8A] ${
+                                color === cName ? 'border-[#CCAD8A] shadow-md scale-105' : 'border-gray-200 hover:border-[#132333]'
+                              } ${cImg || cHex ? 'w-full aspect-square rounded-xl flex items-center justify-center bg-gray-50' : 'w-full px-2 py-3 text-sm font-medium rounded-xl text-gray-700 bg-white'}`}
+                              title={cName}
+                            >
+                              {cImg ? (
+                                <>
+                                  <img src={cImg} alt={cName} className="w-full h-full object-cover" />
+                                  <div className="absolute inset-x-0 bottom-0 bg-black/60 pt-2 pb-1.5 px-1 flex items-end">
+                                    <span className="text-white text-[10px] sm:text-[11px] leading-tight font-medium w-full text-center drop-shadow-sm">{cName}</span>
+                                  </div>
+                                  {color === cName && (
+                                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center pb-4">
+                                      <Check className="text-white drop-shadow-md shadow-black" size={24} strokeWidth={3} />
                                     </div>
-                                    {color === cName && (
-                                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center pb-4">
-                                        <Check className="text-white drop-shadow-md shadow-black" size={24} strokeWidth={3} />
-                                      </div>
-                                    )}
-                                  </>
-                                ) : cHex ? (
-                                  <>
-                                    <div className="w-full h-full" style={{ backgroundColor: cHex }}></div>
-                                    <div className="absolute inset-x-0 bottom-0 bg-black/60 pt-2 pb-1.5 px-1 flex items-end">
-                                      <span className="text-white text-[10px] sm:text-[11px] leading-tight font-medium w-full text-center drop-shadow-sm">{cName}</span>
+                                  )}
+                                  <div 
+                                    className="absolute top-1 right-1 p-1.5 bg-white/90 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white z-10"
+                                    onClick={(e) => { e.stopPropagation(); setPreviewModalImg(cImg!); }}
+                                  >
+                                    <Eye className="w-4 h-4 text-gray-700" />
+                                  </div>
+                                </>
+                              ) : cHex ? (
+                                <>
+                                  <div className="w-full h-full" style={{ backgroundColor: cHex }}></div>
+                                  <div className="absolute inset-x-0 bottom-0 bg-black/60 pt-2 pb-1.5 px-1 flex items-end">
+                                    <span className="text-white text-[10px] sm:text-[11px] leading-tight font-medium w-full text-center drop-shadow-sm">{cName}</span>
+                                  </div>
+                                  {color === cName && (
+                                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center pb-4">
+                                      <Check className="text-white drop-shadow-md shadow-black" size={24} strokeWidth={3} />
                                     </div>
-                                    {color === cName && (
-                                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center pb-4">
-                                        <Check className="text-white drop-shadow-md shadow-black" size={24} strokeWidth={3} />
-                                      </div>
-                                    )}
-                                  </>
-                                ) : (
-                                  <span>{cName}</span>
-                                )}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-gray-500 italic">Pro tuto skupinu nejsou nahrány žádné obrázky látek.</p>
-                      )}
+                                  )}
+                                </>
+                              ) : (
+                                <span>{cName}</span>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
                   )}
-                  <p className="text-xs text-gray-400 mt-2">
-                    {color ? `Vybrána látka: ${color}` : 'Vyberte látku kliknutím na vzorník.'}
-                  </p>
                 </div>
               ) : product?.colors && product.colors.length > 0 ? (
                 <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100">
                   <h3 className="text-base font-bold text-gray-900 mb-5 flex items-center gap-3">
                     <span className="w-8 h-8 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center text-sm text-[#CCAD8A]">2</span>
-                    {product.extras?.find((e: any) => e.key === 'colorSectionTitle')?.value || 'Vyberte barvu profilu/látky'}
+                    {product.extras?.find((e: any) => e.key === 'colorSectionTitle')?.value || 'Vyberte barvu'}
                   </h3>
                   <div className="flex flex-wrap gap-3">
                     {product.colors.map((c: any) => {
@@ -890,9 +796,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                       return (
                         <button
                           key={cName}
-                          onClick={() => {
-                            setColor(cName);
-                          }}
+                          onClick={() => setColor(cName)}
                           className={`relative group overflow-hidden border-2 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#CCAD8A] ${
                             color === cName ? 'border-[#CCAD8A] shadow-md scale-105' : 'border-gray-200 hover:border-[#132333]'
                           } ${cImg || cHex ? 'w-20 h-16 rounded-xl' : 'px-4 py-2 text-sm font-medium rounded-xl text-gray-700 bg-white'}`}
@@ -909,6 +813,12 @@ export default function ProductDetail({ productId }: { productId: string }) {
                                   <Check className="text-white drop-shadow-md shadow-black" size={20} strokeWidth={3} />
                                 </div>
                               )}
+                              <div 
+                                className="absolute top-1 right-1 p-1.5 bg-white/90 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white z-10"
+                                onClick={(e) => { e.stopPropagation(); setPreviewModalImg(cImg!); }}
+                              >
+                                <Eye className="w-4 h-4 text-gray-700" />
+                              </div>
                             </>
                           ) : cHex ? (
                             <>
@@ -929,213 +839,9 @@ export default function ProductDetail({ productId }: { productId: string }) {
                       );
                     })}
                   </div>
-                  <p className="text-xs text-gray-400 mt-2">
-                    {color ? `Vybrána barva: ${color}` : 'Vyberte barvu kliknutím na vzorník.'}
-                  </p>
                 </div>
               ) : null}
 
-              {/* Specific Options */}
-              {(prof === 'textile_zaluzie' || prof === 'screen_roleta_union_l') && (
-                <div>
-                  <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs text-gray-500">3</span>
-                    Specifikace látky
-                  </h3>
-                  {fabricGroups?.length > 0 ? (
-                    <div className="space-y-4">
-                      {fabricGroups.map((group) => (
-                        <div key={group.id} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-                          <h4 className="font-semibold text-gray-900 mb-2">
-                            {group.name} 
-                            <span className="text-sm text-gray-500 ml-2 font-normal">(+{Number(group.surcharge)} Kč/m²)</span>
-                          </h4>
-                          <div className="flex flex-wrap gap-3">
-                            {group.colors?.map((c: any) => {
-                              const isSelected = selectedFabricColorId === c.id;
-                              return (
-                                <button
-                                  key={c.id}
-                                  onClick={() => {
-                                    setFabric(c.name);
-                                    setSelectedFabricColorId(c.id);
-                                    setSelectedFabricGroupId(group.id);
-                                  }}
-                                  title={c.name}
-                                  className={`relative w-10 h-10 rounded-full border-2 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#CCAD8A] overflow-hidden ${
-                                    isSelected ? 'scale-110 border-[#CCAD8A] shadow-md' : 'border-gray-200 hover:scale-105'
-                                  }`}
-                                  style={{ backgroundColor: c.img ? 'transparent' : c.hex }}
-                                >
-                                  {c.img && (
-                                    <img src={c.img} alt={c.name} className="absolute inset-0 w-full h-full object-cover" />
-                                  )}
-                                  {isSelected && (
-                                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/20 rounded-full text-white">
-                                      <Check size={16} />
-                                    </div>
-                                  )}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      ))}
-                      <div className="text-sm text-gray-500">
-                        Nebo zadejte název / kód látky ručně:
-                      </div>
-                      <div className="relative">
-                        <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider absolute top-2 left-3 z-10">
-                          Název / kód látky
-                        </label>
-                        <input
-                          type="text"
-                          value={fabric}
-                          onChange={(e) => {
-                             setFabric(e.target.value);
-                             setSelectedFabricColorId(null);
-                             setSelectedFabricGroupId(null);
-                          }}
-                          className="w-full border border-gray-200 rounded-xl px-3 pt-6 pb-2 focus:ring-2 focus:ring-[#CCAD8A] focus:border-[#CCAD8A] outline-none transition-all font-medium"
-                          placeholder="(volitelné)"
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="relative">
-                      <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider absolute top-2 left-3 z-10">
-                        Název / kód látky
-                      </label>
-                      <input
-                        type="text"
-                        value={fabric}
-                        onChange={(e) => setFabric(e.target.value)}
-                        className="w-full border border-gray-200 rounded-xl px-3 pt-6 pb-2 focus:ring-2 focus:ring-[#CCAD8A] focus:border-[#CCAD8A] outline-none transition-all font-medium"
-                        placeholder="(volitelné)"
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {prof === 'plise' && (
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs text-gray-500">3</span>
-                      Model plisé
-                    </h3>
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-                      {['PM1', 'PM2', 'PM3', 'PS3'].map((m) => (
-                        <button
-                          key={m}
-                          onClick={() => {
-                            setPliseModel(m);
-                            setQuote(null);
-                          }}
-                          className={`flex-1 py-2 px-3 text-sm font-bold rounded-xl border transition-all ${
-                            pliseModel === m
-                              ? 'bg-[#132333] text-white border-[#132333] shadow-md'
-                              : 'bg-white text-gray-600 border-gray-200 hover:border-[#132333] hover:text-[#132333]'
-                          }`}
-                        >
-                          {m}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {prof === 'venkovni_roleta_radix' && (
-                <div>
-                   <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs text-gray-500">3</span>
-                    Lamela
-                  </h3>
-                  <div className="relative">
-                    <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider absolute top-2 left-3 z-10">
-                      Zadejte lamelu
-                    </label>
-                    <input
-                      type="text"
-                      value={lamela}
-                      onChange={(e) => setLamela(e.target.value)}
-                      className="w-full border border-gray-200 rounded-xl px-3 pt-6 pb-2 focus:ring-2 focus:ring-[#CCAD8A] focus:border-[#CCAD8A] outline-none transition-all font-medium"
-                      placeholder="39 nebo 40"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {prof === 'screen_roleta_union_l' && (
-                <div className="bg-gray-50 p-4 rounded-xl space-y-3 border border-gray-100/80">
-                  <label className="flex items-center justify-between cursor-pointer group">
-                    <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">Polyscreen látka</span>
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs text-gray-500">+40 %</span>
-                      <input
-                        type="checkbox"
-                        checked={polyscreen}
-                        onChange={(e) => setPolyscreen(e.target.checked)}
-                        className="w-5 h-5 rounded border-gray-300 text-[#CCAD8A] focus:ring-[#CCAD8A]"
-                      />
-                    </div>
-                  </label>
-                  <label className="flex items-center justify-between cursor-pointer group pt-3 border-t border-gray-200/50">
-                    <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">Dodat bez látky</span>
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs text-red-500 font-medium">−25 %</span>
-                      <input
-                        type="checkbox"
-                        checked={bezLatky}
-                        onChange={(e) => setBezLatky(e.target.checked)}
-                        className="w-5 h-5 rounded border-gray-300 text-[#CCAD8A] focus:ring-[#CCAD8A]"
-                      />
-                    </div>
-                  </label>
-                  <label className="flex items-center justify-between cursor-pointer group pt-3 border-t border-gray-200/50">
-                    <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">Spodní profil v RAL</span>
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs text-gray-500">+10 %</span>
-                      <input type="checkbox" checked={ral} onChange={(e) => setRal(e.target.checked)} className="w-5 h-5 rounded border-gray-300 text-[#CCAD8A] focus:ring-[#CCAD8A]" />
-                    </div>
-                  </label>
-                </div>
-              )}
-
-              {/* Extras (Příplatkové položky) */}
-              {product?.extras && product.extras.length > 0 && (
-                <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100">
-                  <h3 className="text-base font-bold text-gray-900 mb-5 flex items-center gap-3">
-                    <span className="w-8 h-8 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center text-sm text-[#CCAD8A]">+</span>
-                    Příplatkové položky
-                  </h3>
-                  {product.extras.map(extra => (
-                    <label key={extra.id} className="flex items-center justify-between cursor-pointer group pt-2 first:pt-0 border-t first:border-0 border-gray-200/50">
-                      <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">{extra.name}</span>
-                      <div className="flex items-center gap-3">
-                        <span className="text-xs font-medium text-gray-500">+{extra.price} Kč</span>
-                        <input
-                          type="checkbox"
-                          checked={selectedExtras.includes(extra.id)}
-                          onChange={(e) => {
-                            setQuote(null);
-                            if (e.target.checked) {
-                              setSelectedExtras(prev => [...prev, extra.id]);
-                            } else {
-                              setSelectedExtras(prev => prev.filter(id => id !== extra.id));
-                            }
-                          }}
-                          className="w-5 h-5 rounded border-gray-300 text-[#CCAD8A] focus:ring-[#CCAD8A]"
-                        />
-                      </div>
-                    </label>
-                  ))}
-                </div>
-              )}
-
-              {/* Vlastní Parametry */}
               {visibleParameters.length > 0 && (
                 <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 space-y-6">
                   {visibleParameters.map(param => (
@@ -1144,9 +850,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                         <span className="w-1.5 h-1.5 rounded-full bg-[#CCAD8A]"></span>
                         {param.name}
                       </h3>
-                      {param.hint && (
-                        <p className="text-xs text-gray-500 mb-3 leading-relaxed">{param.hint}</p>
-                      )}
+                      {param.hint && <p className="text-xs text-gray-500 mb-3">{param.hint}</p>}
                       
                       {param.type === 'select' ? (
                         <div className="relative">
@@ -1155,30 +859,23 @@ export default function ProductDetail({ productId }: { productId: string }) {
                             onChange={(val) => {
                               setSelectedParameters(prev => ({ ...prev, [param.id]: val }));
                               setQuote(null);
-                              const opt = param.options.find(o => o.value === val);
-                              if (opt?.img) setMainImg(opt.img);
                             }}
-                            options={param.options.filter(opt => !opt.hidden).map(opt => {
-                              const unit = opt.priceType === 'per_m2' ? ' Kč/m²' : opt.priceType === 'per_bm' ? ' Kč/bm šířky' : opt.priceType === 'per_bm_height' ? ' Kč/bm výšky' : ' Kč';
-                              return {
-                                value: opt.value,
-                                label: (
-                                  <span className="flex items-center">
-                                    {opt.label}
-                                    {opt.qapiRecommended && <span className="text-yellow-500 text-xs ml-1.5 font-bold">⭐ Doporučujeme</span>}
-                                    {opt.priceVariant ? <span className="text-gray-400 ml-1.5">(+{opt.priceVariant}{unit})</span> : ''}
-                                  </span>
-                                )
-                              };
-                            })}
+                            options={param.options.filter(opt => !opt.hidden && (!opt.excludedModels || !opt.excludedModels.includes(selectedParameters['model'] || ''))).map(opt => ({
+                              value: opt.value,
+                              label: (
+                                <span className="flex items-center">
+                                  {opt.label}
+                                  {opt.qapiRecommended && <span className="text-yellow-500 text-xs ml-1.5 font-bold">⭐</span>}
+                                </span>
+                              )
+                            }))}
                           />
                         </div>
                       ) : param.type === 'color_array' ? (
                         <div className="flex flex-wrap gap-4 items-start">
-                          {param.options.filter(opt => !opt.hidden).map(opt => {
+                          {param.options.filter(opt => !opt.hidden && (!opt.excludedModels || !opt.excludedModels.includes(selectedParameters['model'] || ''))).map(opt => {
                             const isSelected = selectedParameters[param.id] === opt.value;
                             const bgColor = opt.hex || opt.colorCode;
-                            const titleText = `${opt.label} ${opt.priceVariant ? `(+${opt.priceVariant}${opt.priceType === 'per_m2' ? ' Kč/m²' : opt.priceType === 'per_bm' ? ' Kč/bm šířky' : opt.priceType === 'per_bm_height' ? ' Kč/bm výšky' : ' Kč'})` : ''}`;
 
                             if (opt.img) {
                               return (
@@ -1187,10 +884,8 @@ export default function ProductDetail({ productId }: { productId: string }) {
                                   onClick={() => {
                                     setSelectedParameters(prev => ({ ...prev, [param.id]: opt.value }));
                                     setQuote(null);
-                                    if (opt.img) setMainImg(opt.img);
                                   }}
-                                  title={titleText}
-                                  className={`relative group overflow-hidden border-2 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#CCAD8A] ${
+                                  className={`relative group overflow-hidden border-2 transition-all duration-200 ${
                                     isSelected ? 'border-[#CCAD8A] shadow-md scale-105' : 'border-gray-200 hover:border-[#132333]'
                                   } w-28 h-28 rounded-xl`}
                                 >
@@ -1198,37 +893,13 @@ export default function ProductDetail({ productId }: { productId: string }) {
                                   <div className="absolute inset-x-0 bottom-0 bg-black/60 pt-2 pb-1 px-1 min-h-[50%] flex items-end">
                                     <span className="text-white text-[10px] sm:text-xs leading-none font-medium truncate w-full text-center drop-shadow-sm">{opt.label}</span>
                                   </div>
-                                  {isSelected && (
-                                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center pb-3">
-                                      <Check className="text-white drop-shadow-md shadow-black" size={24} strokeWidth={3} />
-                                    </div>
-                                  )}
-                                </button>
-                              );
-                            } else if (bgColor) {
-                              return (
-                                <div key={opt.value} className="flex flex-col items-center gap-1.5 w-[72px]">
-                                  <button
-                                    onClick={() => {
-                                      setSelectedParameters(prev => ({ ...prev, [param.id]: opt.value }));
-                                      setQuote(null);
-                                    }}
-                                    title={titleText}
-                                    className={`relative group overflow-hidden border-2 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#CCAD8A] ${
-                                      isSelected ? 'border-[#CCAD8A] shadow-md scale-110' : 'border-gray-200 hover:border-gray-400'
-                                    } w-[72px] h-[48px] rounded-lg`}
-                                    style={{ backgroundColor: bgColor }}
+                                  <div 
+                                    className="absolute top-1 right-1 p-1.5 bg-white/90 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white z-10"
+                                    onClick={(e) => { e.stopPropagation(); setPreviewModalImg(opt.img!); }}
                                   >
-                                    {isSelected && (
-                                      <div className="absolute inset-0 bg-black/10 flex items-center justify-center">
-                                        <Check className="text-white drop-shadow-md shadow-black" size={24} strokeWidth={3} />
-                                      </div>
-                                    )}
-                                  </button>
-                                  <span className="text-[11px] leading-tight text-center font-medium text-gray-700 select-none break-words w-full">
-                                    {opt.label}
-                                  </span>
-                                </div>
+                                    <Eye className="w-4 h-4 text-gray-700" />
+                                  </div>
+                                </button>
                               );
                             } else {
                               return (
@@ -1553,6 +1224,17 @@ export default function ProductDetail({ productId }: { productId: string }) {
           }}
         />
       )}
+      {previewModalImg && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={() => setPreviewModalImg(null)}>
+          <div className="relative max-w-4xl max-h-[90vh] w-full flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+            <button onClick={() => setPreviewModalImg(null)} className="absolute -top-12 right-0 p-2 text-white hover:text-gray-300">
+              <X className="w-8 h-8" />
+            </button>
+            <img src={previewModalImg} alt="Preview" className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl bg-white p-4" />
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
