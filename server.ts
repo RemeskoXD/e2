@@ -2348,13 +2348,35 @@ async function startServer() {
             ] 
           },
           { 
-            name: "Cenová skupina 5 (Bamboo Pearl, Shine, Wave, Sparkle)", surcharge_percent: 0, matrix: m.g5, 
+            name: "Cenová skupina 5 (Bamboo Pearl, Shine, Wave, Binary, Living Blackout, Sparkle)", surcharge_percent: 0, matrix: m.g5, 
             colors: [
-              { name: "Pearl White", hex: "#eae0c8" },
-              { name: "Shine Silver", hex: "#c0c0c0" },
-              { name: "Wave Blue", hex: "#add8e6" },
-              { name: "Sparkle Gold", hex: "#d4af37" },
-              { name: "Sparkle Black", hex: "#222222" }
+              // Bamboo Pearl
+              { name: "Bamboo Pearl 1015", hex: "#f5f5f5" },
+              { name: "Bamboo Pearl 1025", hex: "#f5f5f5" },
+              { name: "Bamboo Pearl 1035", hex: "#f5f5f5" },
+              { name: "Bamboo Pearl 1045", hex: "#f5f5f5" },
+              { name: "Bamboo Pearl 1055", hex: "#f5f5f5" },
+              { name: "Bamboo Pearl 1065", hex: "#f5f5f5" },
+              { name: "Bamboo Pearl 1075", hex: "#f5f5f5" },
+              { name: "Bamboo Pearl 1085", hex: "#f5f5f5" },
+              // Shine
+              { name: "Shine 8550", hex: "#e6e6fa" },
+              { name: "Shine 8555", hex: "#e6e6fa" },
+              // Wave
+              { name: "Wave 9660", hex: "#b0e0e6" },
+              { name: "Wave 9661", hex: "#b0e0e6" },
+              // Binary
+              { name: "Binary 9600", hex: "#d3d3d3" },
+              { name: "Binary 9601", hex: "#d3d3d3" },
+              // Living Blackout
+              { name: "Living Blackout 201V", hex: "#808080" },
+              { name: "Living Blackout 202V", hex: "#808080" },
+              { name: "Living Blackout 203V", hex: "#808080" },
+              { name: "Living Blackout 204V", hex: "#808080" },
+              { name: "Living Blackout 205V", hex: "#808080" },
+              { name: "Living Blackout 206V", hex: "#808080" },
+              // Sparkle
+              { name: "Sparkle 1300", hex: "#ffebcd" }
             ] 
           }
         ];
