@@ -1236,6 +1236,23 @@ async function startServer() {
           } else {
             latkaHorni = pLatkaHorni;
           }
+          
+          // Rozdělení látky na Název a Barvu (např. "Sonia FR - 105 White")
+          let latkaHorniNazev = latkaHorni;
+          let latkaHorniBarva = '';
+          if (latkaHorni.includes(' - ')) {
+            const parts = latkaHorni.split(' - ');
+            latkaHorniNazev = parts[0];
+            latkaHorniBarva = parts.slice(1).join(' - ');
+          }
+
+          let latkaDolniNazev = latkaDolni;
+          let latkaDolniBarva = '';
+          if (latkaDolni.includes(' - ')) {
+            const parts = latkaDolni.split(' - ');
+            latkaDolniNazev = parts[0];
+            latkaDolniBarva = parts.slice(1).join(' - ');
+          }
 
           const strana = params.strana_ovladani || '';
           let stranaLetter = '';
@@ -1253,8 +1270,10 @@ async function startServer() {
           const m2 = ((w * h) / 1000000).toFixed(2);
           const addr = [order.delivery_street, order.delivery_city, order.delivery_zip].filter(Boolean).join(', ');
           const customerDetails = `${order.customer_name}, Tel: ${order.customer_phone || '-'}, E-mail: ${order.customer_email || '-'}, Adresa: ${addr || '-'}`;
-          let poznamka = `${customerDetails} | Plocha: ${m2} m²`;
-          if (params.poznamka) poznamka += ` | Poznámka zákazníka: ${params.poznamka}`;
+          
+          // Dáme m2 hned na začátek poznámky, aby to bylo jasně viditelné
+          let poznamka = `Plocha: ${m2} m2 | Zákazník: ${customerDetails}`;
+          if (params.poznamka) poznamka += ` | Pozn. zákazníka: ${params.poznamka}`;
 
           const writeCell = (colChar: string, val: any) => {
             if (val == null || val === '') return;
@@ -1268,8 +1287,10 @@ async function startServer() {
           writeCell('D', qty);
           writeCell('E', model);
           writeCell('F', barva_profilu);
-          writeCell('G', latkaHorni);
-          writeCell('I', latkaDolni);
+          writeCell('G', latkaHorniNazev);
+          writeCell('H', latkaHorniBarva);
+          writeCell('I', latkaDolniNazev);
+          writeCell('J', latkaDolniBarva);
           writeCell('K', ovladani);
           writeCell('L', montaz);
           writeCell('M', poznamka);
