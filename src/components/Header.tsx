@@ -105,8 +105,8 @@ export default function Header({
                           }}
                           className="flex items-center gap-4 p-3 hover:bg-gray-50 border-b border-gray-50 transition-colors"
                         >
-                          {p.images && p.images.length > 0 ? (
-                            <img src={p.images[0].url} alt={p.title} className="w-12 h-12 object-cover rounded bg-gray-100" />
+                          {p.cover_image ? (
+                            <img src={p.cover_image} alt={p.title} className="w-12 h-12 object-cover rounded bg-gray-100" />
                           ) : (
                             <div className="w-12 h-12 rounded bg-gray-100 flex items-center justify-center text-gray-400 text-xs">Bez foto</div>
                           )}

@@ -57,7 +57,7 @@ export default function Home() {
       <Benefits />
       
       {/* Featured Products brought up higher for immediate shopping */}
-      <div className="mt-8">
+      <div>
         <FeaturedProducts />
       </div>
 
