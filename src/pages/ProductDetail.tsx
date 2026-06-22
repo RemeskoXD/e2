@@ -876,6 +876,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                           {param.options.filter(opt => !opt.hidden && (!opt.excludedModels || !opt.excludedModels.includes(selectedParameters['model'] || ''))).map(opt => {
                             const isSelected = selectedParameters[param.id] === opt.value;
                             const bgColor = opt.hex || opt.colorCode;
+                            const titleText = `${opt.label} ${opt.priceVariant ? `(+${opt.priceVariant}${opt.priceType === 'per_m2' ? ' Kč/m²' : opt.priceType === 'per_bm' ? ' Kč/bm šířky' : opt.priceType === 'per_bm_height' ? ' Kč/bm výšky' : ' Kč'})` : ''}`;
 
                             if (opt.img) {
                               return (
