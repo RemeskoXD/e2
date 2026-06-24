@@ -9,6 +9,7 @@ import CategoryShop from './pages/CategoryShop';
 import ProductDetail from './pages/ProductDetail';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
+import OrderSuccessPage from './pages/OrderSuccessPage';
 import LegalTerms from './pages/LegalTerms';
 import LegalPrivacy from './pages/LegalPrivacy';
 import LegalCookies from './pages/LegalCookies';
@@ -61,6 +62,7 @@ function StorefrontRoutes({ currentPath }: { currentPath: string }) {
       {productId != null && <ProductDetail productId={productId} />}
       {currentPath === '#/kosik' && <CartPage />}
       {currentPath === '#/checkout' && <CheckoutPage />}
+      {currentPath.split('?')[0] === '#/objednavka-uspesna' && <OrderSuccessPage />}
       {currentPath === '#/obchodni-podminky' && <LegalTerms />}
       {currentPath === '#/ochrana-udaju' && <LegalPrivacy />}
       {currentPath === '#/cookies' && <LegalCookies />}

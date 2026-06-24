@@ -737,45 +737,46 @@ export default function ProductDetail({ productId }: { productId: string }) {
                               <button
                                 key={cName}
                                 onClick={() => setColor(cName)}
-                                className={`relative group overflow-hidden border-2 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#CCAD8A] ${
-                                color === cName ? 'border-[#CCAD8A] shadow-md scale-105' : 'border-gray-200 hover:border-[#132333]'
-                              } ${cImg || cHex ? 'w-full aspect-square rounded-xl flex items-center justify-center bg-gray-50' : 'w-full px-2 py-3 text-sm font-medium rounded-xl text-gray-700 bg-white'}`}
-                              title={cName}
-                            >
-                              {cImg ? (
-                                <>
-                                  <img src={cImg} alt={cName} className="w-full h-full object-cover" />
-                                  <div className="absolute inset-x-0 bottom-0 bg-black/60 pt-2 pb-1.5 px-1 flex items-end">
-                                    <span className="text-white text-[10px] sm:text-[11px] leading-tight font-medium w-full text-center drop-shadow-sm">{cName}</span>
-                                  </div>
-                                  {color === cName && (
-                                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center pb-4">
-                                      <Check className="text-white drop-shadow-md shadow-black" size={24} strokeWidth={3} />
-                                    </div>
+                                className={`group flex flex-col items-center gap-1.5 focus:outline-none focus:ring-0 ${!(cImg || cHex) ? 'w-full' : ''}`}
+                                title={cName}
+                              >
+                                <div className={`relative overflow-hidden transition-all duration-200 ease-out border-2 ${
+                                  color === cName ? 'border-[#CCAD8A] shadow-md scale-105' : 'border-gray-200 group-hover:border-[#132333]'
+                                } ${cImg || cHex ? 'w-16 h-16 rounded-full flex-shrink-0 bg-gray-50' : 'w-full px-2 py-3 text-sm font-medium rounded-xl text-gray-700 bg-white'}`}>
+                                  {cImg ? (
+                                    <>
+                                      <img src={cImg} alt={cName} className="w-full h-full object-cover" />
+                                      {color === cName && (
+                                        <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                                          <Check className="text-white drop-shadow-md shadow-black" size={24} strokeWidth={3} />
+                                        </div>
+                                      )}
+                                      <div 
+                                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-white/90 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white z-10"
+                                        onClick={(e) => { e.stopPropagation(); setPreviewModalImg(cImg!); }}
+                                      >
+                                        <Eye className="w-4 h-4 text-gray-700" />
+                                      </div>
+                                    </>
+                                  ) : cHex ? (
+                                    <>
+                                      <div className="w-full h-full" style={{ backgroundColor: cHex }}></div>
+                                      {color === cName && (
+                                        <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                                          <Check className="text-white drop-shadow-md shadow-black" size={24} strokeWidth={3} />
+                                        </div>
+                                      )}
+                                    </>
+                                  ) : (
+                                    <span>{cName}</span>
                                   )}
-                                  <div 
-                                    className="absolute top-1 right-1 p-1.5 bg-white/90 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white z-10"
-                                    onClick={(e) => { e.stopPropagation(); setPreviewModalImg(cImg!); }}
-                                  >
-                                    <Eye className="w-4 h-4 text-gray-700" />
-                                  </div>
-                                </>
-                              ) : cHex ? (
-                                <>
-                                  <div className="w-full h-full" style={{ backgroundColor: cHex }}></div>
-                                  <div className="absolute inset-x-0 bottom-0 bg-black/60 pt-2 pb-1.5 px-1 flex items-end">
-                                    <span className="text-white text-[10px] sm:text-[11px] leading-tight font-medium w-full text-center drop-shadow-sm">{cName}</span>
-                                  </div>
-                                  {color === cName && (
-                                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center pb-4">
-                                      <Check className="text-white drop-shadow-md shadow-black" size={24} strokeWidth={3} />
-                                    </div>
-                                  )}
-                                </>
-                              ) : (
-                                <span>{cName}</span>
-                              )}
-                            </button>
+                                </div>
+                                {(cImg || cHex) && (
+                                  <span className={`text-[11px] leading-tight text-center max-w-full break-words ${color === cName ? 'text-[#132333] font-bold' : 'text-gray-500'}`}>
+                                    {cName}
+                                  </span>
+                                )}
+                              </button>
                           );
                         })}
                       </div>
@@ -797,43 +798,44 @@ export default function ProductDetail({ productId }: { productId: string }) {
                         <button
                           key={cName}
                           onClick={() => setColor(cName)}
-                          className={`relative group overflow-hidden border-2 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#CCAD8A] ${
-                            color === cName ? 'border-[#CCAD8A] shadow-md scale-105' : 'border-gray-200 hover:border-[#132333]'
-                          } ${cImg || cHex ? 'w-20 h-16 rounded-xl' : 'px-4 py-2 text-sm font-medium rounded-xl text-gray-700 bg-white'}`}
+                          className={`group flex flex-col items-center gap-1.5 focus:outline-none focus:ring-0`}
                           title={cName}
                         >
-                          {cImg ? (
-                            <>
-                              <img src={cImg} alt={cName} className="w-full h-full object-cover" />
-                              <div className="absolute inset-x-0 bottom-0 bg-black/60 pt-2 pb-1 px-1 min-h-[50%] flex items-end">
-                                <span className="text-white text-[10px] sm:text-xs leading-none font-medium truncate w-full text-center drop-shadow-sm">{cName}</span>
-                              </div>
-                              {color === cName && (
-                                <div className="absolute inset-0 bg-black/20 flex items-center justify-center pb-3">
-                                  <Check className="text-white drop-shadow-md shadow-black" size={20} strokeWidth={3} />
+                          <div className={`relative overflow-hidden transition-all duration-200 ease-out border-2 ${
+                            color === cName ? 'border-[#CCAD8A] shadow-md scale-105' : 'border-gray-200 group-hover:border-[#132333]'
+                          } ${cImg || cHex ? 'w-16 h-16 rounded-full flex-shrink-0' : 'px-4 py-2 text-sm font-medium rounded-xl text-gray-700 bg-white'}`}>
+                            {cImg ? (
+                              <>
+                                <img src={cImg} alt={cName} className="w-full h-full object-cover" />
+                                {color === cName && (
+                                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                                    <Check className="text-white drop-shadow-md shadow-black" size={24} strokeWidth={3} />
+                                  </div>
+                                )}
+                                <div 
+                                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-white/90 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white z-10"
+                                  onClick={(e) => { e.stopPropagation(); setPreviewModalImg(cImg!); }}
+                                >
+                                  <Eye className="w-4 h-4 text-gray-700" />
                                 </div>
-                              )}
-                              <div 
-                                className="absolute top-1 right-1 p-1.5 bg-white/90 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white z-10"
-                                onClick={(e) => { e.stopPropagation(); setPreviewModalImg(cImg!); }}
-                              >
-                                <Eye className="w-4 h-4 text-gray-700" />
-                              </div>
-                            </>
-                          ) : cHex ? (
-                            <>
-                              <div className="w-full h-full" style={{ backgroundColor: cHex }}></div>
-                              <div className="absolute inset-x-0 bottom-0 bg-black/60 pt-2 pb-1 px-1 min-h-[50%] flex items-end">
-                                <span className="text-white text-[10px] sm:text-xs leading-none font-medium truncate w-full text-center drop-shadow-sm">{cName}</span>
-                              </div>
-                              {color === cName && (
-                                <div className="absolute inset-0 bg-black/20 flex items-center justify-center pb-3">
-                                  <Check className="text-white drop-shadow-md shadow-black" size={20} strokeWidth={3} />
-                                </div>
-                              )}
-                            </>
-                          ) : (
-                            cName
+                              </>
+                            ) : cHex ? (
+                              <>
+                                <div className="w-full h-full" style={{ backgroundColor: cHex }}></div>
+                                {color === cName && (
+                                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                                    <Check className="text-white drop-shadow-md shadow-black" size={24} strokeWidth={3} />
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              cName
+                            )}
+                          </div>
+                          {(cImg || cHex) && (
+                            <span className={`text-[11px] leading-tight text-center max-w-full break-words ${color === cName ? 'text-[#132333] font-bold' : 'text-gray-500'}`}>
+                              {cName}
+                            </span>
                           )}
                         </button>
                       );
@@ -1145,7 +1147,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                 <button
                   type="button"
                   onClick={handleAddToCart}
-                  className="flex-1 sm:flex-none px-8 py-3.5 bg-[#CCAD8A] text-[#132333] font-bold rounded-xl hover:bg-[#b5997a] hover:text-white transition-all shadow-md flex items-center justify-center gap-2 transform hover:-translate-y-0.5"
+                  className="flex-1 sm:flex-none px-8 py-3.5 bg-green-500 text-white font-bold rounded-xl hover:bg-green-600 active:bg-green-700 transition-all shadow-md flex items-center justify-center gap-2 transform hover:-translate-y-0.5"
                 >
                   <ShoppingCart size={20} />
                   Vložit do košíku

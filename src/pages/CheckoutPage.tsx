@@ -9,6 +9,7 @@ export default function CheckoutPage() {
   const [phone, setPhone] = useState('');
   const [note, setNote] = useState('');
   const [agreedTerms, setAgreedTerms] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'transfer'>('card');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [doneOrderNo, setDoneOrderNo] = useState<string | null>(null);
@@ -35,12 +36,17 @@ export default function CheckoutPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           customer: { name, email, phone, note },
+          paymentMethod,
           items,
         }),
       });
       const data = await res.json();
       if (!res.ok) {
         setError(typeof data?.error === 'string' ? data.error : 'Odeslání selhalo.');
+        return;
+      }
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
         return;
       }
       const no = data.order_no ?? data.order?.order_no;
@@ -134,6 +140,34 @@ export default function CheckoutPage() {
             rows={3}
             className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#CCAD8A] outline-none"
           />
+        </div>
+
+        <div className="pt-2">
+          <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Způsob platby *</label>
+          <div className="space-y-2">
+            <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:border-[#CCAD8A] transition-colors">
+              <input
+                type="radio"
+                name="paymentMethod"
+                value="card"
+                checked={paymentMethod === 'card'}
+                onChange={() => setPaymentMethod('card')}
+                className="text-[#132333] focus:ring-[#CCAD8A]"
+              />
+              <span className="text-sm font-medium text-gray-700">Platba kartou online (Stripe)</span>
+            </label>
+            <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:border-[#CCAD8A] transition-colors">
+              <input
+                type="radio"
+                name="paymentMethod"
+                value="transfer"
+                checked={paymentMethod === 'transfer'}
+                onChange={() => setPaymentMethod('transfer')}
+                className="text-[#132333] focus:ring-[#CCAD8A]"
+              />
+              <span className="text-sm font-medium text-gray-700">Platba převodem (zálohová faktura)</span>
+            </label>
+          </div>
         </div>
 
         <label className="flex items-start gap-3 cursor-pointer text-sm text-gray-700">

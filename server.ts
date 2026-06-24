@@ -13,6 +13,13 @@ import { mapProductRow, num, optIntCol, optStrCol, parseDimBody } from "./produc
 import { computeProductQuote } from "./quote-compute";
 import { sendOrderEmails } from "./order-email";
 import { registerMeasureGuideRoutes } from "./server-measure-guide";
+import Stripe from "stripe";
+
+const stripe = process.env.STRIPE_SECRET_KEY
+  ? new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: "2024-04-10",
+    })
+  : null;
 
 import { seedIsoline } from "./seed-isoline";
 import m from "./scratch-matrices.js";
@@ -165,6 +172,22 @@ async function ensureSchema(db: Pool) {
       registered TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `, "Customer");
+
+  await db.query(`ALTER TABLE "Order" ADD COLUMN IF NOT EXISTS payment_method VARCHAR(50)`).catch(() => {});
+  await db.query(`ALTER TABLE "Order" ADD COLUMN IF NOT EXISTS payment_status VARCHAR(50)`).catch(() => {});
+
+  await runSafe(`
+    CREATE TABLE IF NOT EXISTS "AuditLog" (
+      id SERIAL PRIMARY KEY,
+      entity_type VARCHAR(50) NOT NULL,
+      entity_id INTEGER NOT NULL,
+      action VARCHAR(100) NOT NULL,
+      old_value TEXT,
+      new_value TEXT,
+      timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `, "AuditLog");
+  await db.query(`CREATE INDEX IF NOT EXISTS idx_auditlog_entity ON "AuditLog"(entity_type, entity_id);`).catch(() => {});
 
   await db
     .query(
@@ -496,6 +519,101 @@ async function startServer() {
     legacyHeaders: false,
     message: { error: "Příliš mnoho požadavků. Zkuste to za chvíli." },
   });
+
+  if (stripe) {
+    app.post(
+      "/api/webhooks/stripe",
+      express.raw({ type: "application/json" }),
+      async (req, res) => {
+        const sig = req.headers["stripe-signature"];
+        const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+        if (!sig || !webhookSecret || !stripe) {
+          res.status(400).send("Chybí webhook konfigurace");
+          return;
+        }
+
+        let event;
+        try {
+          event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+        } catch (err: any) {
+          console.error("Webhook signature verification failed.", err.message);
+          res.status(400).send(`Webhook Error: ${err.message}`);
+          return;
+        }
+
+        if (event.type === "checkout.session.completed") {
+          const session = event.data.object as Stripe.Checkout.Session;
+          const orderId = session.metadata?.order_id;
+          const orderNo = session.metadata?.order_no;
+
+          if (orderId && orderNo) {
+            const db = initDb();
+            if (db) {
+              const client = await db.connect();
+              try {
+                await client.query("BEGIN");
+                
+                // Zjistit aktuální stav objednávky
+                const orderRes = await client.query('SELECT * FROM "Order" WHERE id = $1', [orderId]);
+                const order = orderRes.rows[0];
+
+                if (order && order.payment_status !== "Zaplaceno") {
+                  await client.query(
+                    'UPDATE "Order" SET payment_status = $1 WHERE id = $2',
+                    ["Zaplaceno", orderId]
+                  );
+
+                  // Načíst položky pro odeslání emailu a webhooku do výroby (QAPI)
+                  const itemsRes = await client.query('SELECT * FROM "OrderItem" WHERE order_id = $1', [orderId]);
+                  
+                  const webhookLines = itemsRes.rows.map((r) => ({
+                    product_id: r.product_id,
+                    title: r.product_title,
+                    width_mm: r.width_mm,
+                    height_mm: r.height_mm,
+                    quantity: r.quantity,
+                    line_total_czk: r.line_total_czk,
+                  }));
+
+                  void notifyOrderWebhook({
+                    event: "order.paid",
+                    order_no: orderNo,
+                    order_id: Number(orderId),
+                    customer_name: order.customer_name,
+                    email: order.customer_email || "",
+                    phone: order.customer_phone || null,
+                    total_amount_czk: order.total_amount,
+                    items_count: order.items_count,
+                    lines: webhookLines,
+                  });
+
+                  void sendOrderEmails({
+                    orderNo,
+                    customerName: order.customer_name,
+                    customerEmail: order.customer_email || "",
+                    totalCzk: order.total_amount,
+                    itemsCount: order.items_count,
+                    lines: webhookLines,
+                  });
+                }
+                
+                await client.query("COMMIT");
+                console.log(`[stripe] Objednávka ${orderNo} úspěšně zaplacena.`);
+              } catch (err) {
+                await client.query("ROLLBACK").catch(() => {});
+                console.error("[stripe] Chyba při zpracování zaplacené objednávky", err);
+              } finally {
+                client.release();
+              }
+            }
+          }
+        }
+
+        res.json({ received: true });
+      }
+    );
+  }
 
   app.use(express.json({ limit: "50mb" }));
 
@@ -850,6 +968,7 @@ async function startServer() {
       phone = clipStr(phone, 50);
       let note = customer.note != null ? String(customer.note).trim() : "";
       note = clipStr(note, 4000);
+      const paymentMethod = body.paymentMethod === 'transfer' ? 'transfer' : 'card';
       const items = body.items;
       if (!Array.isArray(items) || items.length === 0) {
         res.status(400).json({ error: "Košík je prázdný." });
@@ -962,8 +1081,8 @@ async function startServer() {
         const orderNo = `${prefix}${seqStr}`;
 
         const orderIns = await client.query(
-          `INSERT INTO "Order" (order_no, customer_name, total_amount, status, items_count, customer_email, customer_phone, customer_note)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+          `INSERT INTO "Order" (order_no, customer_name, total_amount, status, items_count, customer_email, customer_phone, customer_note, payment_method, payment_status)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
           [
             orderNo,
             name,
@@ -973,9 +1092,17 @@ async function startServer() {
             email || null,
             phone || null,
             note || null,
+            paymentMethod,
+            "Nezaplaceno"
           ]
         );
         const orderId = orderIns.rows[0].id as number;
+
+        await client.query(
+          `INSERT INTO "AuditLog" (entity_type, entity_id, action, old_value, new_value)
+           VALUES ($1, $2, $3, $4, $5)`,
+          ['order', orderId, 'vytvoření', '', 'Nová']
+        );
 
         for (const row of lineRows) {
           await client.query(
@@ -1018,34 +1145,66 @@ async function startServer() {
           quantity: r.quantity,
           line_total_czk: r.line_total_czk,
         }));
-        setImmediate(() => {
-          void notifyOrderWebhook({
-            event: "order.created",
-            order_no: orderNo,
-            order_id: orderId,
-            customer_name: name,
-            email,
-            phone: phone || null,
-            total_amount_czk: totalAmount,
-            items_count: itemsCount,
-            lines: webhookLines,
+        let checkoutUrl: string | null = null;
+        if (paymentMethod === "card" && stripe) {
+          try {
+            const host = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',')[0] : "http://localhost:5173";
+            const session = await stripe.checkout.sessions.create({
+              payment_method_types: ["card"],
+              line_items: lineRows.map((r) => ({
+                price_data: {
+                  currency: "czk",
+                  product_data: {
+                    name: r.product_title,
+                    description: `${r.width_mm}x${r.height_mm} mm`,
+                  },
+                  unit_amount: Math.round(r.unit_price_czk * 100),
+                },
+                quantity: r.quantity,
+              })),
+              mode: "payment",
+              success_url: `${host}/#/objednavka-uspesna?session_id={CHECKOUT_SESSION_ID}&order_no=${orderNo}`,
+              cancel_url: `${host}/#/kosik`,
+              client_reference_id: String(orderId),
+              metadata: {
+                order_id: String(orderId),
+                order_no: orderNo,
+              },
+            });
+            checkoutUrl = session.url;
+          } catch (err) {
+            console.error("Stripe session creation failed", err);
+          }
+        } else {
+          setImmediate(() => {
+            void notifyOrderWebhook({
+              event: "order.created",
+              order_no: orderNo,
+              order_id: orderId,
+              customer_name: name,
+              email,
+              phone: phone || null,
+              total_amount_czk: totalAmount,
+              items_count: itemsCount,
+              lines: webhookLines,
+            });
+            void sendOrderEmails({
+              orderNo,
+              customerName: name,
+              customerEmail: email,
+              totalCzk: totalAmount,
+              itemsCount,
+              lines: lineRows.map((r) => ({
+                title: r.product_title,
+                width_mm: r.width_mm,
+                height_mm: r.height_mm,
+                quantity: r.quantity,
+                line_total_czk: r.line_total_czk,
+              })),
+            });
           });
-          void sendOrderEmails({
-            orderNo,
-            customerName: name,
-            customerEmail: email,
-            totalCzk: totalAmount,
-            itemsCount,
-            lines: lineRows.map((r) => ({
-              title: r.product_title,
-              width_mm: r.width_mm,
-              height_mm: r.height_mm,
-              quantity: r.quantity,
-              line_total_czk: r.line_total_czk,
-            })),
-          });
-        });
-        res.status(201).json({ order: orderIns.rows[0], order_no: orderNo });
+        }
+        res.status(201).json({ order: orderIns.rows[0], order_no: orderNo, checkoutUrl });
       } catch (e: unknown) {
         await client.query("ROLLBACK").catch(() => {});
         const err = e as { status?: number; msg?: string };
@@ -1323,7 +1482,9 @@ async function startServer() {
 
   app.patch("/api/admin/orders/:id", requireAdmin, async (req, res) => {
     await withDb(res, async (db) => {
+      const client = await db.connect();
       try {
+        await client.query("BEGIN");
         const id = Number(req.params.id);
         const status =
           req.body?.status != null ? String(req.body.status).trim() : "";
@@ -1331,20 +1492,59 @@ async function startServer() {
           res.status(400).json({ error: "Neplatný požadavek" });
           return;
         }
-        const r = await db.query(
-          'UPDATE "Order" SET status = $1 WHERE id = $2 RETURNING *',
-          [status, id]
-        );
-        if (!r.rows[0]) {
+
+        const oldOrderRes = await client.query('SELECT status FROM "Order" WHERE id = $1', [id]);
+        if (!oldOrderRes.rows[0]) {
           res.status(404).json({ error: "Nenalezeno" });
           return;
         }
-        const items = await db.query(
+        const oldStatus = oldOrderRes.rows[0].status;
+
+        if (oldStatus !== status) {
+          await client.query(
+            `INSERT INTO "AuditLog" (entity_type, entity_id, action, old_value, new_value)
+             VALUES ($1, $2, $3, $4, $5)`,
+            ['order', id, 'status_change', oldStatus, status]
+          );
+        }
+
+        const r = await client.query(
+          'UPDATE "Order" SET status = $1 WHERE id = $2 RETURNING *',
+          [status, id]
+        );
+        
+        const items = await client.query(
           'SELECT * FROM "OrderItem" WHERE order_id = $1 ORDER BY id ASC',
           [id]
         );
+        
+        await client.query("COMMIT");
         res.json({ ...(r.rows[0] as Record<string, unknown>), items: items.rows });
-      } catch {
+      } catch (err) {
+        await client.query("ROLLBACK").catch(() => {});
+        console.error("Patch order error:", err);
+        res.status(500).json({ error: "Server error" });
+      } finally {
+        client.release();
+      }
+    });
+  });
+
+  app.get("/api/admin/orders/:id/audit", requireAdmin, async (req, res) => {
+    await withDb(res, async (db) => {
+      try {
+        const id = Number(req.params.id);
+        if (!Number.isFinite(id) || id < 1) {
+          res.status(400).json({ error: "Neplatný požadavek" });
+          return;
+        }
+        const result = await db.query(
+          'SELECT * FROM "AuditLog" WHERE entity_type = $1 AND entity_id = $2 ORDER BY timestamp DESC',
+          ['order', id]
+        );
+        res.json(result.rows);
+      } catch (err) {
+        console.error("Audit log fetch error:", err);
         res.status(500).json({ error: "Server error" });
       }
     });

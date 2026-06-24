@@ -604,7 +604,7 @@ export default function CategoryShop() {
                         >
                           <Eye size={20} />
                         </button>
-                        <span className="text-[#CCAD8A] font-bold flex items-center gap-1 text-sm group-hover:underline">
+                        <span className="bg-green-500 hover:bg-green-600 active:bg-green-700 text-white px-4 py-2 rounded-xl font-bold flex items-center gap-1 text-sm transition-colors shadow-sm">
                           Konfigurovat
                         </span>
                       </div>

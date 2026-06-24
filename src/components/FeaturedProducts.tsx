@@ -182,7 +182,7 @@ export default function FeaturedProducts() {
                     </div>
                     <a
                       href={`#/produkt/${product.id}`}
-                      className="w-full text-center bg-[#F6F8F9] text-[#132333] hover:bg-[#132333] hover:text-white font-bold py-3.5 rounded-xl transition-colors flex items-center justify-center"
+                      className="w-full text-center bg-green-500 hover:bg-green-600 active:bg-green-700 text-white font-bold py-3.5 rounded-xl transition-colors flex items-center justify-center shadow-sm"
                     >
                       Nakonfigurovat
                     </a>

@@ -1,6 +1,15 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, FileSpreadsheet } from 'lucide-react';
+import { ArrowLeft, FileSpreadsheet, History } from 'lucide-react';
 import { formatCzk } from '../../lib/money';
+import toast from 'react-hot-toast';
+
+type AuditLogRow = {
+  id: number;
+  action: string;
+  old_value: string;
+  new_value: string;
+  timestamp: string;
+};
 
 type OrderItemRow = {
   id: number;
@@ -36,6 +45,7 @@ export default function AdminOrderDetail({ orderId }: { orderId: number }) {
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState('');
   const [saving, setSaving] = useState(false);
+  const [auditLog, setAuditLog] = useState<AuditLogRow[]>([]);
 
   const token = () => localStorage.getItem('adminToken');
 
@@ -59,6 +69,14 @@ export default function AdminOrderDetail({ orderId }: { orderId: number }) {
       }
       setOrder(data as OrderDetail);
       setStatus(String(data.status ?? 'Nová'));
+
+      // Fetch audit log
+      const auditRes = await fetch(`/api/admin/orders/${orderId}/audit`, {
+        headers: { Authorization: `Bearer ${t}` },
+      });
+      if (auditRes.ok) {
+        setAuditLog(await auditRes.json());
+      }
     } catch {
       setOrder(null);
       setError('Spojení se serverem selhalo.');
@@ -86,13 +104,24 @@ export default function AdminOrderDetail({ orderId }: { orderId: number }) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(typeof data?.error === 'string' ? data.error : 'Uložení stavu selhalo.');
+        const msg = typeof data?.error === 'string' ? data.error : 'Uložení stavu selhalo.';
+        setError(msg);
+        toast.error(msg);
         return;
       }
       setOrder(data as OrderDetail);
       setError(null);
+      toast.success('Stav byl úspěšně uložen.');
+      // Refresh audit log to show the new entry
+      const auditRes = await fetch(`/api/admin/orders/${orderId}/audit`, {
+        headers: { Authorization: `Bearer ${t}` },
+      });
+      if (auditRes.ok) {
+        setAuditLog(await auditRes.json());
+      }
     } catch {
       setError('Spojení selhalo.');
+      toast.error('Spojení selhalo.');
     } finally {
       setSaving(false);
     }
@@ -245,6 +274,47 @@ export default function AdminOrderDetail({ orderId }: { orderId: number }) {
         </div>
         {items.length === 0 && (
           <p className="text-center text-gray-500 py-8 text-sm">Žádné řádky (starší objednávka).</p>
+        )}
+      </div>
+
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mt-8">
+        <h2 className="font-bold text-[#132333] p-6 border-b border-gray-100 flex items-center gap-2">
+          <History size={20} />
+          Historie změn (Audit Log)
+        </h2>
+        {auditLog.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="bg-gray-50 text-gray-500 border-b border-gray-100">
+                  <th className="py-3 px-4 font-semibold">Datum a čas</th>
+                  <th className="py-3 px-4 font-semibold">Akce</th>
+                  <th className="py-3 px-4 font-semibold">Původní hodnota</th>
+                  <th className="py-3 px-4 font-semibold">Nová hodnota</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {auditLog.map((log) => (
+                  <tr key={log.id}>
+                    <td className="py-3 px-4 text-gray-600">
+                      {new Date(log.timestamp).toLocaleString('cs-CZ')}
+                    </td>
+                    <td className="py-3 px-4 font-medium">
+                      {log.action === 'status_change' ? 'Změna stavu' : log.action}
+                    </td>
+                    <td className="py-3 px-4 text-gray-500">
+                      <span className="bg-gray-100 px-2 py-1 rounded">{log.old_value || '—'}</span>
+                    </td>
+                    <td className="py-3 px-4 font-bold text-[#132333]">
+                      <span className="bg-[#CCAD8A]/20 text-[#132333] px-2 py-1 rounded">{log.new_value}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="p-6 text-gray-500 text-sm">Zatím nebyly zaznamenány žádné změny v Audit logu.</p>
         )}
       </div>
     </div>

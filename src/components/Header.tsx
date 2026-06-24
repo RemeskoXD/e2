@@ -134,7 +134,7 @@ export default function Header({
           </button>
           <a
             href="#/kosik"
-            className="relative bg-[#CCAD8A] hover:bg-[#b5997a] text-[#132333] px-5 py-2.5 rounded-md font-bold flex items-center space-x-2 transition-colors shadow-sm"
+            className="relative bg-green-500 hover:bg-green-600 active:bg-green-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center space-x-2 transition-colors shadow-sm"
           >
             <ShoppingBag size={18} />
             <span className="hidden sm:inline">Košík</span>
@@ -189,6 +189,15 @@ export default function Header({
               className={`transition-colors hover:text-[#132333] ${isKontakt ? 'text-[#132333]' : ''}`}
             >
               Kontakt
+            </a>
+            <div className="flex-1"></div>
+            <a
+              href="https://qapi.cz/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-green-500 hover:bg-green-600 active:bg-green-700 text-white px-5 py-2 rounded-xl transition-colors shadow-sm flex items-center ml-auto"
+            >
+              CHCI SERVIS
             </a>
           </nav>
         </div>

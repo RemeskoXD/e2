@@ -71,7 +71,7 @@ export default function Hero() {
               {banner.buttonText && (
                 <a 
                   href={banner.link || '#'} 
-                  className="bg-[#CCAD8A] hover:bg-[#b5997a] text-[#132333] font-bold px-8 py-4 rounded-xl transition-all transform hover:-translate-y-0.5 shadow-lg flex items-center justify-center gap-2 text-lg"
+                  className="bg-green-500 hover:bg-green-600 active:bg-green-700 text-white font-bold px-8 py-4 rounded-xl transition-all transform hover:-translate-y-0.5 shadow-lg flex items-center justify-center gap-2 text-lg"
                 >
                   {banner.buttonText} <ArrowRight size={20} />
                 </a>
