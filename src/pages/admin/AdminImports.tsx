@@ -45,7 +45,7 @@ export default function AdminImports() {
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           <div className="border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow">
             <h3 className="font-bold text-lg text-gray-800 mb-2">Horizontální žaluzie</h3>
-            <p className="text-sm text-gray-600 mb-6">Sloučený produkt: Isoline, LOCO i PRIM (max. plocha 2.4 m²)</p>
+            <p className="text-sm text-gray-600 mb-6">Jeden dokonalý produkt pro Isoline i PRIM. Převodovky a LOCO trvale odstraněny (limit max. plocha 2.4 m² pro všechny).</p>
             <button
               type="button"
               disabled={loading}
