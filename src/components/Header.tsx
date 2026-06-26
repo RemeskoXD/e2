@@ -128,9 +128,12 @@ export default function Header({
 
         {/* Action Buttons */}
         <div className="flex items-center space-x-3 shrink-0">
-          <button className="hidden xl:flex text-[#132333] hover:text-[#CCAD8A] px-4 py-2.5 font-semibold items-center space-x-2 transition-colors">
-            <Phone size={18} />
-            <span>{phone}</span>
+          <button className="hidden xl:flex flex-col items-end justify-center text-[#132333] hover:text-[#CCAD8A] px-4 font-semibold transition-colors">
+            <span className="text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-0.5">Po - Pá od 9:00 do 16:00</span>
+            <div className="flex items-center space-x-2">
+              <Phone size={16} />
+              <span className="text-sm">{phone}</span>
+            </div>
           </button>
           <a
             href="#/kosik"
