@@ -145,28 +145,15 @@ export default function CheckoutPage() {
         <div className="pt-2">
           <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Způsob platby *</label>
           <div className="space-y-2">
-            <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:border-[#CCAD8A] transition-colors">
-              <input
-                type="radio"
-                name="paymentMethod"
-                value="card"
-                checked={paymentMethod === 'card'}
-                onChange={() => setPaymentMethod('card')}
-                className="text-[#132333] focus:ring-[#CCAD8A]"
-              />
-              <span className="text-sm font-medium text-gray-700">Platba kartou online (Stripe)</span>
-            </label>
-            <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:border-[#CCAD8A] transition-colors">
-              <input
-                type="radio"
-                name="paymentMethod"
-                value="transfer"
-                checked={paymentMethod === 'transfer'}
-                onChange={() => setPaymentMethod('transfer')}
-                className="text-[#132333] focus:ring-[#CCAD8A]"
-              />
-              <span className="text-sm font-medium text-gray-700">Platba převodem (zálohová faktura)</span>
-            </label>
+            <div className="flex items-center gap-3 p-4 border-2 border-green-500 bg-green-50 rounded-xl">
+              <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
+                <div className="w-2 h-2 rounded-full bg-white"></div>
+              </div>
+              <div>
+                <span className="block text-sm font-bold text-gray-900">Platba kartou online (Stripe)</span>
+                <span className="block text-xs text-gray-600 mt-0.5">Bezpečná platba přes platební bránu</span>
+              </div>
+            </div>
           </div>
         </div>
 

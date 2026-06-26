@@ -1148,7 +1148,7 @@ async function startServer() {
         let checkoutUrl: string | null = null;
         if (paymentMethod === "card" && stripe) {
           try {
-            const host = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',')[0] : "http://localhost:5173";
+            const host = req.headers.origin || (process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',')[0] : "http://localhost:5173");
             const session = await stripe.checkout.sessions.create({
               payment_method_types: ["card"],
               line_items: lineRows.map((r) => ({
@@ -1969,7 +1969,8 @@ async function startServer() {
           {
             id: "celostin",
             name: "Domykatelné provedení (Celostín)",
-            hint: "U domykatelné žaluzie je po dovření lamel minimalizován prostup světla. Otvory pro strunu jsou schované.",
+            hint: "U domykatelné žaluzie je po dovření lamel minimalizován prostup světla. Otvory pro strunu jsou schované excentricky v zadní části lamel.",
+            img: "/images/celostin.jpg",
             type: "select",
             options: [
               { label: "Ne (Standardní)", value: "ne" },
@@ -1979,6 +1980,7 @@ async function startServer() {
           {
             id: "barva_profilu_isoline",
             name: "Materiál a barva profilu (Isoline)",
+            hint: "Horní profil žaluzie, který se šroubuje do rámu okna. Můžete jej sladit s barvou vašeho okna.",
             type: "select",
             condition: {
               dependsOnParamId: "typ_profilu",
@@ -1992,9 +1994,11 @@ async function startServer() {
               { label: "Železný profil (Fe) v imitaci dřeva", value: "fe_drevo", priceVariant: 131, priceType: "per_bm" }
             ]
           },
+
           {
             id: "barva_profilu_prim",
             name: "Materiál a barva profilu (PRIM)",
+            hint: "Horní profil žaluzie, který se šroubuje do rámu okna. Můžete jej sladit s barvou vašeho okna.",
             type: "select",
             condition: {
               dependsOnParamId: "typ_profilu",
@@ -2006,21 +2010,10 @@ async function startServer() {
             ]
           },
           {
-            id: "ovladani_prim",
-            name: "Ovládání",
-            type: "select",
-            condition: {
-              dependsOnParamId: "typ_profilu",
-              allowedValues: ["prim"]
-            },
-            options: [
-              { label: "Standardní řetízek (bez brzdy)", value: "std", priceVariant: 0, priceType: "fixed" },
-              { label: "S brzdou (poměr 1:1)", value: "brzda", priceVariant: 34, priceType: "fixed" }
-            ]
-          },
-          {
             id: "podlozka",
             name: "Distanční podložka",
+            hint: "Používá se, pokud je zasklívací lišta vašeho okna příliš mělká (pod 16 mm). Vkládá se pod horní profil, aby žaluzie nenarážela do skla.",
+            img: "/images/podlozka.jpg",
             type: "select",
             options: [
               { label: "Bez podložky", value: "0", priceVariant: 0, priceType: "fixed" },
@@ -2033,6 +2026,8 @@ async function startServer() {
           {
             id: "bezpecnost",
             name: "Bezpečnostní prvek",
+            hint: "Speciální spojka řetízku, která se při větším zatažení rozpojí. Zabraňuje uškrcení a je povinná, pokud mají k oknu přístup malé děti.",
+            img: "/images/bezpecnost_zaluzie.jpg",
             type: "select",
             options: [
               { label: "Ne", value: "ne", priceVariant: 0, priceType: "fixed" },
@@ -2075,13 +2070,13 @@ async function startServer() {
             validation_profile = 'isoline_merged'
           RETURNING id
         `, [
-          "Horizontální žaluzie Isoline & PRIM",
-          "horizontalni-zaluzie-isoline-prim-merged",
+          "Horizontální žaluzie",
+          "horizontalni-zaluzie",
           category,
           263,
           "",
           "https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=600&auto=format&fit=crop",
-          `<h3>Základní ceníková sestava</h3><p>Tento produkt kombinuje dva nejoblíbenější typy horizontálních žaluzií - s rovným profilem (Isoline) i luxusním obloukovým (PRIM). Obě varianty jsou interiérové, ovládané řetízkem a s fixací silonovou strunou.</p><ul><li><strong>Isoline:</strong> Rovný profil 42,5 x 25,6 mm, max. plocha 2.4 m²</li><li><strong>Isoline PRIM:</strong> Obloukový profil 47,3 x 24 mm, max. plocha 2.4 m²</li></ul><br /><h3>Technické detaily a provedení</h3><p><strong>Domykatelné provedení (Celostín):</strong> Žaluzie, u které je po dovření lamel minimalizován prostup světla. Otvory pro textilní pásku a fixační strunu jsou umístěny excentricky (nelze použít s 16 mm lamelou).</p><p><strong>Vyměření:</strong> Výrobní šířka a výška je vždy rozměr mezi zasklívacími lištami. Při mělké zasklívací liště je nutné použít distanční podložky pod koncovky.</p><p><em>DŮLEŽITÉ UPOZORNĚNÍ: E-shop vás automaticky upozorní, pokud vaše rozměry přesáhnou standardní limity pro zvolený typ profilu.</em></p>`,
+          `<h3>Základní ceníková sestava</h3><p>Tento produkt kombinuje dva typy horizontálních žaluzií - s rovným profilem (Isoline) i luxusním obloukovým (PRIM). Obě varianty jsou interiérové, ovládané řetízkem a s fixací silonovou strunou.</p><ul><li><strong>Isoline:</strong> Rovný profil 42,5 x 25,6 mm, max. plocha 2.4 m²</li><li><strong>Isoline PRIM:</strong> Obloukový profil 47,3 x 24 mm, max. plocha 2.4 m²</li></ul><br /><h3>Technické detaily a provedení</h3><p><strong>Domykatelné provedení (Celostín):</strong> Žaluzie, u které je po dovření lamel minimalizován prostup světla. Otvory pro textilní pásku a fixační strunu jsou umístěny excentricky (nelze použít s 16 mm lamelou).</p><p><strong>Vyměření:</strong> Výrobní šířka a výška je vždy rozměr mezi zasklívacími lištami. Při mělké zasklívací liště je nutné použít distanční podložky pod koncovky.</p><p><em>DŮLEŽITÉ UPOZORNĚNÍ: E-shop vás automaticky upozorní, pokud vaše rozměry přesáhnou maximální povolenou plochu 2.4 m². Větší žaluzie z důvodu záruky nevyrábíme.</em></p>`,
           JSON.stringify(params)
         ]);
 

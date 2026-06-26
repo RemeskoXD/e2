@@ -44,27 +44,13 @@ export default function AdminImports() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           <div className="border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow">
-            <h3 className="font-bold text-lg text-gray-800 mb-2">Horizontální žaluzie ISOLINE</h3>
-            <p className="text-sm text-gray-600 mb-6">Základní provedení, max. plocha 2.4 m²</p>
+            <h3 className="font-bold text-lg text-gray-800 mb-2">Horizontální žaluzie</h3>
+            <p className="text-sm text-gray-600 mb-6">Sloučený produkt: Isoline, LOCO i PRIM (max. plocha 2.4 m²)</p>
             <button
               type="button"
               disabled={loading}
-              onClick={() => handleImport('/api/admin/import-isoline', 'ISOLINE')}
+              onClick={() => handleImport('/api/admin/import-isoline', 'Horizontální žaluzie')}
               className="w-full bg-[#132333] hover:bg-[#1f3a53] disabled:opacity-50 text-white font-bold px-4 py-2.5 rounded-lg transition-colors flex justify-center items-center gap-2"
-            >
-              <Terminal size={18} />
-              Spustit import
-            </button>
-          </div>
-
-          <div className="border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow">
-            <h3 className="font-bold text-lg text-gray-800 mb-2">Horizontální žaluzie ISOLINE PRIM</h3>
-            <p className="text-sm text-gray-600 mb-6">Včetně provedení s převodovkou, max. plocha 5.28 m²</p>
-            <button
-              type="button"
-              disabled={loading}
-              onClick={() => handleImport('/api/admin/import-isoline-prim', 'ISOLINE PRIM')}
-              className="w-full bg-[#CCAD8A] hover:bg-[#b5997a] disabled:opacity-50 text-[#132333] font-bold px-4 py-2.5 rounded-lg transition-colors flex justify-center items-center gap-2"
             >
               <Terminal size={18} />
               Spustit import

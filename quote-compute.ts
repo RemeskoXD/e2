@@ -555,13 +555,15 @@ export async function computeProductQuote(
     let minH = 300;
     let maxH = 2200;
 
+    const actualAreaM2 = (wR * hR) / 1000000;
+
     if (typProfilu === 'prim') {
       maxH = 2400;
       minW = 240;
-      const ovladani = p.ovladani_prim;
-      if (ovladani === 'brzda') {
-         minW = 330;
-      }
+    } else {
+      // isoline
+      minW = 200;
+      maxH = 2200;
     }
 
     if (wR < minW || wR > maxW) {
@@ -570,7 +572,6 @@ export async function computeProductQuote(
     if (hR < minH || hR > maxH) {
       return { ok: false, status: 400, body: { error: `Výška musí být v rozmezí ${minH} - ${maxH} mm.` } };
     }
-    const actualAreaM2 = (wR * hR) / 1000000;
     if (actualAreaM2 > maxArea) {
       return { ok: false, status: 400, body: { error: `Maximální povolená plocha pro toto provedení je ${maxArea} m² (zadáno ${actualAreaM2.toFixed(2)} m²).` } };
     }

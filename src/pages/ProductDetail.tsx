@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { ShoppingCart, Ruler, Info, Check, AlertCircle, Star, Truck, PackageCheck, Eye, X } from 'lucide-react';
+import { ShoppingCart, Ruler, Info, Check, AlertCircle, Star, Truck, PackageCheck, Eye, X, HelpCircle } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { formatCzk } from '../lib/money';
 import { sanitizeGuideHtml } from '../lib/measureGuide';
@@ -49,6 +49,8 @@ type Product = {
   parameters?: {
     id: string;
     name: string;
+    hint?: string;
+    img?: string;
     type: 'select' | 'color_array';
     options: { label: string; value: string; colorCode?: string; hex?: string; img?: string; priceVariant?: number; priceType?: 'fixed' | 'per_m2' | 'per_bm' | 'per_bm_height'; excludedModels?: string[] }[];
     condition?: {
@@ -111,6 +113,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [previewModalImg, setPreviewModalImg] = useState<string | null>(null);
+  const [openHints, setOpenHints] = useState<Record<string, boolean>>({});
   const [selectedExtras, setSelectedExtras] = useState<string[]>(() => {
     const ex = initialParams.get('extras');
     return ex ? ex.split(',') : [];
@@ -848,11 +851,35 @@ export default function ProductDetail({ productId }: { productId: string }) {
                 <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 space-y-6">
                   {visibleParameters.map(param => (
                     <div key={param.id} className="pt-4 first:pt-0 border-t first:border-0 border-gray-200/50">
-                      <h3 className={`text-sm font-bold text-gray-900 flex items-center gap-2 ${param.hint ? 'mb-1' : 'mb-3'}`}>
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#CCAD8A]"></span>
-                        {param.name}
-                      </h3>
-                      {param.hint && <p className="text-xs text-gray-500 mb-3">{param.hint}</p>}
+                      <div className={`flex items-center gap-2 ${param.hint && openHints[param.id] ? 'mb-1' : 'mb-3'}`}>
+                        <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#CCAD8A]"></span>
+                          {param.name}
+                        </h3>
+                        {param.img && (
+                          <button 
+                            onClick={() => setPreviewModalImg(param.img!)} 
+                            className="text-gray-400 hover:text-[#CCAD8A] transition-colors p-1" 
+                            title="Zobrazit obrázek"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        )}
+                        {param.hint && (
+                          <button 
+                            onClick={() => setOpenHints(prev => ({...prev, [param.id]: !prev[param.id]}))} 
+                            className={`transition-colors p-1 ${openHints[param.id] ? 'text-[#CCAD8A]' : 'text-gray-400 hover:text-[#CCAD8A]'}`}
+                            title="Zobrazit nápovědu"
+                          >
+                            <HelpCircle className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                      {param.hint && openHints[param.id] && (
+                        <div className="text-xs text-gray-600 bg-blue-50/50 p-3 rounded-xl border border-blue-100/50 mb-3 leading-relaxed shadow-sm">
+                          {param.hint}
+                        </div>
+                      )}
                       
                       {param.type === 'select' ? (
                         <div className="relative">
