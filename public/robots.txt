@@ -1,4 +1,2 @@
 User-agent: *
-Allow: /
-
-# Admin rozhraní je hash routa v SPA — není třeba zakazovat.
+Disallow: /
