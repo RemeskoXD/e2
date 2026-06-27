@@ -131,8 +131,8 @@ export default function Header({
           <button className="hidden xl:flex flex-col items-end justify-center text-[#132333] hover:text-[#CCAD8A] px-4 font-semibold transition-colors">
             <span className="text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-0.5">Po - Pá od 9:00 do 16:00</span>
             <div className="flex items-center space-x-2">
-              <Phone size={16} />
-              <span className="text-sm">{phone}</span>
+              <Phone size={18} />
+              <span className="text-base font-bold">{phone}</span>
             </div>
           </button>
           <a
