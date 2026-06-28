@@ -1782,7 +1782,7 @@ export default function AdminProducts() {
                                 if (!parentParam) return <p className="text-xs text-gray-400 italic">Nejprve vyberte nadřazený parametr.</p>;
                                 return (
                                   <div className="flex flex-wrap gap-2">
-                                    {parentParam.options.map(opt => (
+                                    {(parentParam.options || []).map(opt => (
                                       <label key={opt.value} className="flex items-center gap-1 text-[11px] bg-white border border-gray-200 px-2 py-1 rounded cursor-pointer hover:bg-gray-50">
                                         <input
                                           type="checkbox"
@@ -1875,9 +1875,9 @@ export default function AdminProducts() {
                           </button>
                         </div>
                         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(e) => handleDragEndOptions(pIdx, e)}>
-                          <SortableContext items={param.options.map(o => o.value)} strategy={verticalListSortingStrategy}>
+                          <SortableContext items={(param.options || []).map(o => o.value)} strategy={verticalListSortingStrategy}>
                             <div className="space-y-2">
-                              {param.options.map((opt, oIdx) => (
+                              {(param.options || []).map((opt, oIdx) => (
                                 <SortableOptionItem key={opt.value} id={opt.value}>
                                   <div className="flex-1">
                                     <input
