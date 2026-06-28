@@ -2142,8 +2142,8 @@ async function startServer() {
             img: "/images/celostin.jpg",
             type: "select",
             options: [
-              { label: "Ne", value: "ne" },
-              { label: "Ano", value: "ano" }
+              { label: "Ne", value: "ne", priceVariant: 0, priceType: "fixed" },
+              { label: "Ano", value: "ano", priceVariant: 33, priceType: "per_m2" }
             ]
           },
           {
@@ -2153,7 +2153,7 @@ async function startServer() {
             type: "select",
             options: [
               { label: "Ne (Základní sladění - komponenty v bílé barvě)", value: "ne", priceVariant: 0, priceType: "fixed" },
-              { label: "Ano (Celkové individuální sladění)", value: "ano", priceVariant: 0, priceType: "fixed" }
+              { label: "Ano (Celkové individuální sladění)", value: "ano", priceVariant: 33, priceType: "per_m2" }
             ]
           },
           {

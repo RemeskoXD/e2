@@ -130,7 +130,7 @@ export async function computeProductQuote(
     
     const actualAreaM2 = (wR * hR) / 1_000_000;
     // Speciální pravidlo pro Isoline a Sítě: minimální účtovaná plocha pro příplatky je 0.5 m2
-    const minArea05 = productTitle.toLowerCase().includes('isoline') || product.validation_profile === 'sit_hmyz' || product.validation_profile === 'dverni_sit';
+    const minArea05 = product.validation_profile === 'isoline' || product.validation_profile === 'sit_hmyz' || product.validation_profile === 'dverni_sit';
     const calcAreaM2 = minArea05 ? Math.max(0.5, actualAreaM2) : actualAreaM2;
     const calcWidthM = wR / 1000;
 
@@ -576,16 +576,7 @@ export async function computeProductQuote(
       return { ok: false, status: 400, body: { error: `Maximální povolená plocha pro toto provedení je ${maxArea} m² (zadáno ${actualAreaM2.toFixed(2)} m²).` } };
     }
 
-    if (celostin) {
-       let celostinSurchargeM2 = 33;
-       if (lamelaTyp === 'std_drevo') {
-         celostinSurchargeM2 = 98;
-       }
-       const calcAreaM2 = Math.max(0.5, actualAreaM2);
-       const calculatedCelostinPrice = celostinSurchargeM2 * calcAreaM2;
-       parametersSurcharge += Math.round(calculatedCelostinPrice);
-       screenUnionCatalogNotes.push(`+ Domykatelné provedení (Celostín): ${celostinSurchargeM2} Kč/m² × ${calcAreaM2.toFixed(2)} m² = ${Math.round(calculatedCelostinPrice)} Kč`);
-    }
+
   }
   // --- KONEC HORIZONTÁLNÍ ŽALUZIE ---
 
