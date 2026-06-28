@@ -1480,6 +1480,126 @@ async function startServer() {
     });
   });
 
+  app.get("/api/admin/orders/:id/export-horizontalni-zaluzie", requireAdmin, async (req, res) => {
+    await withDb(res, async (db) => {
+      try {
+        const id = Number(req.params.id);
+        if (!Number.isFinite(id) || id < 1) {
+          res.status(400).json({ error: "Neplatné ID" });
+          return;
+        }
+        const o = await db.query('SELECT * FROM "Order" WHERE id = $1', [id]);
+        if (!o.rows[0]) {
+          res.status(404).json({ error: "Nenalezeno" });
+          return;
+        }
+        const order = o.rows[0];
+        const items = await db.query(
+          'SELECT * FROM "OrderItem" WHERE order_id = $1 ORDER BY id ASC',
+          [id]
+        );
+
+        const horizontalItems = items.rows.filter((item: any) => 
+          (item.product_title || '').toLowerCase().includes('horizontální žaluzie')
+        );
+
+        if (horizontalItems.length === 0) {
+          res.status(404).json({ error: "Objednávka neobsahuje Horizontální žaluzie" });
+          return;
+        }
+
+        const templatePath = path.join(process.cwd(), 'public', 'formular', '01_formular_horizontalni_zaluzie_Isoline_Loco_Prim_Eco.xls');
+        if (!fs.existsSync(templatePath)) {
+           res.status(404).json({ error: "Šablona formuláře nebyla nalezena." });
+           return;
+        }
+
+        const workbook = XLSX.readFile(templatePath);
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+
+        const addr = [order.delivery_street, order.delivery_city, order.delivery_zip].filter(Boolean).join(', ');
+        
+        sheet['B1'] = { v: "Ropemi s.r.o., Varšavská 715/36, Vinohrady, 120 00 Praha 2", t: 's' };
+        sheet['B3'] = { v: addr, t: 's' };
+        sheet['B5'] = { v: "+420 774 060 193", t: 's' };
+        sheet['I3'] = { v: new Date(order.date).toLocaleDateString('cs-CZ'), t: 's' };
+        sheet['N3'] = { v: order.order_no, t: 's' };
+
+        let currentRow = 9; // data starts at row 10 (index 9)
+        horizontalItems.forEach((item: any, index: number) => {
+          const params = item.options?.selected_parameters || {};
+          const w = item.width_mm || 0;
+          const h = item.height_mm || 0;
+          const qty = item.quantity;
+          const typZaluzie = params.typ_profilu === 'prim' ? 'Isoline PRIM' : 'Isoline';
+          const materialProfilu = params.typ_profilu === 'prim' ? 'Fe' : 'Al';
+          const montazniPodpera = params.typ_profilu === 'prim' ? 'ANO' : 'NE';
+          
+          let barvaProfilu = '';
+          if (params.typ_profilu === 'prim') {
+            barvaProfilu = params.barva_profilu_prim || '';
+          } else {
+            barvaProfilu = params.barva_profilu_isoline || '';
+          }
+
+          let typLamely = '25x0.21';
+          let barvaLamely = params.lamela_typ || '';
+
+          const m2 = ((w * h) / 1000000).toFixed(2);
+          const customerDetails = `${order.customer_name}, Tel: ${order.customer_phone || '-'}, E-mail: ${order.customer_email || '-'}`;
+          
+          let poznamka = `Plocha: ${m2} m2 | Zákazník: ${customerDetails}`;
+          if (params.poznamka) poznamka += ` | Pozn. zákazníka: ${params.poznamka}`;
+
+          const writeCell = (colChar: string, val: any) => {
+            if (val == null || val === '') return;
+            const ref = `${colChar}${currentRow + 1}`;
+            sheet[ref] = { v: val, t: typeof val === 'number' ? 'n' : 's' };
+          };
+
+          writeCell('A', index + 1 + '.');
+          writeCell('C', w);
+          writeCell('D', h);
+          writeCell('E', qty);
+          writeCell('F', params.ovladani_strana || '');
+          writeCell('G', materialProfilu);
+          writeCell('H', params.doplnek_prim || '');
+          writeCell('I', typZaluzie);
+          writeCell('J', barvaProfilu);
+          writeCell('M', typLamely);
+          writeCell('N', barvaLamely);
+          writeCell('O', params.celostin === 'ano' ? 'ANO' : 'NE');
+          writeCell('P', params.delka_ovladani || '');
+          writeCell('Q', params.typ_okna || '');
+          writeCell('R', params.podlozka || '0');
+          writeCell('S', params.barva_sladeni === 'ano' ? 'ANO' : 'NE');
+          writeCell('T', params.bezpecnost === 'ano' ? 'ANO' : 'NE');
+          writeCell('U', montazniPodpera);
+          writeCell('V', poznamka);
+          
+          currentRow++;
+        });
+
+        const range = XLSX.utils.decode_range(sheet['!ref'] || 'A1:V50');
+        if (currentRow > range.e.r) {
+          range.e.r = currentRow;
+          sheet['!ref'] = XLSX.utils.encode_range(range);
+        }
+
+        const buf = XLSX.write(workbook, { type: 'buffer', bookType: 'xls' });
+
+        res.setHeader('Content-Disposition', `attachment; filename="Objednavka_Zaluzie_${order.order_no}.xls"`);
+        res.setHeader('Content-Type', 'application/vnd.ms-excel');
+        res.send(buf);
+
+      } catch (err) {
+        console.error('Horizontalni zaluzie export error:', err);
+        res.status(500).json({ error: "Server error při generování Excelu" });
+      }
+    });
+  });
+
   app.patch("/api/admin/orders/:id", requireAdmin, async (req, res) => {
     await withDb(res, async (db) => {
       const client = await db.connect();

@@ -200,6 +200,19 @@ export default function AdminOrderDetail({ orderId }: { orderId: number }) {
               Exportovat Lagarta Excel
             </button>
           )}
+          {items.some(it => (it.product_title || '').toLowerCase().includes('horizontální žaluzie')) && (
+            <button
+              type="button"
+              onClick={() => {
+                const t = token();
+                window.open(`/api/admin/orders/${order.id}/export-horizontalni-zaluzie?token=${t}`, '_blank');
+              }}
+              className="bg-white text-blue-700 border border-blue-200 font-bold px-4 py-2 rounded-lg hover:bg-blue-50 flex items-center gap-2"
+            >
+              <FileSpreadsheet size={18} />
+              Exportovat Horizontální Excel
+            </button>
+          )}
         </div>
       </div>
 
