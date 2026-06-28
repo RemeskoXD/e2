@@ -2526,13 +2526,23 @@ async function startServer() {
         
         const params = [
           {
-            id: "barva_profilu",
-            name: "Barva boxu a vodících lišt",
+            id: "barva_komponentu",
+            name: "Barva komponentů (box, lišty, řetízek)",
+            hint: "Sladění barvy profilu a řetízku s vaším oknem zajistí elegantní vzhled.",
+            type: "color_array",
+            options: [
+              { label: "Bílá", value: "bila", hex: "#ffffff", priceVariant: 0, priceType: "fixed", qapiRecommended: true },
+              { label: "Hnědá", value: "hneda", hex: "#45322e", priceVariant: 0, priceType: "fixed" },
+              { label: "Stříbrná", value: "stribrna", hex: "#a5a5a5", priceVariant: 0, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "ovladani_strana",
+            name: "Strana ovládání",
             type: "select",
             options: [
-              { label: "Bílá", value: "bila", priceVariant: 0, priceType: "fixed" },
-              { label: "Hnědá", value: "hneda", priceVariant: 0, priceType: "fixed" },
-              { label: "Stříbrná", value: "stribrna", priceVariant: 0, priceType: "fixed" }
+              { label: "Pravá", value: "P" },
+              { label: "Levá", value: "L" }
             ]
           },
           {
@@ -2540,6 +2550,7 @@ async function startServer() {
             name: "Délka řetízku",
             type: "select",
             options: [
+              { label: "Standardní", value: "standard", priceVariant: 0, priceType: "fixed" },
               { label: "30 cm", value: "30", priceVariant: 0, priceType: "fixed" },
               { label: "50 cm", value: "50", priceVariant: 0, priceType: "fixed" },
               { label: "75 cm", value: "75", priceVariant: 0, priceType: "fixed" },
@@ -2547,25 +2558,6 @@ async function startServer() {
               { label: "125 cm", value: "125", priceVariant: 0, priceType: "fixed" },
               { label: "150 cm", value: "150", priceVariant: 0, priceType: "fixed" },
               { label: "175 cm", value: "175", priceVariant: 0, priceType: "fixed" }
-            ]
-          },
-          {
-            id: "barva_retizku",
-            name: "Barva řetízku a závaží",
-            type: "select",
-            options: [
-              { label: "Bílá / transparentní", value: "bila", priceVariant: 0, priceType: "fixed" },
-              { label: "Hnědá / transparentní", value: "hneda", priceVariant: 0, priceType: "fixed" },
-              { label: "Šedá / transparentní", value: "seda", priceVariant: 0, priceType: "fixed" }
-            ]
-          },
-          {
-            id: "bezpecnost",
-            name: "Bezpečnostní prvek",
-            type: "select",
-            options: [
-              { label: "Ne", value: "ne", priceVariant: 0, priceType: "fixed" },
-              { label: "Ano", value: "ano", priceVariant: 12, priceType: "fixed" }
             ]
           }
         ];
@@ -2731,9 +2723,9 @@ async function startServer() {
 
         const optimaDenNocParams = [
           {
-            id: "barva_profilu",
-            name: "Barva boxu a vodících lišt",
-            hint: "Sladění barvy profilu s vaším oknem zajistí elegantní vzhled.",
+            id: "barva_komponentu",
+            name: "Barva komponentů (box, lišty, řetízek)",
+            hint: "Sladění barvy profilu a řetízku s vaším oknem zajistí elegantní vzhled.",
             type: "color_array",
             options: [
               { label: "Bílá", value: "bila", hex: "#ffffff", priceVariant: 0, priceType: "fixed", qapiRecommended: true },
@@ -2742,10 +2734,20 @@ async function startServer() {
             ]
           },
           {
+            id: "ovladani_strana",
+            name: "Strana ovládání",
+            type: "select",
+            options: [
+              { label: "Pravá", value: "P" },
+              { label: "Levá", value: "L" }
+            ]
+          },
+          {
             id: "delka_retizku",
             name: "Délka řetízku",
             type: "select",
             options: [
+              { label: "Standardní", value: "standard", priceVariant: 0, priceType: "fixed" },
               { label: "30 cm", value: "30", priceVariant: 0, priceType: "fixed" },
               { label: "50 cm", value: "50", priceVariant: 0, priceType: "fixed" },
               { label: "75 cm", value: "75", priceVariant: 0, priceType: "fixed" },
@@ -2753,26 +2755,6 @@ async function startServer() {
               { label: "125 cm", value: "125", priceVariant: 0, priceType: "fixed" },
               { label: "150 cm", value: "150", priceVariant: 0, priceType: "fixed" },
               { label: "175 cm", value: "175", priceVariant: 0, priceType: "fixed" }
-            ]
-          },
-          {
-            id: "barva_retizku",
-            name: "Barva řetízku a závaží",
-            hint: "Vyberte barvu ovládacího řetízku tak, aby ladila s profilem.",
-            type: "color_array",
-            options: [
-              { label: "Bílá / transparentní", value: "bila", hex: "#ffffff", priceVariant: 0, priceType: "fixed", qapiRecommended: true },
-              { label: "Hnědá / transparentní", value: "hneda", hex: "#45322e", priceVariant: 0, priceType: "fixed" },
-              { label: "Šedá / transparentní", value: "seda", hex: "#a9a9a9", priceVariant: 0, priceType: "fixed" }
-            ]
-          },
-          {
-            id: "bezpecnost",
-            name: "Bezpečnostní prvek",
-            type: "select",
-            options: [
-              { label: "Ne", value: "ne", priceVariant: 0, priceType: "fixed" },
-              { label: "Ano", value: "ano", priceVariant: 12, priceType: "fixed" }
             ]
           }
         ];
