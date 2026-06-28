@@ -2935,6 +2935,7 @@ async function startServer() {
           {
             id: "barva_komponentu",
             name: "Barva komponentů (držáky, závaží, řetízek)",
+            hint: "Barva držáků, závaží a řetízku. Doporučujeme sladit s barvou rámu okna nebo interiéru pro dokonalý vzhled.",
             type: "color_array",
             options: [
               { label: "Bílá", value: "bila", hex: "#ffffff", priceVariant: 0, priceType: "fixed", qapiRecommended: true },
@@ -2972,7 +2973,7 @@ async function startServer() {
           {
             id: "montazni_profil_typ",
             name: "Způsob dodání profilu",
-            hint: "Chcete roletku dodat již kompletně namontovanou na profilu?",
+            hint: "Samostatně: profil a roletka vám přijdou zvlášť. Kompletní: roletka je již složená a nacvaknutá na profilu, což vám výrazně urychlí finální montáž.",
             type: "select",
             condition: {
               dependentParamId: "montazni_profil",
@@ -2986,6 +2987,7 @@ async function startServer() {
           {
             id: "barva_profilu_montaz",
             name: "Barva montážního profilu",
+            hint: "Barva hliníkového montážního profilu. Ideální je vybrat stejnou barvu, jakou mají komponenty roletky (držáky).",
             type: "color_array",
             condition: {
               dependentParamId: "montazni_profil",
@@ -3020,6 +3022,7 @@ async function startServer() {
           {
             id: "bezpecnost",
             name: "Bezpečnostní prvek",
+            hint: "Bezpečnostní úchyt, který se připevní na stěnu či rám. Drží řetízek pevně napnutý, čímž zabraňuje volnému houpání a chrání děti před zamotáním (vyžadováno normou).",
             type: "select",
             options: [
               { label: "Ne", value: "ne", priceVariant: 0, priceType: "fixed" },
