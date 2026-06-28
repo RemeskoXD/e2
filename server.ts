@@ -2888,6 +2888,15 @@ async function startServer() {
               { label: "Stěna, křídlo okna", value: "stena_kridlo", priceVariant: 0, priceType: "fixed" },
               { label: "Strop", value: "strop", priceVariant: 0, priceType: "fixed" }
             ]
+          },
+          {
+            id: "bezpecnost",
+            name: "Bezpečnostní prvek",
+            type: "select",
+            options: [
+              { label: "Ne", value: "ne", priceVariant: 0, priceType: "fixed" },
+              { label: "Ano", value: "ano", priceVariant: 12, priceType: "fixed" }
+            ]
           }
         ];
 
