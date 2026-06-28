@@ -580,6 +580,15 @@ export async function computeProductQuote(
   }
   // --- KONEC HORIZONTÁLNÍ ŽALUZIE ---
 
+  // --- TEXTILNÍ ROLETA VOLNĚ VYSÍCÍ (JAZZ EXPERT) ---
+  if (matrixProfile === "jazz_expert") {
+    if (wR > 1950 && hR > 1950) {
+      return { ok: false, status: 400, body: { error: `Z důvodu výrobních rozměrů látek není možné vyrobit roletku, jejíž šířka i výška současně přesahují 1 950 mm.` } };
+    }
+    if (wR > 1950 && hR > 1850) {
+      return { ok: false, status: 400, body: { error: `Pokud šířka přesáhne 1 950 mm, je výška limitována na max 1 850 mm.` } };
+    }
+  }
 
   // --- SÍTĚ PROTI HMYZU ---
   if (matrixProfile === "sit_hmyz") {

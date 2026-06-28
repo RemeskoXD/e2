@@ -85,6 +85,20 @@ export default function AdminImports() {
             </button>
           </div>
 
+          <div className="border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow bg-blue-50">
+            <h3 className="font-bold text-lg text-gray-800 mb-2">Textilní roleta volně vysící (JAZZ EXPERT)</h3>
+            <p className="text-sm text-gray-600 mb-6">Jednoduchá roleta s komplexním účtováním montážního profilu.</p>
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => handleImport('/api/admin/import-jazz-expert', 'Textilní roleta volně vysící')}
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold px-4 py-2.5 rounded-lg transition-colors flex justify-center items-center gap-2"
+            >
+              <Terminal size={18} />
+              Spustit import
+            </button>
+          </div>
+
           <div className="border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow">
             <h3 className="font-bold text-lg text-gray-800 mb-2">Plisé žaluzie Lagarta</h3>
             <p className="text-sm text-gray-600 mb-6">Naprostý gigant. Pět cenových matic pro 5 skupin látek, složitá logika a limity pro každý model z 12 dostupných.</p>

@@ -2776,7 +2776,238 @@ async function startServer() {
   });
 
   
-  app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
+  
+  app.post("/api/admin/import-jazz-expert", requireAdmin, async (req, res) => {
+    await withDb(res, async (db) => {
+      try {
+        const rawMatrix = `
+500 404 428 453 478 504 529 554 579 604 629 654 679 704 728 753 778
+600 416 443 470 497 525 552 577 604 631 659 686 711 738 766 793 820
+700 426 455 484 514 542 572 600 630 659 688 716 746 774 805 833 862
+800 440 470 500 531 562 594 624 655 687 718 748 779 811 841 872 902
+900 449 481 515 549 582 615 648 681 714 747 780 813 845 879 914 946
+1000 463 497 531 566 602 636 672 707 742 777 812 845 883 918 951 987
+1100 473 509 547 584 621 659 694 732 770 807 842 882 918 955 991 1029
+1200 483 523 561 602 641 680 719 757 797 836 874 915 952 993 1032 1071
+1300 496 536 578 619 660 702 743 784 823 865 906 948 989 1030 1071 1112
+1400 507 550 594 636 680 722 766 809 852 895 940 981 1025 1068 1111 1154
+1500 518 562 608 654 699 744 790 835 879 924 971 1015 1061 1106 1151 1197
+1600 530 577 624 672 719 766 812 860 906 954 1002 1049 1096 1143 1191 1238
+1700 540 590 639 688 737 787 836 886 935 983 1033 1083 1131 1181 1230 1280
+1800 553 603 655 706 757 809 860 913 962 1013 1066 1115 1168 1219 1269 1321
+1900 563 617 671 724 777 831 884 937 989 1044 1097 1151 1203 1257 1310 1364
+2000 575 630 686 742 797 851 906 962 1018 1073 1128 1183 1239 1293 1349 1404
+2100 586 643 702 757 815 873 929 988 1045 1102 1159 1218 1276 1333 1390 1448
+2200 598 658 716 776 835 895 954 1013 1072 1133 1192 1251 1310 1370 1429 1489
+2300 608 671 732 793 856 917 978 1040 1100 1162 1224 1285 1346 1408 1469 1529
+2400 621 683 747 811 873 939 1002 1065 1128 1192 1255 1318 1382 1446 1508 1572
+2500 631 698 763 830 894 958 1025 1090 1155 1221 1286 1351 1418 1482 1548 1613
+`;
+
+        const widths = [500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000];
+        
+        const params = [
+          {
+            id: "barva_komponentu",
+            name: "Barva komponentů (držáky, závaží, řetízek)",
+            type: "color_array",
+            options: [
+              { label: "Bílá", value: "bila", hex: "#ffffff", priceVariant: 0, priceType: "fixed", qapiRecommended: true },
+              { label: "Žlutá", value: "zluta", hex: "#ffff00", priceVariant: 0, priceType: "fixed" },
+              { label: "Hnědá", value: "hneda", hex: "#45322e", priceVariant: 0, priceType: "fixed" },
+              { label: "Béžová", value: "bezova", hex: "#f5f5dc", priceVariant: 0, priceType: "fixed" },
+              { label: "Šedá", value: "seda", hex: "#808080", priceVariant: 0, priceType: "fixed" },
+              { label: "Oranžová", value: "oranzova", hex: "#ffa500", priceVariant: 0, priceType: "fixed" },
+              { label: "Světle zelená", value: "svetle_zelena", hex: "#90ee90", priceVariant: 0, priceType: "fixed" },
+              { label: "Tmavě zelená", value: "tmave_zelena", hex: "#006400", priceVariant: 0, priceType: "fixed" },
+              { label: "Modrá", value: "modra", hex: "#0000ff", priceVariant: 0, priceType: "fixed" },
+              { label: "Světle modrá", value: "svetle_modra", hex: "#add8e6", priceVariant: 0, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "ovladani_strana",
+            name: "Strana ovládání",
+            type: "select",
+            options: [
+              { label: "Pravá", value: "P" },
+              { label: "Levá", value: "L" }
+            ]
+          },
+          {
+            id: "montazni_profil",
+            name: "Montážní profil",
+            hint: "Umožňuje snadnější instalaci roletky.",
+            type: "select",
+            options: [
+              { label: "Ne", value: "ne", priceVariant: 0, priceType: "fixed" },
+              { label: "Ano", value: "ano", priceVariant: 186, priceType: "per_bm" }
+            ]
+          },
+          {
+            id: "montazni_profil_typ",
+            name: "Způsob dodání profilu",
+            hint: "Chcete roletku dodat již kompletně namontovanou na profilu?",
+            type: "select",
+            condition: {
+              dependentParamId: "montazni_profil",
+              expectedValues: ["ano"]
+            },
+            options: [
+              { label: "Samostatně", value: "samostatne", priceVariant: 0, priceType: "fixed" },
+              { label: "Kompletní", value: "kompletni", priceVariant: 77, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "barva_profilu_montaz",
+            name: "Barva montážního profilu",
+            type: "color_array",
+            condition: {
+              dependentParamId: "montazni_profil",
+              expectedValues: ["ano"]
+            },
+            options: [
+              { label: "Bílá", value: "bila", hex: "#ffffff", priceVariant: 0, priceType: "fixed", qapiRecommended: true },
+              { label: "Hnědá", value: "hneda", hex: "#45322e", priceVariant: 0, priceType: "fixed" },
+              { label: "Antracit", value: "antracit", hex: "#2a2e33", priceVariant: 0, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "odvijeni",
+            name: "Odvíjení látky",
+            type: "select",
+            options: [
+              { label: "Ke zdi (Standard)", value: "ke_zdi", priceVariant: 0, priceType: "fixed" },
+              { label: "Ode zdi", value: "ode_zdi", priceVariant: 0, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "uchyceni",
+            name: "Způsob uchycení",
+            type: "select",
+            options: [
+              { label: "Stěna, křídlo okna", value: "stena_kridlo", priceVariant: 0, priceType: "fixed" },
+              { label: "Strop", value: "strop", priceVariant: 0, priceType: "fixed" }
+            ]
+          }
+        ];
+
+        const fabricGroups = [
+          { name: "Skupina 1 (Adriana, Melisa)", surcharge_percent: 0, max_width_mm: 1950, max_height_mm: 2500, 
+            colors: [
+              { name: "Adriana Bílá", hex: "#f0f0f0" },
+              { name: "Adriana Béžová", hex: "#f5f5dc" },
+              { name: "Adriana Žlutá", hex: "#ffff00" },
+              { name: "Melisa Hnědá", hex: "#8b4513" },
+              { name: "Melisa Zelená", hex: "#008000" }
+            ]
+          },
+          { name: "Skupina 2 (Melisa BO)", surcharge_percent: 20, max_width_mm: 1950, max_height_mm: 2500, 
+            colors: [
+              { name: "Melisa BO Bílá", hex: "#ffffff" },
+              { name: "Melisa BO Béžová", hex: "#fffdd0" },
+              { name: "Melisa BO Šedá", hex: "#808080" }
+            ]
+          },
+          { name: "Skupina 3 (Stella BO, Melisa BO B/B, B/S)", surcharge_percent: 30, max_width_mm: 1950, max_height_mm: 2500, 
+            colors: [
+              { name: "Stella BO Bílá", hex: "#ffffff" },
+              { name: "Stella BO Hnědá", hex: "#8b4513" },
+              { name: "Stella BO Šedá", hex: "#808080" }
+            ]
+          },
+          { name: "Skupina 4 (Tropic)", surcharge_percent: 45, max_width_mm: 1950, max_height_mm: 2500, 
+            colors: [
+              { name: "Tropic Bílá", hex: "#f5f5f5" },
+              { name: "Tropic Béžová", hex: "#e8c396" },
+              { name: "Tropic Šedá", hex: "#a9a9a9" }
+            ]
+          },
+          { name: "Skupina 5 (Screen nehořlavá)", surcharge_percent: 80, max_width_mm: 1800, max_height_mm: 2250, 
+            colors: [
+              { name: "Screen Bílá", hex: "#f0f0f0" },
+              { name: "Screen Šedá", hex: "#808080" },
+              { name: "Screen Černá", hex: "#000000" }
+            ]
+          }
+        ];
+
+        const catRes = await db.query(`SELECT name FROM "Category" WHERE name = 'Textilní roletky'`);
+        let category = 'Textilní roletky';
+        if (catRes.rows.length === 0) {
+            await db.query(`INSERT INTO "Category" (name, count, img) VALUES ('Textilní roletky', 1, '')`);
+        }
+
+        const pRes = await db.query(`
+          INSERT INTO "Product" (
+            title, slug, category, price, "oldPrice", badge, img, "desc", 
+            supplier_markup_percent, commission_percent, 
+            width_mm_min, width_mm_max, height_mm_min, height_mm_max, max_area_m2, 
+            parameters, gallery, colors, extras, fabric_groups_config, price_mode, hidden, validation_profile
+          ) VALUES (
+            $1, $2, $3, $4, null, $5, $6, $7,
+            4.9, 0,
+            350, 2000, 500, 2500, null,
+            $8, '[]', '[]', '[{"key":"colorSectionTitle","value":"Vyberte model látky"}]', $9, 'matrix_cell', false, 'jazz_expert'
+          )
+          ON CONFLICT (slug) DO UPDATE SET
+            title = EXCLUDED.title,
+            price = EXCLUDED.price,
+            "desc" = EXCLUDED."desc",
+            parameters = EXCLUDED.parameters,
+            fabric_groups_config = EXCLUDED.fabric_groups_config,
+            height_mm_max = 2500,
+            width_mm_max = 2000,
+            price_mode = 'matrix_cell',
+            validation_profile = 'jazz_expert'
+          RETURNING id
+        `, [
+          "Textilní roleta volně vysící",
+          "textilni-roleta-volne-vysici",
+          category,
+          1000,
+          "",
+          "/images/jazz_expert.png",
+          `<h3>Základní ceníková sestava JAZZ EXPERT</h3><ul><li><strong>Látka:</strong> 100% polyester dle výběru</li><li><strong>Hřídel:</strong> hliníkový profil, průměr 25 mm</li><li><strong>Držáky:</strong> plastové</li><li><strong>Závaží:</strong> hliníkové</li><li><strong>Ovládání:</strong> řetízkem</li><li><strong>Uchycení:</strong> strop, zeď</li></ul><br /><h3>Technické informace</h3><p>Roletka je v provedení bez krytu návinu, volně visící. Konstrukce roletky umožňuje různé nastavení výšky stažení látky. Invazivní montáž pomocí šroubů na křídlo (nezmenšuje světlost), do ostění, nebo nad okno.</p>`,
+          JSON.stringify(params),
+          JSON.stringify(fabricGroups)
+        ]);
+
+        const productId = pRes.rows[0].id;
+
+        await db.query(`DELETE FROM "ProductPriceBracket" WHERE product_id = $1`, [productId]);
+
+        const lines = rawMatrix.trim().split('\n');
+        let brackets = [];
+        for (const line of lines) {
+          const parts = line.trim().split(/\s+/).map(Number);
+          if (parts.length < 2) continue;
+          
+          const height = parts[0];
+          for (let i = 0; i < widths.length; i++) {
+            const width = widths[i];
+            const price = parts[i + 1];
+            if (price) {
+              brackets.push(`(${productId}, ${width}, ${height}, ${price})`);
+            }
+          }
+        }
+
+        if (brackets.length > 0) {
+          await db.query(`
+            INSERT INTO "ProductPriceBracket" (product_id, width_mm_max, height_mm_max, base_price_czk)
+            VALUES ${brackets.join(', ')}
+          `);
+        }
+
+        res.json({ success: true, productId });
+      } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: String(e) });
+      }
+    });
+  });
+
+app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
     await withDb(res, async (db) => {
       try {
         const slug = 'plise-zaluzie-lagarta';
