@@ -2077,8 +2077,8 @@ async function startServer() {
             name: "Typ žaluzie",
             type: "color_array",
             options: [
-              { label: "Isoline (Rovný profil)", value: "isoline", img: "/images/icon_isoline_rovny.png", hint: "Klasický hranatý profil. Materiál horního profilu je automaticky Hliník (Al)." },
-              { label: "Isoline PRIM (Obloukový profil)", value: "prim", img: "/images/icon_isoline_prim.png", qapiRecommended: true, hint: "Moderní zaoblený design. Materiál profilu je automaticky Železo (Fe)." }
+              { label: "Isoline (Rovný profil)", value: "isoline", img: "/images/icon_isoline_rovny.png", hint: "Klasický hranatý profil." },
+              { label: "Isoline PRIM (Obloukový profil)", value: "prim", img: "/images/icon_isoline_prim.png", qapiRecommended: true, hint: "Moderní zaoblený design profilu." }
             ]
           },
           {
@@ -2087,36 +2087,36 @@ async function startServer() {
             hint: "Vyberte si požadovaný barevný odstín lamely. Hex kódy jsou pouze orientační náhledy barev.",
             type: "color_array",
             options: [
-              { label: "BASIC 101", value: "101", hex: "#FFFFFF", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 102", value: "102", hex: "#FAF5ED", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 105", value: "105", hex: "#EBE3D5", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 106", value: "106", hex: "#E3DAC9", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 107", value: "107", hex: "#E8DEC6", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 109", value: "109", hex: "#D6C6A1", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 110", value: "110", hex: "#C4AC82", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 111", value: "111", hex: "#BA9F72", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 113", value: "113", hex: "#E9C2A6", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 115", value: "115", hex: "#F2D8B3", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 117", value: "117", hex: "#F5DEB3", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 119", value: "119", hex: "#F7E1D7", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 120", value: "120", hex: "#D9CDBF", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 121", value: "121", hex: "#D4C2B0", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 123", value: "123", hex: "#C2A892", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 124", value: "124", hex: "#B3957A", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 125", value: "125", hex: "#A48261", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 130", value: "130", hex: "#946E4A", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 131", value: "131", hex: "#7E5C3B", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 132", value: "132", hex: "#68482A", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 135", value: "135", hex: "#B8B5B0", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 136", value: "136", hex: "#A39F98", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 137", value: "137", hex: "#8A8680", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 138", value: "138", hex: "#706C67", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 139", value: "139", hex: "#5C5854", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 146", value: "146", hex: "#42403E", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 150", value: "150", hex: "#A9D08E", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 153", value: "153", hex: "#9DC3E6", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 154", value: "154", hex: "#F4B084", priceVariant: 74, priceType: "per_m2" },
-              { label: "BASIC 155", value: "155", hex: "#FFC000", priceVariant: 74, priceType: "per_m2" }
+              { label: "BASIC 101 (#FFFFFF)", value: "101", hex: "#FFFFFF", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 102 (#FAF5ED)", value: "102", hex: "#FAF5ED", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 105 (#EBE3D5)", value: "105", hex: "#EBE3D5", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 106 (#E3DAC9)", value: "106", hex: "#E3DAC9", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 107 (#E8DEC6)", value: "107", hex: "#E8DEC6", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 109 (#D6C6A1)", value: "109", hex: "#D6C6A1", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 110 (#C4AC82)", value: "110", hex: "#C4AC82", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 111 (#BA9F72)", value: "111", hex: "#BA9F72", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 113 (#E9C2A6)", value: "113", hex: "#E9C2A6", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 115 (#F2D8B3)", value: "115", hex: "#F2D8B3", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 117 (#F5DEB3)", value: "117", hex: "#F5DEB3", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 119 (#F7E1D7)", value: "119", hex: "#F7E1D7", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 120 (#D9CDBF)", value: "120", hex: "#D9CDBF", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 121 (#D4C2B0)", value: "121", hex: "#D4C2B0", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 123 (#C2A892)", value: "123", hex: "#C2A892", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 124 (#B3957A)", value: "124", hex: "#B3957A", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 125 (#A48261)", value: "125", hex: "#A48261", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 130 (#946E4A)", value: "130", hex: "#946E4A", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 131 (#7E5C3B)", value: "131", hex: "#7E5C3B", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 132 (#68482A)", value: "132", hex: "#68482A", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 135 (#B8B5B0)", value: "135", hex: "#B8B5B0", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 136 (#A39F98)", value: "136", hex: "#A39F98", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 137 (#8A8680)", value: "137", hex: "#8A8680", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 138 (#706C67)", value: "138", hex: "#706C67", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 139 (#5C5854)", value: "139", hex: "#5C5854", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 146 (#42403E)", value: "146", hex: "#42403E", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 150 (#A9D08E)", value: "150", hex: "#A9D08E", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 153 (#9DC3E6)", value: "153", hex: "#9DC3E6", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 154 (#F4B084)", value: "154", hex: "#F4B084", priceVariant: 74, priceType: "per_m2" },
+              { label: "BASIC 155 (#FFC000)", value: "155", hex: "#FFC000", priceVariant: 74, priceType: "per_m2" }
             ]
           },
           {
@@ -2221,17 +2221,6 @@ async function startServer() {
               { label: "Nekonečný řetízek 175 cm", value: "175", excludedModels: ["isoline"] },
               { label: "Nekonečný řetízek 200 cm", value: "200", excludedModels: ["isoline"] },
               { label: "Nekonečný řetízek 225 cm", value: "225", excludedModels: ["isoline"] }
-            ]
-          },
-          {
-            id: "bezpecnost",
-            name: "Bezpečnostní prvek",
-            hint: "Speciální spojka řetízku, která se při větším zatažení rozpojí. Zabraňuje uškrcení a je povinná, pokud mají k oknu přístup malé děti.",
-            img: "/images/bezpecnost_zaluzie.jpg",
-            type: "select",
-            options: [
-              { label: "Ne", value: "ne", priceVariant: 0, priceType: "fixed" },
-              { label: "Ano", value: "ano", priceVariant: 12, priceType: "fixed" }
             ]
           }
         ];
