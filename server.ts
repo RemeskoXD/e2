@@ -1633,21 +1633,21 @@ async function startServer() {
            return;
         }
 
-        const workbook = XLSX.readFile(templatePath);
-        const sheetName = workbook.SheetNames[0];
-        const sheet = workbook.Sheets[sheetName];
+        // We use ExcelJS to preserve images and formatting!
+        const ExcelJS = require('exceljs');
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.readFile(templatePath);
+        const sheet = workbook.worksheets[0];
 
         const addr = [order.delivery_street, order.delivery_city, order.delivery_zip].filter(Boolean).join(', ');
         
-        sheet['D1'] = { v: "Ropemi s.r.o.", t: 's' }; // or B1 based on actual layout? Let's use standard.
-        // Actually, let's map exactly based on the layout if possible or leave empty if not sure
-        sheet['D1'] = { v: "Ropemi s.r.o., Varšavská 715/36, Vinohrady, 120 00 Praha 2", t: 's' };
-        sheet['D3'] = { v: addr, t: 's' };
-        sheet['D5'] = { v: "+420 774 060 193", t: 's' };
-        sheet['M3'] = { v: new Date(order.date).toLocaleDateString('cs-CZ'), t: 's' };
-        sheet['R3'] = { v: order.order_no, t: 's' };
+        sheet.getCell('D1').value = "Ropemi s.r.o., Varšavská 715/36, Vinohrady, 120 00 Praha 2";
+        sheet.getCell('D3').value = addr;
+        sheet.getCell('D5').value = "+420 774 060 193";
+        sheet.getCell('M3').value = new Date(order.date).toLocaleDateString('cs-CZ');
+        sheet.getCell('R3').value = order.order_no;
 
-        let currentRow = 9; // Data starts at row 10 (index 9)
+        let currentRow = 10; // Data starts at row 10 in ExcelJS (1-indexed)
         textilniItems.forEach((item: any, index: number) => {
           const params = item.options?.selected_parameters || {};
           const w = item.width_mm || 0;
@@ -1687,45 +1687,33 @@ async function startServer() {
           let poznamka = `Plocha: ${m2} m2 | Zákazník: ${customerDetails}`;
           if (params.poznamka) poznamka += ` | Pozn. zákazníka: ${params.poznamka}`;
 
-          const writeCell = (colChar: string, val: any) => {
-            if (val == null || val === '') return;
-            const ref = `${colChar}${currentRow + 1}`;
-            sheet[ref] = { v: val, t: typeof val === 'number' ? 'n' : 's' };
-          };
-
-          writeCell('A', index + 1 + '.');
-          writeCell('C', typRoletky);
-          writeCell('E', qty);
-          writeCell('F', w);
-          writeCell('G', h);
-          writeCell('H', params.ovladani_strana || '');
-          writeCell('I', 'Ř');
-          writeCell('J', '');
-          writeCell('K', params.delka_retizku || '');
-          writeCell('L', montazniProfil);
-          writeCell('M', provedeni);
-          writeCell('N', barvaProfilu);
-          writeCell('O', params.lamela_typ || '');
-          writeCell('P', params.barva_komponentu || '');
-          writeCell('Q', odvijeni);
-          writeCell('R', uchyceni);
-          writeCell('S', 'NE');
-          writeCell('T', poznamka);
+          // Copy formatting from previous row if needed, but since it's a template we just set values.
+          sheet.getCell(`A${currentRow}`).value = index + 1 + '.';
+          sheet.getCell(`C${currentRow}`).value = typRoletky;
+          sheet.getCell(`E${currentRow}`).value = qty;
+          sheet.getCell(`F${currentRow}`).value = w;
+          sheet.getCell(`G${currentRow}`).value = h;
+          sheet.getCell(`H${currentRow}`).value = params.ovladani_strana || '';
+          sheet.getCell(`I${currentRow}`).value = 'Ř';
+          // Skip elektronika (J) and délka (K)
+          sheet.getCell(`L${currentRow}`).value = montazniProfil;
+          sheet.getCell(`M${currentRow}`).value = provedeni;
+          sheet.getCell(`N${currentRow}`).value = barvaProfilu;
+          sheet.getCell(`O${currentRow}`).value = params.lamela_typ || '';
+          sheet.getCell(`P${currentRow}`).value = params.barva_komponentu || '';
+          sheet.getCell(`Q${currentRow}`).value = odvijeni;
+          sheet.getCell(`R${currentRow}`).value = uchyceni;
+          sheet.getCell(`S${currentRow}`).value = 'NE';
+          sheet.getCell(`T${currentRow}`).value = poznamka;
           
           currentRow++;
         });
 
-        const range = XLSX.utils.decode_range(sheet['!ref'] || 'A1:T50');
-        if (currentRow > range.e.r) {
-          range.e.r = currentRow;
-          sheet['!ref'] = XLSX.utils.encode_range(range);
-        }
-
-        const buf = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-
         res.setHeader('Content-Disposition', `attachment; filename="Objednavka_TextilniRoletky_${order.order_no}.xlsx"`);
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.send(buf);
+        
+        await workbook.xlsx.write(res);
+        res.end();
 
       } catch (err) {
         console.error('Textilni roletky export error:', err);
