@@ -1537,7 +1537,9 @@ async function startServer() {
           const montazniPodpera = params.typ_profilu === 'prim' ? 'ANO' : 'NE';
           
           let barvaProfilu = params.barva_profilu || '';
-
+          if (barvaProfilu === 'al_ral' && params.vlastni_ral_kod) {
+            barvaProfilu = `Vlastní RAL: ${params.vlastni_ral_kod}`;
+          }
           let typLamely = '25x0.21';
           let barvaLamely = params.lamela_typ || '';
 
@@ -2117,13 +2119,45 @@ async function startServer() {
           {
             id: "barva_profilu",
             name: "Barva profilu",
-            hint: "U Isoline profilu je navíc možnost lakování do RAL.",
+            hint: "U Isoline profilu je navíc možnost lakování do speciálních RAL barev.",
             type: "select",
             options: [
-              { label: "Základní (dle vzorníku)", value: "zakladni", priceVariant: 0, priceType: "fixed" },
-              { label: "Imitace dřeva", value: "drevo", priceVariant: 131, priceType: "per_bm" },
-              { label: "Lakovaný v RAL (pouze pro Isoline)", value: "al_ral", priceVariant: 147, priceType: "per_bm", excludedModels: ["prim"] }
+              { label: "Základní: RAL 9010 - bílá", value: "zakl_9010", priceVariant: 0, priceType: "fixed" },
+              { label: "Základní: RAL 8017 - tm. hnědá", value: "zakl_8017", priceVariant: 0, priceType: "fixed" },
+              { label: "Základní: RAL 9006 - stříbrná", value: "zakl_9006", priceVariant: 0, priceType: "fixed" },
+              { label: "Základní: RAL 8004 - hnědá", value: "zakl_8004", priceVariant: 0, priceType: "fixed" },
+              { label: "Základní: RAL 8003 - hnědá", value: "zakl_8003", priceVariant: 0, priceType: "fixed" },
+              { label: "Základní: RAL 1013 - slonová kost", value: "zakl_1013", priceVariant: 0, priceType: "fixed" },
+              { label: "Základní: RAL 7016 - antracit", value: "zakl_7016", priceVariant: 0, priceType: "fixed" },
+              { label: "Základní: Gold 1 (k lamele č. 714)", value: "zakl_gold1", priceVariant: 0, priceType: "fixed" },
+              { label: "Základní: Gold 2 (k lamele č. 700)", value: "zakl_gold2", priceVariant: 0, priceType: "fixed" },
+              { label: "Imitace dřeva: 21 - zlatý dub", value: "ren_21", priceVariant: 131, priceType: "per_bm" },
+              { label: "Imitace dřeva: 22 - třešeň amaretto", value: "ren_22", priceVariant: 131, priceType: "per_bm" },
+              { label: "Imitace dřeva: 23 - borovice horská", value: "ren_23", priceVariant: 131, priceType: "per_bm" },
+              { label: "Imitace dřeva: 24 - tmavý dub", value: "ren_24", priceVariant: 131, priceType: "per_bm" },
+              { label: "Imitace dřeva: 25 - vlašský ořech", value: "ren_25", priceVariant: 131, priceType: "per_bm" },
+              { label: "Imitace dřeva: 26 - sapeli", value: "ren_26", priceVariant: 131, priceType: "per_bm" },
+              { label: "Imitace dřeva: 27 - přírodní dub", value: "ren_27", priceVariant: 131, priceType: "per_bm" },
+              { label: "Imitace dřeva: 28 - tmavý ořech", value: "ren_28", priceVariant: 131, priceType: "per_bm" },
+              { label: "Imitace dřeva: 29 - douglas", value: "ren_29", priceVariant: 131, priceType: "per_bm" },
+              { label: "Imitace dřeva: 30 - oregon 4", value: "ren_30", priceVariant: 131, priceType: "per_bm" },
+              { label: "Imitace dřeva: 31 - rustikální dub", value: "ren_31", priceVariant: 131, priceType: "per_bm" },
+              { label: "Imitace dřeva: 32 - bahenní dub", value: "ren_32", priceVariant: 131, priceType: "per_bm" },
+              { label: "Imitace dřeva: 33 - antracit", value: "ren_33", priceVariant: 131, priceType: "per_bm" },
+              { label: "Imitace dřeva: 35 - přírodní ořech", value: "ren_35", priceVariant: 131, priceType: "per_bm" },
+              { label: "Imitace dřeva: 36 - winchester", value: "ren_36", priceVariant: 131, priceType: "per_bm" },
+              { label: "RAL 8023 - hnědá (pouze Isoline)", value: "ral_8023", priceVariant: 147, priceType: "per_bm", excludedModels: ["prim"] },
+              { label: "Jiná vlastní RAL (pouze Isoline)", value: "al_ral", priceVariant: 147, priceType: "per_bm", excludedModels: ["prim"] }
             ]
+          },
+          {
+            id: "vlastni_ral_kod",
+            name: "Zadejte kód RAL barvy",
+            type: "text",
+            condition: {
+              dependsOnParamId: "barva_profilu",
+              allowedValues: ["al_ral"]
+            }
           },
           {
             id: "ovladani_strana",
