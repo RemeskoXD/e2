@@ -1536,12 +1536,7 @@ async function startServer() {
           const materialProfilu = params.typ_profilu === 'prim' ? 'Fe' : 'Al';
           const montazniPodpera = params.typ_profilu === 'prim' ? 'ANO' : 'NE';
           
-          let barvaProfilu = '';
-          if (params.typ_profilu === 'prim') {
-            barvaProfilu = params.barva_profilu_prim || '';
-          } else {
-            barvaProfilu = params.barva_profilu_isoline || '';
-          }
+          let barvaProfilu = params.barva_profilu || '';
 
           let typLamely = '25x0.21';
           let barvaLamely = params.lamela_typ || '';
@@ -2120,32 +2115,14 @@ async function startServer() {
             ]
           },
           {
-            id: "barva_profilu_isoline",
-            name: "Barva profilu (Isoline - Al)",
-            hint: "Horní profil žaluzie z Hliníku (Al).",
+            id: "barva_profilu",
+            name: "Barva profilu",
+            hint: "U Isoline profilu je navíc možnost lakování do RAL.",
             type: "select",
-            condition: {
-              dependsOnParamId: "typ_profilu",
-              allowedValues: ["isoline"]
-            },
             options: [
               { label: "Základní (dle vzorníku)", value: "zakladni", priceVariant: 0, priceType: "fixed" },
-              { label: "Lakovaný v RAL", value: "al_ral", priceVariant: 147, priceType: "per_bm" },
-              { label: "Imitace dřeva (Renolit)", value: "al_drevo", priceVariant: 131, priceType: "per_bm" }
-            ]
-          },
-          {
-            id: "barva_profilu_prim",
-            name: "Barva profilu (PRIM - Fe)",
-            hint: "Horní profil žaluzie ze Železa (Fe).",
-            type: "select",
-            condition: {
-              dependsOnParamId: "typ_profilu",
-              allowedValues: ["prim"]
-            },
-            options: [
-              { label: "Základní (dle vzorníku)", value: "zakladni", priceVariant: 0, priceType: "fixed" },
-              { label: "Imitace dřeva", value: "prim_drevo", priceVariant: 131, priceType: "per_bm" }
+              { label: "Imitace dřeva", value: "drevo", priceVariant: 131, priceType: "per_bm" },
+              { label: "Lakovaný v RAL (pouze pro Isoline)", value: "al_ral", priceVariant: 147, priceType: "per_bm", excludedModels: ["prim"] }
             ]
           },
           {
