@@ -2058,9 +2058,8 @@ async function startServer() {
               allowedValues: ["prim"]
             },
             options: [
-              { label: "Bez doplňku", value: "ne", priceVariant: 0, priceType: "fixed" },
               { label: "Brzda", value: "brzda", priceVariant: 34, priceType: "fixed" },
-              { label: "Převodovka s brzdou", value: "prevodovka", priceVariant: 82, priceType: "fixed" }
+              { label: "Bez doplňku", value: "ne", priceVariant: 0, priceType: "fixed" }
             ]
           },
           {
