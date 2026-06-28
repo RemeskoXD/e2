@@ -213,6 +213,19 @@ export default function AdminOrderDetail({ orderId }: { orderId: number }) {
               Exportovat Horizontální Excel
             </button>
           )}
+          {items.some(it => (it.product_title || '').toLowerCase().includes('textilní rolet') || (it.product_title || '').toLowerCase().includes('textilni rolet')) && (
+            <button
+              type="button"
+              onClick={() => {
+                const t = token();
+                window.open(`/api/admin/orders/${order.id}/export-textilni-roletky?token=${t}`, '_blank');
+              }}
+              className="bg-white text-teal-700 border border-teal-200 font-bold px-4 py-2 rounded-lg hover:bg-teal-50 flex items-center gap-2"
+            >
+              <FileSpreadsheet size={18} />
+              Exportovat Textilní roletky Excel
+            </button>
+          )}
         </div>
       </div>
 

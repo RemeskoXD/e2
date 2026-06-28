@@ -1597,6 +1597,143 @@ async function startServer() {
     });
   });
 
+
+  app.get("/api/admin/orders/:id/export-textilni-roletky", requireAdmin, async (req, res) => {
+    await withDb(res, async (db) => {
+      try {
+        const id = Number(req.params.id);
+        if (!Number.isFinite(id) || id < 1) {
+          res.status(400).json({ error: "Neplatné ID" });
+          return;
+        }
+        const o = await db.query('SELECT * FROM "Order" WHERE id = $1', [id]);
+        if (!o.rows[0]) {
+          res.status(404).json({ error: "Nenalezeno" });
+          return;
+        }
+        const order = o.rows[0];
+        const items = await db.query(
+          'SELECT * FROM "OrderItem" WHERE order_id = $1 ORDER BY id ASC',
+          [id]
+        );
+
+        const textilniItems = items.rows.filter((item: any) => 
+          (item.product_title || '').toLowerCase().includes('textilní rolet') ||
+          (item.product_title || '').toLowerCase().includes('textilni rolet')
+        );
+
+        if (textilniItems.length === 0) {
+          res.status(404).json({ error: "Objednávka neobsahuje žádné Textilní roletky" });
+          return;
+        }
+
+        const templatePath = path.join(process.cwd(), 'public', 'formular', '05_formular_textilni_roletky_Jazz.xlsx');
+        if (!fs.existsSync(templatePath)) {
+           res.status(404).json({ error: "Šablona formuláře nebyla nalezena." });
+           return;
+        }
+
+        const workbook = XLSX.readFile(templatePath);
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+
+        const addr = [order.delivery_street, order.delivery_city, order.delivery_zip].filter(Boolean).join(', ');
+        
+        sheet['D1'] = { v: "Ropemi s.r.o.", t: 's' }; // or B1 based on actual layout? Let's use standard.
+        // Actually, let's map exactly based on the layout if possible or leave empty if not sure
+        sheet['D1'] = { v: "Ropemi s.r.o., Varšavská 715/36, Vinohrady, 120 00 Praha 2", t: 's' };
+        sheet['D3'] = { v: addr, t: 's' };
+        sheet['D5'] = { v: "+420 774 060 193", t: 's' };
+        sheet['M3'] = { v: new Date(order.date).toLocaleDateString('cs-CZ'), t: 's' };
+        sheet['R3'] = { v: order.order_no, t: 's' };
+
+        let currentRow = 9; // Data starts at row 10 (index 9)
+        textilniItems.forEach((item: any, index: number) => {
+          const params = item.options?.selected_parameters || {};
+          const w = item.width_mm || 0;
+          const h = item.height_mm || 0;
+          const qty = item.quantity;
+          
+          let typRoletky = "Textilní roletka";
+          if ((item.product_title || '').toLowerCase().includes('jazz expert')) {
+            typRoletky = "JAZZ Expert";
+          } else if ((item.product_title || '').toLowerCase().includes('optima den a noc')) {
+            typRoletky = "Optima Den a noc";
+          } else if ((item.product_title || '').toLowerCase().includes('optima')) {
+            typRoletky = "Optima";
+          }
+          
+          const montazniProfil = params.montazni_profil === 'ano' ? 'ANO' : 'NE';
+          let provedeni = '';
+          if (params.montazni_profil_typ === 'samostatne') provedeni = '1 - samostatně';
+          else if (params.montazni_profil_typ === 'kompletni') provedeni = '2 - kompletní';
+          
+          let barvaProfilu = '';
+          if (params.barva_profilu_montaz === 'bila') barvaProfilu = 'A - bílá';
+          else if (params.barva_profilu_montaz === 'hneda') barvaProfilu = 'B - hnědá';
+          else if (params.barva_profilu_montaz === 'antracit') barvaProfilu = 'C - antracit';
+
+          let odvijeni = '';
+          if (params.odvijeni === 'ke_zdi') odvijeni = '1 - ke zdi';
+          else if (params.odvijeni === 'ode_zdi') odvijeni = '2 - ode zdi';
+          
+          let uchyceni = '';
+          if (params.uchyceni === 'stena_kridlo') uchyceni = '1 - stěna, křídlo';
+          else if (params.uchyceni === 'strop') uchyceni = '2 - strop';
+          
+          const m2 = ((w * h) / 1000000).toFixed(2);
+          const customerDetails = `${order.customer_name}, Tel: ${order.customer_phone || '-'}, E-mail: ${order.customer_email || '-'}`;
+          
+          let poznamka = `Plocha: ${m2} m2 | Zákazník: ${customerDetails}`;
+          if (params.poznamka) poznamka += ` | Pozn. zákazníka: ${params.poznamka}`;
+
+          const writeCell = (colChar: string, val: any) => {
+            if (val == null || val === '') return;
+            const ref = `${colChar}${currentRow + 1}`;
+            sheet[ref] = { v: val, t: typeof val === 'number' ? 'n' : 's' };
+          };
+
+          writeCell('A', index + 1 + '.');
+          writeCell('C', typRoletky);
+          writeCell('E', qty);
+          writeCell('F', w);
+          writeCell('G', h);
+          writeCell('H', params.ovladani_strana || '');
+          writeCell('I', 'Ř');
+          writeCell('J', '');
+          writeCell('K', params.delka_retizku || '');
+          writeCell('L', montazniProfil);
+          writeCell('M', provedeni);
+          writeCell('N', barvaProfilu);
+          writeCell('O', params.lamela_typ || '');
+          writeCell('P', params.barva_komponentu || '');
+          writeCell('Q', odvijeni);
+          writeCell('R', uchyceni);
+          writeCell('S', 'NE');
+          writeCell('T', poznamka);
+          
+          currentRow++;
+        });
+
+        const range = XLSX.utils.decode_range(sheet['!ref'] || 'A1:T50');
+        if (currentRow > range.e.r) {
+          range.e.r = currentRow;
+          sheet['!ref'] = XLSX.utils.encode_range(range);
+        }
+
+        const buf = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+        res.setHeader('Content-Disposition', `attachment; filename="Objednavka_TextilniRoletky_${order.order_no}.xlsx"`);
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.send(buf);
+
+      } catch (err) {
+        console.error('Textilni roletky export error:', err);
+        res.status(500).json({ error: "Server error při generování Excelu" });
+      }
+    });
+  });
+
   app.patch("/api/admin/orders/:id", requireAdmin, async (req, res) => {
     await withDb(res, async (db) => {
       const client = await db.connect();
