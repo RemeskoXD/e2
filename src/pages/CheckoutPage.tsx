@@ -184,7 +184,7 @@ export default function CheckoutPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full bg-[#132333] text-white font-bold py-3 rounded-xl hover:bg-[#1a3145] disabled:opacity-50"
+          className="w-full bg-green-500 text-white font-bold py-3.5 rounded-xl hover:bg-green-600 active:bg-green-700 disabled:opacity-50 transition-all shadow-md"
         >
           {submitting ? 'Odesílám…' : 'Odeslat objednávku'}
         </button>

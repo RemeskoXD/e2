@@ -127,7 +127,7 @@ export default function CartPage() {
         </div>
         <a
           href="#/checkout"
-          className="inline-flex justify-center bg-[#CCAD8A] text-[#132333] font-bold px-8 py-3 rounded-xl hover:bg-[#b5997a] transition-colors"
+          className="inline-flex justify-center bg-green-500 text-white font-bold px-8 py-3 rounded-xl hover:bg-green-600 transition-colors shadow-md"
         >
           Pokračovat k objednávce
         </a>
