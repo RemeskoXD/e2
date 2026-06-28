@@ -1943,27 +1943,75 @@ async function startServer() {
         
         const params = [
           {
-            id: "typ_profilu",
-            name: "Typ profilu",
+            id: "typ_okna",
+            name: "Materiál okna",
             type: "color_array",
             options: [
-              { label: "Isoline (Rovný profil)", value: "isoline", img: "/images/icon_isoline_rovny.png", hint: "Klasický hranatý profil s možností hliníkového provedení či lakování do RAL." },
-              { label: "Isoline PRIM (Obloukový profil)", value: "prim", img: "/images/icon_isoline_prim.png", qapiRecommended: true, hint: "Moderní zaoblený design profilu." }
+              { label: "Plastové okno", value: "pvc", img: "/images/icon_okno_pvc.png" },
+              { label: "Dřevěné okno", value: "drevo", img: "/images/icon_okno_drevo.png" },
+              { label: "Hliníkové okno", value: "hlinik", img: "/images/icon_okno_hlinik.png" }
+            ]
+          },
+          {
+            id: "typ_profilu",
+            name: "Typ žaluzie",
+            type: "color_array",
+            options: [
+              { label: "Isoline (Rovný profil)", value: "isoline", img: "/images/icon_isoline_rovny.png", hint: "Klasický hranatý profil. Materiál horního profilu je automaticky Hliník (Al)." },
+              { label: "Isoline PRIM (Obloukový profil)", value: "prim", img: "/images/icon_isoline_prim.png", qapiRecommended: true, hint: "Moderní zaoblený design. Materiál profilu je automaticky Železo (Fe)." }
             ]
           },
           {
             id: "lamela_typ",
-            name: "Design a typ lamel",
-            hint: "Vyberte si šířku a povrchovou úpravu hliníkových lamel.",
+            name: "Barva lamely (tloušťka 0.21 mm)",
+            hint: "Nabízíme pouze kvalitnější lamely o tloušťce 0.21 mm.",
             type: "select",
             options: [
-              { label: "Základní barvy (lamela 25x0.18 mm)", value: "std_zaklad", priceVariant: 0, priceType: "per_m2" },
-              { label: "Lamela 16 mm", value: "std_l16", priceVariant: 74, priceType: "per_m2" },
+              { label: "Základní barvy (lamela 25x0.21 mm)", value: "std_l25", priceVariant: 0, priceType: "per_m2" },
               { label: "Lamela 25x0.21 mm (Skupina 1)", value: "std_l25_g1", priceVariant: 74, priceType: "per_m2", hint: "Čísla: 101-155, 211-265, 311-371, 700, 714" },
               { label: "Lamela 25x0.21 mm (Skupina 2)", value: "std_l25_g2", priceVariant: 207, priceType: "per_m2", hint: "Čísla: SR 621-630, SM 801-869" },
               { label: "Speciální barvy (Skupina 3)", value: "std_barva_ex", priceVariant: 87, priceType: "per_m2", hint: "Čísla: 780, 783, 1940, 8005, 8101, 8300, 8204, 8107" },
               { label: "Perforované lamely", value: "std_perf", priceVariant: 76, priceType: "per_m2", hint: "Dírkované lamely propouštějící část světla (PR1, PR58, PR61, PR103, PR285)" },
               { label: "Imitace dřeva", value: "std_drevo", priceVariant: 169, priceType: "per_m2" }
+            ]
+          },
+          {
+            id: "barva_profilu_isoline",
+            name: "Barva profilu (Isoline - Al)",
+            hint: "Horní profil žaluzie z Hliníku (Al).",
+            type: "select",
+            condition: {
+              dependsOnParamId: "typ_profilu",
+              allowedValues: ["isoline"]
+            },
+            options: [
+              { label: "Základní (dle vzorníku)", value: "zakladni", priceVariant: 0, priceType: "fixed" },
+              { label: "Lakovaný v RAL", value: "al_ral", priceVariant: 147, priceType: "per_bm" },
+              { label: "Imitace dřeva (Renolit)", value: "al_drevo", priceVariant: 131, priceType: "per_bm" }
+            ]
+          },
+          {
+            id: "barva_profilu_prim",
+            name: "Barva profilu (PRIM - Fe)",
+            hint: "Horní profil žaluzie ze Železa (Fe).",
+            type: "select",
+            condition: {
+              dependsOnParamId: "typ_profilu",
+              allowedValues: ["prim"]
+            },
+            options: [
+              { label: "Základní (dle vzorníku)", value: "zakladni", priceVariant: 0, priceType: "fixed" },
+              { label: "Imitace dřeva", value: "prim_drevo", priceVariant: 131, priceType: "per_bm" }
+            ]
+          },
+          {
+            id: "ovladani_strana",
+            name: "Ovládání",
+            hint: "Na které straně žaluzie chcete mít ovládací řetízek.",
+            type: "select",
+            options: [
+              { label: "Vpravo", value: "P" },
+              { label: "Vlevo", value: "L" }
             ]
           },
           {
@@ -1973,40 +2021,18 @@ async function startServer() {
             img: "/images/celostin.jpg",
             type: "select",
             options: [
-              { label: "Ne (Standardní)", value: "ne" },
-              { label: "Ano (Celostín)", value: "ano" }
+              { label: "Ne", value: "ne" },
+              { label: "Ano", value: "ano" }
             ]
           },
           {
-            id: "barva_profilu_isoline",
-            name: "Materiál a barva profilu (Isoline)",
-            hint: "Horní profil žaluzie, který se šroubuje do rámu okna. Můžete jej sladit s barvou vašeho okna.",
+            id: "barva_sladeni",
+            name: "Barevné sladění",
+            hint: "Základní sladění je v bílé barvě. Individuální sladění umožňuje komponenty sladit do barvy lamely.",
             type: "select",
-            condition: {
-              dependsOnParamId: "typ_profilu",
-              allowedValues: ["isoline"]
-            },
             options: [
-              { label: "Základní (dle vzorníku)", value: "zakladni", priceVariant: 0, priceType: "fixed" },
-              { label: "Hliníkový profil (Al)", value: "al_isoline", priceVariant: 77, priceType: "per_m2" },
-              { label: "Hliníkový profil (Al) lakovaný v RAL", value: "al_ral", priceVariant: 147, priceType: "per_bm" },
-              { label: "Hliníkový profil (Al) v imitaci dřeva", value: "al_drevo", priceVariant: 131, priceType: "per_bm" },
-              { label: "Železný profil (Fe) v imitaci dřeva", value: "fe_drevo", priceVariant: 131, priceType: "per_bm" }
-            ]
-          },
-
-          {
-            id: "barva_profilu_prim",
-            name: "Materiál a barva profilu (PRIM)",
-            hint: "Horní profil žaluzie, který se šroubuje do rámu okna. Můžete jej sladit s barvou vašeho okna.",
-            type: "select",
-            condition: {
-              dependsOnParamId: "typ_profilu",
-              allowedValues: ["prim"]
-            },
-            options: [
-              { label: "Základní (dle vzorníku)", value: "zakladni", priceVariant: 0, priceType: "fixed" },
-              { label: "Imitace dřeva", value: "prim_drevo", priceVariant: 131, priceType: "per_bm" }
+              { label: "Ne (Základní sladění - komponenty v bílé barvě)", value: "ne", priceVariant: 0, priceType: "fixed" },
+              { label: "Ano (Celkové individuální sladění)", value: "ano", priceVariant: 0, priceType: "fixed" }
             ]
           },
           {
@@ -2024,6 +2050,37 @@ async function startServer() {
             ]
           },
           {
+            id: "doplnek_prim",
+            name: "Doplněk ovládání (Pouze PRIM)",
+            type: "select",
+            condition: {
+              dependsOnParamId: "typ_profilu",
+              allowedValues: ["prim"]
+            },
+            options: [
+              { label: "Bez doplňku", value: "ne", priceVariant: 0, priceType: "fixed" },
+              { label: "Brzda", value: "brzda", priceVariant: 34, priceType: "fixed" },
+              { label: "Převodovka s brzdou", value: "prevodovka", priceVariant: 82, priceType: "fixed" }
+            ]
+          },
+          {
+            id: "delka_ovladani",
+            name: "Délka ovládání (řetízku)",
+            type: "select",
+            options: [
+              { label: "Standardní (cca 2/3 výšky žaluzie)", value: "standard" },
+              { label: "Jiná délka (uveďte v poznámce v košíku)", value: "jina" },
+              { label: "Nekonečný řetízek 50 cm", value: "50", excludedModels: ["isoline"] },
+              { label: "Nekonečný řetízek 75 cm", value: "75", excludedModels: ["isoline"] },
+              { label: "Nekonečný řetízek 100 cm", value: "100", excludedModels: ["isoline"] },
+              { label: "Nekonečný řetízek 125 cm", value: "125", excludedModels: ["isoline"] },
+              { label: "Nekonečný řetízek 150 cm", value: "150", excludedModels: ["isoline"] },
+              { label: "Nekonečný řetízek 175 cm", value: "175", excludedModels: ["isoline"] },
+              { label: "Nekonečný řetízek 200 cm", value: "200", excludedModels: ["isoline"] },
+              { label: "Nekonečný řetízek 225 cm", value: "225", excludedModels: ["isoline"] }
+            ]
+          },
+          {
             id: "bezpecnost",
             name: "Bezpečnostní prvek",
             hint: "Speciální spojka řetízku, která se při větším zatažení rozpojí. Zabraňuje uškrcení a je povinná, pokud mají k oknu přístup malé děti.",
@@ -2035,6 +2092,7 @@ async function startServer() {
             ]
           }
         ];
+
 
         const catRes = await db.query(`SELECT name FROM "Category" WHERE name = 'Horizontální žaluzie'`);
         let category = 'Horizontální žaluzie';

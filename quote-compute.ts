@@ -577,9 +577,6 @@ export async function computeProductQuote(
     }
 
     if (celostin) {
-       if (lamelaTyp === 'std_l16') {
-         return { ok: false, status: 400, body: { error: `Domykatelné provedení (Celostín) nelze vyrobit s lamelou 16 mm.` } };
-       }
        let celostinSurchargeM2 = 33;
        if (lamelaTyp === 'std_drevo') {
          celostinSurchargeM2 = 98;
