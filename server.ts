@@ -2952,20 +2952,21 @@ async function startServer() {
           {
             id: "ovladani_strana",
             name: "Strana ovládání",
+            hint: "Zvolte stranu, na které chcete mít ovládací řetízek (pohled zevnitř místnosti).",
             type: "select",
             options: [
-              { label: "Pravá", value: "P" },
-              { label: "Levá", value: "L" }
+              { label: "Pravá", value: "P", image: "/images/configurator/jazz_expert/ovladani_prava_1782659318932.png" },
+              { label: "Levá", value: "L", image: "/images/configurator/jazz_expert/ovladani_leva_1782659328067.png" }
             ]
           },
           {
             id: "montazni_profil",
             name: "Montážní profil",
-            hint: "Umožňuje snadnější instalaci roletky.",
+            hint: "Hliníkový profil usnadňuje přesnou a pevnou instalaci roletky.",
             type: "select",
             options: [
               { label: "Ne", value: "ne", priceVariant: 0, priceType: "fixed" },
-              { label: "Ano", value: "ano", priceVariant: 186, priceType: "per_bm" }
+              { label: "Ano", value: "ano", priceVariant: 186, priceType: "per_bm", image: "/images/configurator/jazz_expert/montazni_profil_1782659311351.png" }
             ]
           },
           {
@@ -2999,19 +3000,21 @@ async function startServer() {
           {
             id: "odvijeni",
             name: "Odvíjení látky",
+            hint: "Určuje, zda se látka spouští blíže k oknu (Ke zdi), nebo dále do místnosti přes návin (Ode zdi).",
             type: "select",
             options: [
-              { label: "Ke zdi (Standard)", value: "ke_zdi", priceVariant: 0, priceType: "fixed" },
-              { label: "Ode zdi", value: "ode_zdi", priceVariant: 0, priceType: "fixed" }
+              { label: "Ke zdi (Standard)", value: "ke_zdi", priceVariant: 0, priceType: "fixed", image: "/images/configurator/jazz_expert/odvijeni_ke_zdi_1782659263280.png" },
+              { label: "Ode zdi", value: "ode_zdi", priceVariant: 0, priceType: "fixed", image: "/images/configurator/jazz_expert/odvijeni_ode_zdi_1782659273850.png" }
             ]
           },
           {
             id: "uchyceni",
             name: "Způsob uchycení",
+            hint: "Vyberte způsob montáže: horizontálně do stropu, nebo vertikálně do zdi či křídla okna.",
             type: "select",
             options: [
-              { label: "Stěna, křídlo okna", value: "stena_kridlo", priceVariant: 0, priceType: "fixed" },
-              { label: "Strop", value: "strop", priceVariant: 0, priceType: "fixed" }
+              { label: "Stěna, křídlo okna", value: "stena_kridlo", priceVariant: 0, priceType: "fixed", image: "/images/configurator/jazz_expert/uchyceni_stena_1782659282820.png" },
+              { label: "Strop", value: "strop", priceVariant: 0, priceType: "fixed", image: "/images/configurator/jazz_expert/uchyceni_strop_1782659291729.png" }
             ]
           },
           {
