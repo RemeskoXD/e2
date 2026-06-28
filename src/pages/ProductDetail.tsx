@@ -113,6 +113,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [previewModalImg, setPreviewModalImg] = useState<string | null>(null);
+  const [previewModalColor, setPreviewModalColor] = useState<{hex: string, name: string} | null>(null);
   const [openHints, setOpenHints] = useState<Record<string, boolean>>({});
   const [selectedExtras, setSelectedExtras] = useState<string[]>(() => {
     const ex = initialParams.get('extras');
@@ -830,6 +831,12 @@ export default function ProductDetail({ productId }: { productId: string }) {
                                     <Check className="text-white drop-shadow-md shadow-black" size={24} strokeWidth={3} />
                                   </div>
                                 )}
+                                <div 
+                                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-white/90 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white z-10"
+                                  onClick={(e) => { e.stopPropagation(); setPreviewModalColor({ hex: cHex, name: cName }); }}
+                                >
+                                  <Eye className="w-4 h-4 text-gray-700" />
+                                </div>
                               </>
                             ) : (
                               cName
@@ -1255,12 +1262,33 @@ export default function ProductDetail({ productId }: { productId: string }) {
         />
       )}
       {previewModalImg && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={() => setPreviewModalImg(null)}>
-          <div className="relative max-w-4xl max-h-[90vh] w-full flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
-            <button onClick={() => setPreviewModalImg(null)} className="absolute -top-12 right-0 p-2 text-white hover:text-gray-300">
-              <X className="w-8 h-8" />
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onClick={() => setPreviewModalImg(null)}>
+          <div className="relative max-w-4xl max-h-[90vh] w-full flex items-center justify-center">
+            <button 
+              onClick={() => setPreviewModalImg(null)}
+              className="absolute -top-12 right-0 text-white hover:text-gray-300 p-2"
+            >
+              <X size={32} />
             </button>
-            <img src={previewModalImg} alt="Preview" className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl bg-white p-4" />
+            <img src={previewModalImg} alt="Preview" className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl" onClick={e => e.stopPropagation()} />
+          </div>
+        </div>
+      )}
+
+      {previewModalColor && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onClick={() => setPreviewModalColor(null)}>
+          <div className="relative w-full max-w-md bg-white rounded-3xl overflow-hidden shadow-2xl" onClick={e => e.stopPropagation()}>
+            <button 
+              onClick={() => setPreviewModalColor(null)}
+              className="absolute top-4 right-4 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-sm transition-colors z-10"
+            >
+              <X size={24} />
+            </button>
+            <div className="w-full aspect-square" style={{ backgroundColor: previewModalColor.hex }}></div>
+            <div className="p-8 text-center bg-white">
+              <h3 className="text-2xl font-black text-[#132333] mb-2">{previewModalColor.name}</h3>
+              <p className="text-gray-500 font-mono tracking-wider">{previewModalColor.hex}</p>
+            </div>
           </div>
         </div>
       )}
