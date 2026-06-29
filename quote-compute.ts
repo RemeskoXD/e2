@@ -652,14 +652,32 @@ export async function computeProductQuote(
 
     baseCatalogCzk = basePriceM2 * calcAreaM2;
 
+    const color = p.barva_profilu || '';
+    let colorSurcharge = 0;
+    
+    if (color === 'db_703' || color === 'ral_7016_structure') {
+      if (typOkna === 'pvc') colorSurcharge = 57;
+      if (typOkna === 'hlinik') colorSurcharge = 117;
+    }
+    else if (['walnut', 'natural_oak', 'gold_oak', 'amaretto_cherry'].includes(color)) {
+      if (typOkna === 'pvc') colorSurcharge = 162;
+      if (typOkna === 'hlinik') colorSurcharge = 200;
+    }
+    else if (['douglas', 'pine', 'dark_nut', 'sapeli'].includes(color)) {
+      if (typOkna === 'pvc') colorSurcharge = 301; 
+      if (typOkna === 'euro') colorSurcharge = 282; 
+    }
+    
+    if (colorSurcharge > 0) {
+      baseCatalogCzk += colorSurcharge * calcAreaM2;
+      screenUnionCatalogNotes.push(`Příplatek za barvu rámu: ${colorSurcharge} Kč/m².`);
+    }
+
     if (p.okenni_pricka === 'ano') {
       let isRal = false;
-      const bPvc = p.barva_profilu_pvc || '';
-      const bEuro = p.barva_profilu_euro || '';
-      const bHlin = p.barva_profilu_hlinik || '';
+      const activeColor = p.barva_profilu || '';
       
-      const activeColor = typOkna === 'pvc' ? bPvc : typOkna === 'euro' ? bEuro : bHlin;
-      if (activeColor.includes('ral_nestandard') || activeColor.includes('ral_struktura') || activeColor.includes('elox')) {
+      if (activeColor === 'db_703' || activeColor === 'ral_7016_structure') {
          isRal = true;
       }
       
