@@ -3529,51 +3529,30 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             ]
           },
           {
-            id: "barva_profilu_pvc",
+            id: "barva_profilu",
             name: "Barva rámu",
             type: "color_array",
-            condition: { dependsOnParamId: "typ_okna", allowedValues: ["pvc"] },
             options: [
-              { label: "Bílá RAL 9016 mat", value: "bila", hex: "#ffffff" },
-              { label: "Hnědá RAL 8019 mat", value: "hneda", hex: "#45322e" },
-              { label: "RAL 7016 mat (Antracit)", value: "ral_7016", hex: "#383e42" },
-              { label: "RAL 8003 mat (Zlatý dub)", value: "ral_8003", hex: "#8b5a2b" },
-              { label: "RAL 9006 mat (Stříbrná)", value: "ral_9006", hex: "#a5a5a5" },
-              { label: "ELOX champagne", value: "elox", hex: "#fad6a5", priceVariant: 71, priceType: "per_m2" },
-              { label: "RAL 7016 struktura / DB 703", value: "ral_struktura", hex: "#383e42", priceVariant: 57, priceType: "per_m2" },
-              { label: "Nestandardní lakování RAL", value: "ral_nestandard", priceVariant: 382, priceType: "per_m2" },
-              { label: "Nástřik imitace dřeva", value: "imitace_nástrik", hex: "#8b5a2b", priceVariant: 162, priceType: "per_m2" },
-              { label: "Renolit jednostranně", value: "renolit_jedno", hex: "#8b5a2b", priceVariant: 301, priceType: "per_m2" },
-              { label: "Renolit oboustranně", value: "renolit_obou", hex: "#8b5a2b", priceVariant: 528, priceType: "per_m2" }
-            ]
-          },
-          {
-            id: "barva_profilu_euro",
-            name: "Barva rámu",
-            type: "color_array",
-            condition: { dependsOnParamId: "typ_okna", allowedValues: ["euro"] },
-            options: [
-              { label: "Bílá RAL 9016 mat", value: "bila", hex: "#ffffff" },
-              { label: "Hnědá RAL 8019 mat", value: "hneda", hex: "#45322e" },
-              { label: "RAL 8003 mat (Zlatý dub)", value: "ral_8003", hex: "#8b5a2b" },
-              { label: "Nestandardní lakování RAL", value: "ral_nestandard", priceVariant: 382, priceType: "per_m2" },
-              { label: "Renolit oboustranně", value: "renolit_obou", hex: "#8b5a2b", priceVariant: 282, priceType: "per_m2" }
-            ]
-          },
-          {
-            id: "barva_profilu_hlinik",
-            name: "Barva rámu",
-            type: "color_array",
-            condition: { dependsOnParamId: "typ_okna", allowedValues: ["hlinik"] },
-            options: [
-              { label: "Bílá RAL 9016 mat", value: "bila", hex: "#ffffff" },
-              { label: "Hnědá RAL 8019 mat", value: "hneda", hex: "#45322e" },
-              { label: "RAL 7016 mat (Antracit)", value: "ral_7016", hex: "#383e42" },
-              { label: "RAL 8003 mat (Zlatý dub)", value: "ral_8003", hex: "#8b5a2b" },
-              { label: "RAL 9006 mat (Stříbrná)", value: "ral_9006", hex: "#a5a5a5" },
-              { label: "RAL 7016 struktura / DB 703", value: "ral_struktura", hex: "#383e42", priceVariant: 117, priceType: "per_m2" },
-              { label: "Nestandardní lakování RAL", value: "ral_nestandard", priceVariant: 382, priceType: "per_m2" },
-              { label: "Lakování imitace dřeva", value: "imitace_lak", hex: "#8b5a2b", priceVariant: 200, priceType: "per_m2" }
+              // LAKOVANÉ STANDARD
+              { label: "RAL 9016", value: "ral_9016", img: "/barva/site/5849-10.jpg", qapiRecommended: true },
+              { label: "RAL 8019", value: "ral_8019", img: "/barva/site/5852-10.jpg" },
+              { label: "RAL 7016", value: "ral_7016", img: "/barva/site/5851-10.jpg" },
+              { label: "RAL 8003", value: "ral_8003", img: "/barva/site/5850-10.jpg" },
+              { label: "RAL 9006", value: "ral_9006", img: "/barva/site/5848-10.jpg" },
+              { label: "DB-703", value: "db_703", img: "/barva/site/5846-10.jpg" },
+              { label: "RAL 7016 STRUCTURE", value: "ral_7016_structure", img: "/barva/site/5847-10.jpg" },
+
+              // LAKOVANÉ IMITACE
+              { label: "WALNUT", value: "walnut", img: "/barva/site/5752-10.jpg" },
+              { label: "NATURAL OAK", value: "natural_oak", img: "/barva/site/přírodni dub.jpg" },
+              { label: "GOLD OAK", value: "gold_oak", img: "/barva/site/5750-10.jpg" },
+              { label: "AMARETTO CHERRY", value: "amaretto_cherry", img: "/barva/site/5751-10.jpg" },
+
+              // RENOLITOVÁ FÓLIE
+              { label: "DOUGLAS", value: "douglas", img: "/barva/site/5745-10.jpg" },
+              { label: "PINE", value: "pine", img: "/barva/site/5746-10.jpg" },
+              { label: "DARK NUT", value: "dark_nut", img: "/barva/site/5747-10.jpg" },
+              { label: "SAPELI", value: "sapeli", img: "/barva/site/5744-10.jpg" }
             ]
           },
           {
