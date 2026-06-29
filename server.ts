@@ -1378,8 +1378,20 @@ async function startServer() {
           const qty = item.quantity;
           const model = params.model || '';
           
-          let barva_profilu = params.barva_profilu || '';
-          if (barva_profilu === 'ral' && params.vlastni_ral_kod) {
+          const barvaMap: Record<string, string> = {
+            bila: 'Bílá (RAL 9016)',
+            kremova: 'Krémová (RAL 1015)',
+            hneda: 'Hnědá (RAL 8017)',
+            stribrna: 'Stříbrná (RAL 9006)',
+            antracit: 'Antracit (RAL 7016)',
+            cerna: 'Černá (RAL 9005)',
+            zlaty_dub: 'Zlatý dub (Golden Oak)',
+            dark_walnut: 'Ořech (Dark Walnut)',
+            winchester: 'Winchester',
+            imitace: 'Imitace dřeva (zlatý dub, ořech, winchester)'
+          };
+          let barva_profilu = barvaMap[params.barva_profilu] || params.barva_profilu || '';
+          if (params.barva_profilu === 'ral' && params.vlastni_ral_kod) {
             barva_profilu = `RAL ${params.vlastni_ral_kod}`;
           }
 
@@ -3355,14 +3367,16 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             hint: "Sladění profilu s rámem vašeho okna je základem dokonalého designu. Standardní barvy jsou bez příplatku. Imitace dřeva a lakování RAL jsou za příplatek.",
             type: "color_array",
             options: [
-              { label: "Bílá (RAL 9016)", value: "bila", hex: "#ffffff", qapiRecommended: true },
-              { label: "Krémová (RAL 1015)", value: "kremova", hex: "#e6d6b8", excludedModels: ["PS3"] },
-              { label: "Hnědá (RAL 8017)", value: "hneda", hex: "#45322e" },
-              { label: "Stříbrná (RAL 9006)", value: "stribrna", hex: "#a5a5a5" },
-              { label: "Antracit (RAL 7016)", value: "antracit", hex: "#383e42" },
-              { label: "Černá (RAL 9005)", value: "cerna", hex: "#111111", excludedModels: ["PS3"] },
-              { label: "Imitace dřeva (zlatý dub, ořech, winchester)", value: "imitace", priceVariant: 300, priceType: "fixed", hex: "#8b5a2b", hint: "Přesný odstín imitace s vámi doladíme po objednávce.", excludedModels: ["PS3"] },
-              { label: "Vlastní lakování RAL", value: "ral", hint: "Můžete si vybrat jakoukoliv barvu ze vzorníku RAL.", excludedModels: ["PS3"] }
+              { label: "Bílá (RAL 9016)", value: "bila", image: "/barva/barvaplise/Profil/6054-10.jpg", qapiRecommended: true },
+              { label: "Krémová (RAL 1015)", value: "kremova", image: "/barva/barvaplise/Profil/6840-10.jpg", excludedModels: ["PS3"] },
+              { label: "Hnědá (RAL 8017)", value: "hneda", image: "/barva/barvaplise/Profil/6055-10.jpg" },
+              { label: "Stříbrná (RAL 9006)", value: "stribrna", image: "/barva/barvaplise/Profil/6056-10.jpg" },
+              { label: "Antracit (RAL 7016)", value: "antracit", image: "/barva/barvaplise/Profil/6057-10.jpg" },
+              { label: "Černá (RAL 9005)", value: "cerna", image: "/barva/barvaplise/Profil/6841-10.jpg", excludedModels: ["PS3"] },
+              { label: "Zlatý dub (Golden Oak)", value: "zlaty_dub", priceVariant: 300, priceType: "fixed", image: "/barva/barvaplise/Profil/6059-10.jpg", excludedModels: ["PS3"] },
+              { label: "Ořech (Dark Walnut)", value: "dark_walnut", priceVariant: 300, priceType: "fixed", image: "/barva/barvaplise/Profil/6060-10.jpg", excludedModels: ["PS3"] },
+              { label: "Winchester", value: "winchester", priceVariant: 300, priceType: "fixed", image: "/barva/barvaplise/Profil/6062-10.jpg", excludedModels: ["PS3"] },
+              { label: "Vlastní lakování RAL", value: "ral", hex: "#ffffff", hint: "Můžete si vybrat jakoukoliv barvu ze vzorníku RAL.", excludedModels: ["PS3"] }
             ]
           },
           {

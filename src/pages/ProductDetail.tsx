@@ -912,7 +912,61 @@ export default function ProductDetail({ productId }: { productId: string }) {
                           {param.options.filter(opt => !opt.hidden && (!opt.excludedModels || !opt.excludedModels.includes(selectedParameters['model'] || selectedParameters['typ_profilu'] || ''))).map(opt => {
                             const isSelected = selectedParameters[param.id] === opt.value;
                             const bgColor = opt.hex || opt.colorCode;
+                            const isColorParam = param.id.includes('barva');
                             const titleText = `${opt.label} ${opt.priceVariant ? `(+${opt.priceVariant}${opt.priceType === 'per_m2' ? ' Kč/m²' : opt.priceType === 'per_bm' ? ' Kč/bm šířky' : opt.priceType === 'per_bm_height' ? ' Kč/bm výšky' : ' Kč'})` : ''}`;
+
+                            if (isColorParam && (opt.img || bgColor)) {
+                              return (
+                                <button
+                                  key={opt.value}
+                                  onClick={() => {
+                                    setSelectedParameters(prev => ({ ...prev, [param.id]: opt.value }));
+                                    setQuote(null);
+                                  }}
+                                  className="group flex flex-col items-center gap-1.5 focus:outline-none focus:ring-0 w-[72px]"
+                                  title={titleText}
+                                >
+                                  <div className={`relative overflow-hidden transition-all duration-200 ease-out border-2 ${
+                                    isSelected ? 'border-[#CCAD8A] shadow-md scale-105' : 'border-gray-200 group-hover:border-[#132333]'
+                                  } w-16 h-16 rounded-full flex-shrink-0`}>
+                                    {opt.img ? (
+                                      <>
+                                        <img src={opt.img} alt={opt.label} className="w-full h-full object-cover" />
+                                        {isSelected && (
+                                          <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                                            <Check className="text-white drop-shadow-md shadow-black" size={24} strokeWidth={3} />
+                                          </div>
+                                        )}
+                                        <div 
+                                          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-white/90 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white z-10"
+                                          onClick={(e) => { e.stopPropagation(); setPreviewModalImg(opt.img!); }}
+                                        >
+                                          <Eye className="w-4 h-4 text-gray-700" />
+                                        </div>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <div className="w-full h-full" style={{ backgroundColor: bgColor }}></div>
+                                        {isSelected && (
+                                          <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                                            <Check className="text-white drop-shadow-md shadow-black" size={24} strokeWidth={3} />
+                                          </div>
+                                        )}
+                                        <div 
+                                          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-white/90 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white z-10"
+                                          onClick={(e) => { e.stopPropagation(); setPreviewModalColor({ hex: bgColor, name: opt.label }); }}
+                                        >
+                                          <Eye className="w-4 h-4 text-gray-700" />
+                                        </div>
+                                      </>
+                                    )}
+                                  </div>
+                                  <span className={`text-[11px] leading-tight text-center max-w-full break-words ${isSelected ? 'text-[#132333] font-bold' : 'text-gray-500'}`}>
+                                    {opt.label} {opt.priceVariant ? `(+${opt.priceVariant} Kč)` : ''}
+                                  </span>
+                                </button>
+                              );
+                            }
 
                             if (opt.img) {
                               return (
