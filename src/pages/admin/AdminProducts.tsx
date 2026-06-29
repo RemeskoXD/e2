@@ -2004,7 +2004,7 @@ export default function AdminProducts() {
                             </div>
                           </SortableContext>
                         </DndContext>
-                        {param.options.length === 0 && (
+                        {(!param.options || param.options.length === 0) && (
                           <p className="text-xs text-gray-400 italic mt-2">Zatím nejsou přidány žádné možnosti.</p>
                         )}
                       </div>
