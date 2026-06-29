@@ -3291,22 +3291,15 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             name: "Cenová skupina 4 (Zebra, Grass, Parquet)", surcharge_percent: 0, matrix: m.g4, 
             colors: [
               // Zebra
-              { name: "Zebra 6100", hex: "#e5e4e2" },
-              { name: "Zebra 6101", hex: "#e5e4e2" },
-              { name: "Zebra 6108", hex: "#e5e4e2" },
-              { name: "Zebra 6110", hex: "#e5e4e2" },
-              { name: "Zebra 6112", hex: "#e5e4e2" },
-              { name: "Zebra 6117", hex: "#e5e4e2" },
+              { name: "Zebra 6100", img: "/barva/barvaplise/5137-10.jpg" },
+              { name: "Zebra 6110", img: "/barva/barvaplise/5136-10.jpg" },
               // Grass
-              { name: "Grass 6600", hex: "#98fb98" },
-              { name: "Grass 6601", hex: "#98fb98" },
-              { name: "Grass 6604", hex: "#98fb98" },
-              { name: "Grass 6605", hex: "#98fb98" },
-              { name: "Grass 6607", hex: "#98fb98" },
-              { name: "Grass 6608", hex: "#98fb98" },
+              { name: "Grass 6600", img: "/barva/barvaplise/5052-10.jpg" },
+              { name: "Grass 6601", img: "/barva/barvaplise/5049-10.jpg" },
+              { name: "Grass 6607", img: "/barva/barvaplise/5051-10.jpg" },
               // Parquet
-              { name: "Parquet 8940", hex: "#d2b48c" },
-              { name: "Parquet 8942", hex: "#d2b48c" }
+              { name: "Parquet 8940", img: "/barva/barvaplise/5085-10.jpg" },
+              { name: "Parquet 8942", img: "/barva/barvaplise/5083-10.jpg" }
             ] 
           },
           { 
