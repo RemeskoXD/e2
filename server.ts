@@ -3306,30 +3306,29 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             name: "Cenová skupina 5 (Bamboo Pearl, Shine, Wave, Binary, Living Blackout, Sparkle)", surcharge_percent: 0, matrix: m.g5, 
             colors: [
               // Bamboo Pearl
-              { name: "Bamboo Pearl 1015", hex: "#f5f5f5" },
-              { name: "Bamboo Pearl 1025", hex: "#f5f5f5" },
-              { name: "Bamboo Pearl 1035", hex: "#f5f5f5" },
-              { name: "Bamboo Pearl 1045", hex: "#f5f5f5" },
-              { name: "Bamboo Pearl 1055", hex: "#f5f5f5" },
-              { name: "Bamboo Pearl 1065", hex: "#f5f5f5" },
-              { name: "Bamboo Pearl 1075", hex: "#f5f5f5" },
-              { name: "Bamboo Pearl 1085", hex: "#f5f5f5" },
+              { name: "Bamboo Pearl 1015", img: "/barva/barvaplise/4979-10.jpg" },
+              { name: "Bamboo Pearl 1025", img: "/barva/barvaplise/4975-10.jpg" },
+              { name: "Bamboo Pearl 1035", img: "/barva/barvaplise/4977-10.jpg" },
+              { name: "Bamboo Pearl 1045", img: "/barva/barvaplise/4981-10.jpg" },
+              { name: "Bamboo Pearl 1055", img: "/barva/barvaplise/4980-10.jpg" },
+              { name: "Bamboo Pearl 1065", img: "/barva/barvaplise/4976-10.jpg" },
+              { name: "Bamboo Pearl 1075", img: "/barva/barvaplise/4978-10.jpg" },
+              { name: "Bamboo Pearl 1085", img: "/barva/barvaplise/4982-10.jpg" },
               // Shine
-              { name: "Shine 8550", hex: "#e6e6fa" },
-              { name: "Shine 8555", hex: "#e6e6fa" },
+              { name: "Shine 8550", img: "/barva/barvaplise/5102-10.jpg" },
+              { name: "Shine 8555", img: "/barva/barvaplise/5103-10.jpg" },
               // Wave
-              { name: "Wave 9660", hex: "#b0e0e6" },
-              { name: "Wave 9661", hex: "#b0e0e6" },
+              { name: "Wave 9660", img: "/barva/barvaplise/5124-10.jpg" },
+              { name: "Wave 9661", img: "/barva/barvaplise/5125-10.jpg" },
               // Binary
-              { name: "Binary 9600", hex: "#d3d3d3" },
-              { name: "Binary 9601", hex: "#d3d3d3" },
+              { name: "Binary 9600", img: "/barva/barvaplise/5044-10.jpg" },
               // Living Blackout
-              { name: "Living Blackout 201V", hex: "#808080" },
-              { name: "Living Blackout 202V", hex: "#808080" },
-              { name: "Living Blackout 203V", hex: "#808080" },
-              { name: "Living Blackout 204V", hex: "#808080" },
-              { name: "Living Blackout 205V", hex: "#808080" },
-              { name: "Living Blackout 206V", hex: "#808080" },
+              { name: "Living Blackout 201V", img: "/barva/barvaplise/5077-10.jpg" },
+              { name: "Living Blackout 202V", img: "/barva/barvaplise/5080-10.jpg" },
+              { name: "Living Blackout 203V", img: "/barva/barvaplise/5081-10.jpg" },
+              { name: "Living Blackout 204V", img: "/barva/barvaplise/5078-10.jpg" },
+              { name: "Living Blackout 205V", img: "/barva/barvaplise/5076-10.jpg" },
+              { name: "Living Blackout 206V", img: "/barva/barvaplise/5079-10.jpg" },
               // Sparkle
               { name: "Sparkle 1300", hex: "#ffebcd" }
             ] 
