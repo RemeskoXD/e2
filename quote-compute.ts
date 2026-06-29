@@ -655,17 +655,25 @@ export async function computeProductQuote(
     const color = p.barva_profilu || '';
     let colorSurcharge = 0;
     
-    if (color === 'db_703' || color === 'ral_7016_structure') {
-      if (typOkna === 'pvc') colorSurcharge = 57;
-      if (typOkna === 'hlinik') colorSurcharge = 117;
+    const isImitace = ['walnut', 'natural_oak', 'gold_oak', 'amaretto_cherry'].includes(color);
+    const isRenolit = ['douglas', 'pine', 'dark_nut', 'sapeli'].includes(color);
+    const isStruktura = ['db_703', 'ral_7016_structure'].includes(color);
+
+    if (typOkna === 'pvc') {
+      if (isStruktura) colorSurcharge = 57;
+      if (isImitace) colorSurcharge = 162;
+      if (isRenolit) colorSurcharge = 301;
     }
-    else if (['walnut', 'natural_oak', 'gold_oak', 'amaretto_cherry'].includes(color)) {
-      if (typOkna === 'pvc') colorSurcharge = 162;
-      if (typOkna === 'hlinik') colorSurcharge = 200;
+    else if (typOkna === 'euro') {
+      if (isImitace) return { ok: false, status: 400, body: { error: `Lakované imitace dřeva nejsou pro profil EURO (OE 24x24) k dispozici.` } };
+      if (isStruktura) return { ok: false, status: 400, body: { error: `Barvy struktura/DB 703 nejsou pro profil EURO (OE 24x24) k dispozici.` } };
+      if (['ral_7016', 'ral_9006'].includes(color)) return { ok: false, status: 400, body: { error: `Tato RAL barva není ve standardní nabídce pro profil EURO (OE 24x24).` } };
+      if (isRenolit) colorSurcharge = 282;
     }
-    else if (['douglas', 'pine', 'dark_nut', 'sapeli'].includes(color)) {
-      if (typOkna === 'pvc') colorSurcharge = 301; 
-      if (typOkna === 'euro') colorSurcharge = 282; 
+    else if (typOkna === 'hlinik') {
+      if (isRenolit) return { ok: false, status: 400, body: { error: `Renolit fólie nejsou pro hliníkový profil (OE 32x11 Lux) k dispozici.` } };
+      if (isStruktura) colorSurcharge = 117;
+      if (isImitace) colorSurcharge = 200;
     }
     
     if (colorSurcharge > 0) {
@@ -676,11 +684,9 @@ export async function computeProductQuote(
     if (p.okenni_pricka === 'ano') {
       let isRal = false;
       const activeColor = p.barva_profilu || '';
-      
       if (activeColor === 'db_703' || activeColor === 'ral_7016_structure') {
          isRal = true;
       }
-      
       const prickaPrice = isRal ? 85 : 69;
       baseCatalogCzk += prickaPrice;
       screenUnionCatalogNotes.push(`Okenní příčka: ${prickaPrice} Kč.`);
