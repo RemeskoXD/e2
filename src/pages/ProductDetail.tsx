@@ -817,7 +817,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                                   </div>
                                 )}
                                 <div 
-                                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-white/90 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white z-10"
+                                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-white/90 rounded-full shadow-sm md:opacity-0 md:group-hover:opacity-100 opacity-80 hover:opacity-100 transition-opacity z-10"
                                   onClick={(e) => { e.stopPropagation(); setPreviewModalImg(cImg!); }}
                                 >
                                   <Eye className="w-4 h-4 text-gray-700" />
@@ -832,7 +832,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                                   </div>
                                 )}
                                 <div 
-                                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-white/90 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white z-10"
+                                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-white/90 rounded-full shadow-sm md:opacity-0 md:group-hover:opacity-100 opacity-80 hover:opacity-100 transition-opacity z-10"
                                   onClick={(e) => { e.stopPropagation(); setPreviewModalColor({ hex: cHex, name: cName }); }}
                                 >
                                   <Eye className="w-4 h-4 text-gray-700" />
@@ -938,7 +938,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                                           </div>
                                         )}
                                         <div 
-                                          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-white/90 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white z-10"
+                                          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-white/90 rounded-full shadow-sm md:opacity-0 md:group-hover:opacity-100 opacity-80 hover:opacity-100 transition-opacity z-10"
                                           onClick={(e) => { e.stopPropagation(); setPreviewModalImg(opt.img!); }}
                                         >
                                           <Eye className="w-4 h-4 text-gray-700" />
@@ -953,7 +953,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                                           </div>
                                         )}
                                         <div 
-                                          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-white/90 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white z-10"
+                                          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-white/90 rounded-full shadow-sm md:opacity-0 md:group-hover:opacity-100 opacity-80 hover:opacity-100 transition-opacity z-10"
                                           onClick={(e) => { e.stopPropagation(); setPreviewModalColor({ hex: bgColor, name: opt.label }); }}
                                         >
                                           <Eye className="w-4 h-4 text-gray-700" />
