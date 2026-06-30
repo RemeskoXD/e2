@@ -589,6 +589,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
               className="rounded-2xl overflow-hidden border border-gray-100 bg-white shadow-sm aspect-[4/3] mb-4 relative group cursor-zoom-in"
               onClick={() => {
                 const index = allImages.indexOf(mainImg || product.img);
+                setLightboxImages(allImages);
                 setLightboxIndex(index >= 0 ? index : 0);
               }}
             >
