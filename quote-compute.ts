@@ -684,12 +684,14 @@ export async function computeProductQuote(
     if (p.okenni_pricka === 'ano') {
       let isRal = false;
       const activeColor = p.barva_profilu || '';
-      if (activeColor === 'db_703' || activeColor === 'ral_7016_structure') {
+      if (activeColor.startsWith('ral_') || activeColor === 'db_703') {
          isRal = true;
       }
+      const numBars = Number(p.pocet_pricek) || 1;
       const prickaPrice = isRal ? 85 : 69;
-      baseCatalogCzk += prickaPrice;
-      screenUnionCatalogNotes.push(`Okenní příčka: ${prickaPrice} Kč.`);
+      const totalPrickaPrice = prickaPrice * numBars;
+      baseCatalogCzk += totalPrickaPrice;
+      screenUnionCatalogNotes.push(`Okenní příčka (${numBars} ks): ${totalPrickaPrice} Kč.`);
     }
   }
   // --- KONEC SÍTĚ PROTI HMYZU ---

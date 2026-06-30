@@ -3608,6 +3608,17 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             ]
           },
           {
+            id: "uchyceni_euro",
+            name: "Způsob uchycení (pro EURO okna)",
+            hint: "Při použití obrtlíku nebo pružinového kolíku je nutno vrtat do rámu okna.",
+            type: "select",
+            condition: { dependsOnParamId: "typ_okna", allowedValues: ["euro"] },
+            options: [
+              { label: "Obrtlík", value: "obrtlik" },
+              { label: "Pružinový kolík", value: "pruzinovy_kolik" }
+            ]
+          },
+          {
             id: "provedeni_rohu_euro",
             name: "Provedení rohů (pro EURO okna)",
             type: "select",
@@ -3634,8 +3645,32 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             condition: { dependsOnParamId: "typ_okna", allowedValues: ["pvc", "euro"] },
             options: [
               { label: "Ne", value: "ne" },
-              { label: "Ano (dopočítá se dle barvy profilu)", value: "ano" }
+              { label: "Ano (vyžaduje zadání výšky)", value: "ano" }
             ]
+          },
+          {
+            id: "pocet_pricek",
+            name: "Počet okenních příček",
+            type: "select",
+            condition: { dependsOnParamId: "okenni_pricka", allowedValues: ["ano"] },
+            options: [
+              { label: "1 příčka", value: "1" },
+              { label: "2 příčky", value: "2" }
+            ]
+          },
+          {
+            id: "vyska_pricky_1",
+            name: "Umístění 1. příčky",
+            hint: "Výška od spodní hrany sítě na střed příčky v milimetrech (např. 800).",
+            type: "text",
+            condition: { dependsOnParamId: "okenni_pricka", allowedValues: ["ano"] }
+          },
+          {
+            id: "vyska_pricky_2",
+            name: "Umístění 2. příčky",
+            hint: "Výška od spodní hrany sítě na střed druhé příčky v milimetrech.",
+            type: "text",
+            condition: { dependsOnParamId: "pocet_pricek", allowedValues: ["2"] }
           }
         ];
 
