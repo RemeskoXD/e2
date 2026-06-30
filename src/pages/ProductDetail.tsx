@@ -593,6 +593,9 @@ export default function ProductDetail({ productId }: { productId: string }) {
               }}
             >
               <img src={mainImg || product.img} alt={product.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              <div className="absolute top-4 right-4 p-2.5 bg-white/90 backdrop-blur-sm rounded-full shadow-md md:opacity-0 md:group-hover:opacity-100 opacity-80 hover:opacity-100 transition-all duration-300">
+                <ZoomIn className="w-5 h-5 text-gray-800" />
+              </div>
             </div>
             {product.gallery && product.gallery.length > 0 && (
               <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide py-1">
