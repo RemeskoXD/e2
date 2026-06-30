@@ -226,6 +226,19 @@ export default function AdminOrderDetail({ orderId }: { orderId: number }) {
               Exportovat Textilní roletky Excel
             </button>
           )}
+          {items.some(it => (it.product_title || '').toLowerCase().includes('okenní sítě proti hmyzu') || it.product_slug === 'site-proti-hmyzu-okenni') && (
+            <button
+              type="button"
+              onClick={() => {
+                const t = token();
+                window.open(`/api/admin/orders/${order.id}/export-site-okenni?token=${t}`, '_blank');
+              }}
+              className="bg-white text-orange-700 border border-orange-200 font-bold px-4 py-2 rounded-lg hover:bg-orange-50 flex items-center gap-2"
+            >
+              <FileSpreadsheet size={18} />
+              Exportovat Okenní sítě Excel
+            </button>
+          )}
         </div>
       </div>
 

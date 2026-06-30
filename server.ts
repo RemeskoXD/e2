@@ -1734,6 +1734,155 @@ async function startServer() {
     });
   });
 
+  app.get("/api/admin/orders/:id/export-site-okenni", requireAdmin, async (req, res) => {
+    await withDb(res, async (db) => {
+      try {
+        const id = Number(req.params.id);
+        if (!Number.isFinite(id) || id < 1) {
+          res.status(400).json({ error: "Neplatné ID" });
+          return;
+        }
+        const o = await db.query('SELECT * FROM "Order" WHERE id = $1', [id]);
+        if (!o.rows[0]) {
+          res.status(404).json({ error: "Nenalezeno" });
+          return;
+        }
+        const order = o.rows[0];
+        const items = await db.query(
+          'SELECT * FROM "OrderItem" WHERE order_id = $1 ORDER BY id ASC',
+          [id]
+        );
+
+        const okenniItems = items.rows.filter((item: any) => 
+          item.product_slug === 'site-proti-hmyzu-okenni' || (item.product_title || '').toLowerCase().includes('okenní sítě proti hmyzu')
+        );
+
+        if (okenniItems.length === 0) {
+          res.status(404).json({ error: "Objednávka neobsahuje Okenní sítě proti hmyzu" });
+          return;
+        }
+
+        const templatePath = path.join(process.cwd(), 'public', 'formular', '07_formular_pevne_site_proti_hmyzu_okenni.xlsx');
+        if (!fs.existsSync(templatePath)) {
+           res.status(404).json({ error: "Šablona formuláře nebyla nalezena." });
+           return;
+        }
+
+        const ExcelJS = require('exceljs');
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.readFile(templatePath);
+        const sheet = workbook.worksheets[0];
+
+        const addr = [order.delivery_street, order.delivery_city, order.delivery_zip].filter(Boolean).join(', ');
+        sheet.getCell('D3').value = "Ropemi s.r.o., Varšavská 715/36, Vinohrady, 120 00 Praha 2";
+        sheet.getCell('D4').value = addr;
+        sheet.getCell('D5').value = "+420 774 060 193";
+        sheet.getCell('H3').value = new Date(order.date).toLocaleDateString('cs-CZ');
+        sheet.getCell('L3').value = order.order_no;
+        sheet.getCell('L5').value = order.order_no;
+
+        let currentRow = 9; // Data starts at row 9
+        okenniItems.forEach((item: any, index: number) => {
+          const params = item.options?.selected_parameters || {};
+          const w = item.width_mm || 0;
+          const h = item.height_mm || 0;
+          const qty = item.quantity;
+          
+          let typOkna = params.typ_okna || '';
+          let profilLabel = '';
+          let uchyceniText = '';
+          if (typOkna === 'pvc') {
+            profilLabel = 'ISSO OE 19x8';
+            uchyceniText = 'Otočný držák';
+          } else if (typOkna === 'euro') {
+            profilLabel = 'OE 24x24';
+            if (params.uchyceni_euro === 'pruzinovy_kolik') uchyceniText = 'Pružinový kolík';
+            else uchyceniText = 'Obrtlík';
+          } else if (typOkna === 'hlinik') {
+            profilLabel = 'OE 32x11 LUX';
+            uchyceniText = 'Z držák';
+          }
+          
+          const barvaMap: Record<string, string> = {
+            ral_9016: 'RAL 9016',
+            ral_8019: 'RAL 8019',
+            ral_7016: 'RAL 7016',
+            ral_8003: 'RAL 8003',
+            ral_9006: 'RAL 9006',
+            db_703: 'DB-703',
+            ral_7016_structure: 'RAL 7016 STRUCTURE',
+            walnut: 'WALNUT',
+            natural_oak: 'NATURAL OAK',
+            gold_oak: 'GOLD OAK',
+            amaretto_cherry: 'AMARETTO CHERRY',
+            douglas: 'DOUGLAS',
+            pine: 'PINE',
+            dark_nut: 'DARK NUT',
+            sapeli: 'SAPELI'
+          };
+          let barvaProfilu = barvaMap[params.barva_profilu] || params.barva_profilu || '';
+          
+          let sitovina = params.sitovina || '';
+          if (sitovina === 'seda') sitovina = 'Š - šedá';
+          else if (sitovina === 'cerna') sitovina = 'Č - černá';
+          else if (sitovina === 'protipylova') sitovina = 'P - Protipylová černá';
+          else if (sitovina === 'nano') sitovina = 'N - s nanovláknem černá';
+          else if (sitovina === 'petscreen_cerna') sitovina = 'PSČ - pet screen černá';
+          else if (sitovina === 'petscreen_seda') sitovina = 'PSŠ - pet screen šedá';
+          else if (sitovina === 'transparentni') sitovina = 'Transparentní černá';
+
+          let vyskaDrzaku = '';
+          if (typOkna === 'pvc') vyskaDrzaku = (params.uchyceni_pvc || '0') + ' mm';
+          else if (typOkna === 'hlinik') vyskaDrzaku = (params.uchyceni_hlinik || '0') + ' mm';
+
+          let rohyVnejsi = '';
+          let rohyVnitrni = '';
+          if (typOkna === 'euro') {
+            if (params.provedeni_rohu_euro === 'vnitrni') rohyVnitrni = 'X';
+            else rohyVnejsi = 'X';
+          }
+
+          let okenniPricka = '';
+          let prickaPocet = '';
+          let prickaV1 = '';
+          let prickaV2 = '';
+          if (params.okenni_pricka === 'ano') {
+            prickaPocet = params.pocet_pricek || '1';
+            prickaV1 = params.vyska_pricky_1 || '';
+            prickaV2 = prickaPocet === '2' ? (params.vyska_pricky_2 || '') : '';
+          }
+          
+          sheet.getCell(`A${currentRow}`).value = index + 1 + '.';
+          sheet.getCell(`C${currentRow}`).value = profilLabel;
+          sheet.getCell(`E${currentRow}`).value = qty;
+          sheet.getCell(`F${currentRow}`).value = w;
+          sheet.getCell(`G${currentRow}`).value = h;
+          sheet.getCell(`H${currentRow}`).value = barvaProfilu;
+          sheet.getCell(`K${currentRow}`).value = sitovina;
+          sheet.getCell(`L${currentRow}`).value = uchyceniText;
+          sheet.getCell(`M${currentRow}`).value = vyskaDrzaku;
+          sheet.getCell(`O${currentRow}`).value = rohyVnejsi;
+          sheet.getCell(`P${currentRow}`).value = rohyVnitrni;
+          sheet.getCell(`Q${currentRow}`).value = prickaPocet;
+          sheet.getCell(`R${currentRow}`).value = prickaV1;
+          sheet.getCell(`S${currentRow}`).value = prickaV2;
+          
+          currentRow++;
+        });
+
+        res.setHeader('Content-Disposition', `attachment; filename="Objednavka_SiteOkenni_${order.order_no}.xlsx"`);
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        
+        await workbook.xlsx.write(res);
+        res.end();
+
+      } catch (err) {
+        console.error('Okenni site export error:', err);
+        res.status(500).json({ error: "Server error při generování Excelu" });
+      }
+    });
+  });
+
   app.patch("/api/admin/orders/:id", requireAdmin, async (req, res) => {
     await withDb(res, async (db) => {
       const client = await db.connect();
