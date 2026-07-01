@@ -3840,20 +3840,20 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
               { label: "RAL 7016", value: "ral_7016", img: "/barva/site/5851-10.jpg" },
               { label: "RAL 8003", value: "ral_8003", img: "/barva/site/5850-10.jpg" },
               { label: "RAL 9006", value: "ral_9006", img: "/barva/site/5848-10.jpg" },
-              { label: "DB-703", value: "db_703", img: "/barva/site/5846-10.jpg" },
-              { label: "RAL 7016 STRUCTURE", value: "ral_7016_structure", img: "/barva/site/5847-10.jpg" },
+              { label: "DB-703 (od + 57 Kč/m²)", value: "db_703", img: "/barva/site/5846-10.jpg" },
+              { label: "RAL 7016 STRUCTURE (od + 57 Kč/m²)", value: "ral_7016_structure", img: "/barva/site/5847-10.jpg" },
 
               // LAKOVANÉ IMITACE
-              { label: "WALNUT", value: "walnut", img: "/barva/site/5752-10.jpg" },
-              { label: "NATURAL OAK", value: "natural_oak", img: "/barva/site/přírodni dub.jpg" },
-              { label: "GOLD OAK", value: "gold_oak", img: "/barva/site/5750-10.jpg" },
-              { label: "AMARETTO CHERRY", value: "amaretto_cherry", img: "/barva/site/5751-10.jpg" },
+              { label: "WALNUT (od + 162 Kč/m²)", value: "walnut", img: "/barva/site/5752-10.jpg" },
+              { label: "NATURAL OAK (od + 162 Kč/m²)", value: "natural_oak", img: "/barva/site/přírodni dub.jpg" },
+              { label: "GOLD OAK (od + 162 Kč/m²)", value: "gold_oak", img: "/barva/site/5750-10.jpg" },
+              { label: "AMARETTO CHERRY (od + 162 Kč/m²)", value: "amaretto_cherry", img: "/barva/site/5751-10.jpg" },
 
               // RENOLITOVÁ FÓLIE
-              { label: "DOUGLAS", value: "douglas", img: "/barva/site/5745-10.jpg" },
-              { label: "PINE", value: "pine", img: "/barva/site/5746-10.jpg" },
-              { label: "DARK NUT", value: "dark_nut", img: "/barva/site/5747-10.jpg" },
-              { label: "SAPELI", value: "sapeli", img: "/barva/site/5744-10.jpg" }
+              { label: "DOUGLAS (od + 282 Kč/m²)", value: "douglas", img: "/barva/site/5745-10.jpg" },
+              { label: "PINE (od + 282 Kč/m²)", value: "pine", img: "/barva/site/5746-10.jpg" },
+              { label: "DARK NUT (od + 282 Kč/m²)", value: "dark_nut", img: "/barva/site/5747-10.jpg" },
+              { label: "SAPELI (od + 282 Kč/m²)", value: "sapeli", img: "/barva/site/5744-10.jpg" }
             ]
           },
           {
@@ -3865,10 +3865,10 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             options: [
               { label: "Skelné vlákno - šedá", value: "zaklad_seda", qapiRecommended: true, hint: "Nejuniverzálnější volba. Šedá barva dokonale splyne s oknem a propouští nejvíce světla.", img: "/images/icon_sit_seda.png" },
               { label: "Skelné vlákno - černá", value: "zaklad_cerna", hint: "Klasické černé vlákno. Zevnitř je lépe průhledné.", img: "/images/icon_sit_cerna.png" },
-              { label: "Transparentní síťovina - černá", value: "transparentni", priceVariant: 142, priceType: "per_m2", hint: "Extrémně tenké vlákno. Zevnitř i zvenku je síť téměř nepostřehnutelná.", img: "/images/icon_sit_transparent.png" },
-              { label: "Protipylová síťovina - černá", value: "protipylova", priceVariant: 431, priceType: "per_m2", hint: "Hustší tkaní zachytí většinu pylu a prachu. Ideální do ložnice alergiků.", img: "/images/icon_sit_protipylova.png" },
-              { label: "Pet screen (odolná) - šedá", value: "petscreen_seda", priceVariant: 475, priceType: "per_m2", hint: "Vysoce odolná proti protržení kočkou nebo psem. Mírně snižuje světelnost.", img: "/images/icon_sit_petscreen.png" },
-              { label: "Pet screen (odolná) - černá", value: "petscreen_cerna", priceVariant: 475, priceType: "per_m2", hint: "Vysoce odolná černá varianta proti drápkům.", img: "/images/icon_sit_petscreen.png" }
+              { label: "Transparentní síťovina - černá (+ 142 Kč/m²)", value: "transparentni", priceVariant: 142, priceType: "per_m2", hint: "Extrémně tenké vlákno. Zevnitř i zvenku je síť téměř nepostřehnutelná.", img: "/images/icon_sit_transparent.png" },
+              { label: "Protipylová síťovina - černá (+ 431 Kč/m²)", value: "protipylova", priceVariant: 431, priceType: "per_m2", hint: "Hustší tkaní zachytí většinu pylu a prachu. Ideální do ložnice alergiků.", img: "/images/icon_sit_protipylova.png" },
+              { label: "Pet screen (odolná) - šedá (+ 475 Kč/m²)", value: "petscreen_seda", priceVariant: 475, priceType: "per_m2", hint: "Vysoce odolná proti protržení kočkou nebo psem. Mírně snižuje světelnost.", img: "/images/icon_sit_petscreen.png" },
+              { label: "Pet screen (odolná) - černá (+ 475 Kč/m²)", value: "petscreen_cerna", priceVariant: 475, priceType: "per_m2", hint: "Vysoce odolná černá varianta proti drápkům.", img: "/images/icon_sit_petscreen.png" }
             ]
           },
           {
@@ -3880,11 +3880,11 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             options: [
               { label: "Skelné vlákno - šedá", value: "zaklad_seda", qapiRecommended: true, hint: "Nejuniverzálnější volba. Šedá barva dokonale splyne s oknem a propouští nejvíce světla.", img: "/images/icon_sit_seda.png" },
               { label: "Skelné vlákno - černá", value: "zaklad_cerna", hint: "Klasické černé vlákno. Zevnitř je lépe průhledné.", img: "/images/icon_sit_cerna.png" },
-              { label: "Transparentní síťovina - černá", value: "transparentni", priceVariant: 142, priceType: "per_m2", hint: "Extrémně tenké vlákno. Zevnitř i zvenku je síť téměř nepostřehnutelná.", img: "/images/icon_sit_transparent.png" },
-              { label: "Protipylová síťovina - černá", value: "protipylova", priceVariant: 431, priceType: "per_m2", hint: "Hustší tkaní zachytí většinu pylu a prachu. Ideální do ložnice alergiků.", img: "/images/icon_sit_protipylova.png" },
-              { label: "Pet screen (odolná) - šedá", value: "petscreen_seda", priceVariant: 475, priceType: "per_m2", hint: "Vysoce odolná proti protržení kočkou nebo psem. Mírně snižuje světelnost.", img: "/images/icon_sit_petscreen.png" },
-              { label: "Pet screen (odolná) - černá", value: "petscreen_cerna", priceVariant: 475, priceType: "per_m2", hint: "Vysoce odolná černá varianta proti drápkům.", img: "/images/icon_sit_petscreen.png" },
-              { label: "Síťovina s nanovláknem - černá", value: "nano", priceVariant: 1078, priceType: "per_m2", hint: "Revoluční nanovlákno zachytí i ty nejmenší částice smogu. Nejvyšší možná ochrana.", img: "/images/icon_sit_nano.png" }
+              { label: "Transparentní síťovina - černá (+ 142 Kč/m²)", value: "transparentni", priceVariant: 142, priceType: "per_m2", hint: "Extrémně tenké vlákno. Zevnitř i zvenku je síť téměř nepostřehnutelná.", img: "/images/icon_sit_transparent.png" },
+              { label: "Protipylová síťovina - černá (+ 431 Kč/m²)", value: "protipylova", priceVariant: 431, priceType: "per_m2", hint: "Hustší tkaní zachytí většinu pylu a prachu. Ideální do ložnice alergiků.", img: "/images/icon_sit_protipylova.png" },
+              { label: "Pet screen (odolná) - šedá (+ 475 Kč/m²)", value: "petscreen_seda", priceVariant: 475, priceType: "per_m2", hint: "Vysoce odolná proti protržení kočkou nebo psem. Mírně snižuje světelnost.", img: "/images/icon_sit_petscreen.png" },
+              { label: "Pet screen (odolná) - černá (+ 475 Kč/m²)", value: "petscreen_cerna", priceVariant: 475, priceType: "per_m2", hint: "Vysoce odolná černá varianta proti drápkům.", img: "/images/icon_sit_petscreen.png" },
+              { label: "Síťovina s nanovláknem - černá (+ 1078 Kč/m²)", value: "nano", priceVariant: 1078, priceType: "per_m2", hint: "Revoluční nanovlákno zachytí i ty nejmenší částice smogu. Nejvyšší možná ochrana.", img: "/images/icon_sit_nano.png" }
             ]
           },
           {
@@ -3941,7 +3941,7 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             condition: { dependsOnParamId: "typ_okna", allowedValues: ["euro"] },
             options: [
               { label: "Vnější rohy (standard)", value: "vnejsi" },
-              { label: "Vnitřní rohy", value: "vnitrni", priceVariant: 89, priceType: "fixed" }
+              { label: "Vnitřní rohy (+ 89 Kč)", value: "vnitrni", priceVariant: 89, priceType: "fixed" }
             ]
           },
           {
@@ -3951,7 +3951,7 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             condition: { dependsOnParamId: "typ_okna", allowedValues: ["pvc"] },
             options: [
               { label: "Ne", value: "ne" },
-              { label: "Ano (vyžaduje nákres)", value: "ano", priceVariant: 407, priceType: "fixed" }
+              { label: "Ano (+ 407 Kč)", value: "ano", priceVariant: 407, priceType: "fixed" }
             ]
           },
           {
@@ -3961,7 +3961,7 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             condition: { dependsOnParamId: "typ_okna", allowedValues: ["pvc", "euro"] },
             options: [
               { label: "Ne", value: "ne" },
-              { label: "Ano (vyžaduje zadání výšky)", value: "ano" }
+              { label: "Ano (+ 69 Kč / 85 Kč v RAL)", value: "ano" }
             ]
           },
           {
@@ -4066,11 +4066,11 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
               { label: "RAL 7016 mat (Antracit)", value: "zaklad_7016", hex: "#383e42" },
               { label: "RAL 8003 mat (Zlatý dub)", value: "zaklad_8003", hex: "#8b5a2b" },
               { label: "RAL 9006 mat (Stříbrná)", value: "zaklad_9006", hex: "#a5a5a5" },
-              { label: "RAL 7016 struktura / DB 703", value: "ral_struktura", hex: "#383e42" },
-              { label: "Nestandardní lakování RAL", value: "ral_nestandard" },
-              { label: "Lakování imitace dřeva", value: "imitace_dreva", hex: "#8b5a2b" },
-              { label: "Renolit jednostranně", value: "renolit_jedno", hex: "#8b5a2b" },
-              { label: "Renolit oboustranně", value: "renolit_obou", hex: "#8b5a2b" }
+              { label: "RAL 7016 struktura / DB 703 (od + 155 Kč/m²)", value: "ral_struktura", hex: "#383e42" },
+              { label: "Nestandardní lakování RAL (+ 1035 Kč/m²)", value: "ral_nestandard" },
+              { label: "Lakování imitace dřeva (od + 354 Kč/m²)", value: "imitace_dreva", hex: "#8b5a2b" },
+              { label: "Renolit jednostranně (od + 478 Kč/m²)", value: "renolit_jedno", hex: "#8b5a2b" },
+              { label: "Renolit oboustranně (od + 641 Kč/m²)", value: "renolit_obou", hex: "#8b5a2b" }
             ]
           },
           {
@@ -4080,7 +4080,7 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             type: "select",
             options: [
               { label: "Standardní plastové (v ceně)", value: "plast" },
-              { label: "Zpevněné hliníkové", value: "al_rohy", qapiRecommended: true, hint: "Pevné hliníkové rohy doporučujeme pro každodenně používané dveřní sítě." }
+              { label: "Zpevněné hliníkové (+ 407 Kč / křídlo)", value: "al_rohy", qapiRecommended: true, hint: "Pevné hliníkové rohy doporučujeme pro každodenně používané dveřní sítě." }
             ]
           },
           {
@@ -4092,10 +4092,10 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             options: [
               { label: "Skelné vlákno - šedá", value: "zaklad_seda", qapiRecommended: true, hint: "Nejuniverzálnější volba. Šedá barva dokonale splyne s oknem a propouští nejvíce světla.", img: "/images/icon_sit_seda.png" },
               { label: "Skelné vlákno - černá", value: "zaklad_cerna", hint: "Klasické černé vlákno. Zevnitř je lépe průhledné.", img: "/images/icon_sit_cerna.png" },
-              { label: "Transparentní síťovina - černá", value: "transparentni", hint: "Extrémně tenké vlákno. Zevnitř i zvenku je síť téměř nepostřehnutelná.", img: "/images/icon_sit_transparent.png" },
-              { label: "Protipylová síťovina - černá", value: "protipylova", hint: "Hustší tkaní zachytí většinu pylu a prachu. Ideální do ložnice alergiků.", img: "/images/icon_sit_protipylova.png" },
-              { label: "Pet screen (odolná) - šedá", value: "petscreen_seda", hint: "Vysoce odolná proti protržení kočkou nebo psem. Mírně snižuje světelnost.", img: "/images/icon_sit_petscreen.png" },
-              { label: "Pet screen (odolná) - černá", value: "petscreen_cerna", hint: "Vysoce odolná černá varianta proti drápkům.", img: "/images/icon_sit_petscreen.png" }
+              { label: "Transparentní síťovina - černá (+ 142 Kč/m²)", value: "transparentni", hint: "Extrémně tenké vlákno. Zevnitř i zvenku je síť téměř nepostřehnutelná.", img: "/images/icon_sit_transparent.png" },
+              { label: "Protipylová síťovina - černá (+ 431 Kč/m²)", value: "protipylova", hint: "Hustší tkaní zachytí většinu pylu a prachu. Ideální do ložnice alergiků.", img: "/images/icon_sit_protipylova.png" },
+              { label: "Pet screen (odolná) - šedá (+ 475 Kč/m²)", value: "petscreen_seda", hint: "Vysoce odolná proti protržení kočkou nebo psem. Mírně snižuje světelnost.", img: "/images/icon_sit_petscreen.png" },
+              { label: "Pet screen (odolná) - černá (+ 475 Kč/m²)", value: "petscreen_cerna", hint: "Vysoce odolná černá varianta proti drápkům.", img: "/images/icon_sit_petscreen.png" }
             ]
           },
           {
@@ -4107,11 +4107,11 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             options: [
               { label: "Skelné vlákno - šedá", value: "zaklad_seda", qapiRecommended: true, hint: "Nejuniverzálnější volba. Šedá barva dokonale splyne s oknem a propouští nejvíce světla.", img: "/images/icon_sit_seda.png" },
               { label: "Skelné vlákno - černá", value: "zaklad_cerna", hint: "Klasické černé vlákno. Zevnitř je lépe průhledné.", img: "/images/icon_sit_cerna.png" },
-              { label: "Transparentní síťovina - černá", value: "transparentni", hint: "Extrémně tenké vlákno. Zevnitř i zvenku je síť téměř nepostřehnutelná.", img: "/images/icon_sit_transparent.png" },
-              { label: "Protipylová síťovina - černá", value: "protipylova", hint: "Hustší tkaní zachytí většinu pylu a prachu. Ideální do ložnice alergiků.", img: "/images/icon_sit_protipylova.png" },
-              { label: "Pet screen (odolná) - šedá", value: "petscreen_seda", hint: "Vysoce odolná proti protržení kočkou nebo psem. Mírně snižuje světelnost.", img: "/images/icon_sit_petscreen.png" },
-              { label: "Pet screen (odolná) - černá", value: "petscreen_cerna", hint: "Vysoce odolná černá varianta proti drápkům.", img: "/images/icon_sit_petscreen.png" },
-              { label: "Síťovina s nanovláknem - černá", value: "nano", hint: "Revoluční nanovlákno zachytí i ty nejmenší částice smogu. Nejvyšší možná ochrana.", img: "/images/icon_sit_nano.png" }
+              { label: "Transparentní síťovina - černá (+ 142 Kč/m²)", value: "transparentni", hint: "Extrémně tenké vlákno. Zevnitř i zvenku je síť téměř nepostřehnutelná.", img: "/images/icon_sit_transparent.png" },
+              { label: "Protipylová síťovina - černá (+ 431 Kč/m²)", value: "protipylova", hint: "Hustší tkaní zachytí většinu pylu a prachu. Ideální do ložnice alergiků.", img: "/images/icon_sit_protipylova.png" },
+              { label: "Pet screen (odolná) - šedá (+ 475 Kč/m²)", value: "petscreen_seda", hint: "Vysoce odolná proti protržení kočkou nebo psem. Mírně snižuje světelnost.", img: "/images/icon_sit_petscreen.png" },
+              { label: "Pet screen (odolná) - černá (+ 475 Kč/m²)", value: "petscreen_cerna", hint: "Vysoce odolná černá varianta proti drápkům.", img: "/images/icon_sit_petscreen.png" },
+              { label: "Síťovina s nanovláknem - černá (+ 1078 Kč/m²)", value: "nano", hint: "Revoluční nanovlákno zachytí i ty nejmenší částice smogu. Nejvyšší možná ochrana.", img: "/images/icon_sit_nano.png" }
             ]
           },
           {
@@ -4121,7 +4121,7 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             type: "select",
             options: [
               { label: "PVC (plastové)", value: "pvc" },
-              { label: "Al (hliníkové)", value: "al", qapiRecommended: true }
+              { label: "Al (hliníkové) (+ 73 Kč/ks)", value: "al", qapiRecommended: true }
             ]
           },
           {
@@ -4145,11 +4145,11 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             type: "select",
             options: [
               { label: "0 ks", value: "0", qapiRecommended: true },
-              { label: "1 ks", value: "1" },
-              { label: "2 ks", value: "2" },
-              { label: "3 ks", value: "3" },
-              { label: "4 ks", value: "4" },
-              { label: "5 ks", value: "5" }
+              { label: "1 ks (+ 56 Kč PVC / 84 Kč Al)", value: "1" },
+              { label: "2 ks (+ 112 Kč PVC / 168 Kč Al)", value: "2" },
+              { label: "3 ks (+ 168 Kč PVC / 252 Kč Al)", value: "3" },
+              { label: "4 ks (+ 224 Kč PVC / 336 Kč Al)", value: "4" },
+              { label: "5 ks (+ 280 Kč PVC / 420 Kč Al)", value: "5" }
             ]
           },
           {
@@ -4201,7 +4201,7 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             type: "select",
             options: [
               { label: "Standardní magnet (v ceně)", value: "standard" },
-              { label: "Magnetická guma / pásek po celé výšce", value: "cely_profil" }
+              { label: "Magnetická guma / pásek po celé výšce (od + 71 Kč/bm)", value: "cely_profil" }
             ]
           },
           {
@@ -4222,7 +4222,7 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             type: "select",
             options: [
               { label: "Ne", value: "ne" },
-              { label: "Ano (počítá se dle barvy profilu)", value: "ano", qapiRecommended: true, hint: "Velmi doporučujeme, zvláště pokud máte doma děti." }
+              { label: "Ano (od + 169 Kč/bm šířky)", value: "ano", qapiRecommended: true, hint: "Velmi doporučujeme, zvláště pokud máte doma děti. Cena se přesně odvíjí od barvy a šířky dveří." }
             ]
           },
           {
@@ -4249,7 +4249,7 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             type: "select",
             options: [
               { label: "Ne", value: "ne" },
-              { label: "Ano (63 Kč/m)", value: "ano" }
+              { label: "Ano (+ 63 Kč/bm šířky)", value: "ano" }
             ]
           }
         ];
