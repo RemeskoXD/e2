@@ -1977,7 +1977,9 @@ async function startServer() {
           
           let madloMagnet = '';
           if (params.madlo_navic && params.madlo_navic !== '0') madloMagnet += `${params.madlo_navic}ks madlo navíc `;
-          if (params.magnet === 'cely_profil') madloMagnet += `Magnet celá výška`;
+          if (params.magnet === 'cely_profil') madloMagnet += `Magnet celá výška `;
+          if (params.prulez_zvire === 'kocka') madloMagnet += `Průlez kočka `;
+          if (params.prulez_zvire === 'pes') madloMagnet += `Průlez pes `;
 
           let profilKartacek = params.profil_s_kartackem === 'ano' ? 'X' : '';
 
@@ -4154,9 +4156,7 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
           },
           {
             id: "nytovani_pantu",
-            name: "Nýtování pantů z výroby",
-            type: "select",
-            options: [
+options: [
               { label: "Ne", value: "ne" },
               { label: "Ano (zdarma)", value: "ano" }
             ]
@@ -4169,6 +4169,16 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             options: [
               { label: "Levá", value: "leva" },
               { label: "Pravá", value: "prava" }
+            ]
+          },
+          {
+            id: "prulez_zvire",
+            name: "Průlez pro zvířata (černá)",
+            type: "select",
+            options: [
+              { label: "Ne", value: "ne" },
+              { label: "Pro kočku 210x250 (+ 1199 Kč)", value: "kocka", priceVariant: 1199, priceType: "fixed" },
+              { label: "Pro psa 310x340 (+ 1332 Kč)", value: "pes", priceVariant: 1332, priceType: "fixed" }
             ]
           },
           {
@@ -4226,21 +4236,13 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             ]
           },
           {
-            id: "prulez_kocka",
-            name: "Průlez pro kočku (černá)",
+            id: "prulez_zvire",
+            name: "Průlez pro zvířata (černá)",
             type: "select",
             options: [
               { label: "Ne", value: "ne" },
-              { label: "Ano (+1199 Kč)", value: "ano", priceVariant: 1199, priceType: "fixed" }
-            ]
-          },
-          {
-            id: "prulez_pes",
-            name: "Průlez pro psa (černá)",
-            type: "select",
-            options: [
-              { label: "Ne", value: "ne" },
-              { label: "Ano (+1332 Kč)", value: "ano", priceVariant: 1332, priceType: "fixed" }
+              { label: "Pro kočku 210x250 (+ 1199 Kč)", value: "kocka", priceVariant: 1199, priceType: "fixed" },
+              { label: "Pro psa 310x340 (+ 1332 Kč)", value: "pes", priceVariant: 1332, priceType: "fixed" }
             ]
           },
           {
