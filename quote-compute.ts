@@ -763,6 +763,10 @@ export async function computeProductQuote(
         const rohyPrice = isDvou ? 813 : 407;
         baseCatalogCzk += rohyPrice;
         screenUnionCatalogNotes.push(`Provedení s Al rohy: ${rohyPrice} Kč.`);
+      } else if (rohy === 'plast') {
+        if (p.dverni_pricka_typ === 'bez_pricky') {
+          return { ok: false, status: 400, body: { error: `Dveřní síť s plastovými (PVC) rohy nelze z důvodu stability vyrobit bez dveřní příčky. Prosím, zvolte hliníkové rohy, nebo přidejte příčku.` } };
+        }
       }
 
       if (barva.includes('ral_struktura')) {

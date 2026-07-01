@@ -3894,12 +3894,12 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             type: "color_array",
             options: [
               { label: "Jednokřídlé bez rámu (DE 50x20)", value: "bez_ramu_de50", img: "/images/icon_bez_ramu.png" },
-              { label: "Jednokřídlé bez rámu (DE 40x20 Lux)", value: "bez_ramu_de40", qapiRecommended: true, hint: "Oblíbená volba, pevnější profil 40x20.", img: "/images/icon_bez_ramu.png" },
-              { label: "Dvoukřídlé bez rámu (DE 40x20 Lux)", value: "bez_ramu_de40_dvou", img: "/images/icon_dvoukridla.png" },
+              { label: "Jednokřídlé bez rámu (DE 40x20 Lux)", value: "bez_ramu_de40", qapiRecommended: true, hint: "Oblíbená volba, pevnější profil 40x20. Poznámka: U provedení bez rámu je nutné při zaměření počítat 20 mm navíc pro panty a 15 mm pro magnet.", img: "/images/icon_bez_ramu.png" },
+              { label: "Dvoukřídlé bez rámu (DE 40x20 Lux)", value: "bez_ramu_de40_dvou", hint: "U provedení bez rámu je nutné při zaměření počítat 20 mm navíc pro panty a 15 mm pro magnet.", img: "/images/icon_dvoukridla.png" },
               { label: "Jednokřídlé s rámem R3 (DE 40x20 Lux + R3)", value: "ram_r3_de40", hint: "Vlastní rám R3 je vhodný, pokud nechcete vrtat panty do rámu vlastních dveří.", img: "/images/icon_s_ramem.png" },
               { label: "Jednokřídlé s rámem R4 (DE 40x20 Lux + R4)", value: "ram_r4_de40", hint: "Vlastní rám R4 má širší lemování, ideální na hrubší fasádu.", img: "/images/icon_s_ramem.png" },
-              { label: "Dvoukřídlé s rámem R3 (DE 40x20 Lux + R3)", value: "ram_r3_de40_dvou", img: "/images/icon_dvoukridla.png" },
-              { label: "Dvoukřídlé s rámem R4 (DE 40x20 Lux + R4)", value: "ram_r4_de40_dvou", img: "/images/icon_dvoukridla.png" }
+              { label: "Dvoukřídlé s rámem R3 (DE 40x20 Lux + R3)", value: "ram_r3_de40_dvou", hint: "Rám pro dvoukřídlé dveře je z důvodu přepravy dodáván v rozloženém stavu.", img: "/images/icon_dvoukridla.png" },
+              { label: "Dvoukřídlé s rámem R4 (DE 40x20 Lux + R4)", value: "ram_r4_de40_dvou", hint: "Rám pro dvoukřídlé dveře je z důvodu přepravy dodáván v rozloženém stavu.", img: "/images/icon_dvoukridla.png" }
             ]
           },
           {
