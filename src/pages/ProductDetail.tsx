@@ -1048,7 +1048,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                         </div>
                       ) : null}
                       {selectedParameters[param.id] && (() => {
-                         const opt = param.options.find(o => o.value === selectedParameters[param.id]);
+                         const opt = param.options?.find(o => o.value === selectedParameters[param.id]);
                          if (!opt) return null;
                          const unit = opt.priceType === 'per_m2' ? ' Kč/m²' : opt.priceType === 'per_bm' ? ' Kč/bm šířky' : opt.priceType === 'per_bm_height' ? ' Kč/bm výšky' : ' Kč';
                          

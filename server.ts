@@ -3138,6 +3138,7 @@ async function startServer() {
           {
             id: "ovladani_strana",
             name: "Strana ovládání",
+            hint: "Zvolte stranu, na které chcete mít ovládací řetízek. Doporučujeme stranu na opačném boku než je okenní klika, abyste se do řetízku nezamotali.",
             type: "select",
             options: [
               { label: "Pravá", value: "P" },
@@ -3147,6 +3148,7 @@ async function startServer() {
           {
             id: "delka_retizku",
             name: "Délka řetízku",
+            hint: "Délka ovládacího řetízku by měla být ideálně kolem jedné třetiny až poloviny celkové výšky rolety, abyste na ni pohodlně dosáhli.",
             type: "select",
             options: [
               { label: "Standardní", value: "standard", priceVariant: 0, priceType: "fixed" },
@@ -3176,6 +3178,7 @@ async function startServer() {
           {
             id: "ovladani_strana",
             name: "Strana ovládání",
+            hint: "Zvolte stranu, na které chcete mít ovládací řetízek. Doporučujeme stranu na opačném boku než je okenní klika, abyste se do řetízku nezamotali.",
             type: "select",
             options: [
               { label: "Pravá", value: "P" },
@@ -3185,6 +3188,7 @@ async function startServer() {
           {
             id: "delka_retizku",
             name: "Délka řetízku",
+            hint: "Délka ovládacího řetízku by měla být ideálně kolem jedné třetiny až poloviny celkové výšky rolety, abyste na ni pohodlně dosáhli.",
             type: "select",
             options: [
               { label: "Standardní", value: "standard", priceVariant: 0, priceType: "fixed" },
@@ -3677,6 +3681,7 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
           {
             id: "vlastni_ral_kod",
             name: "Zadejte požadovaný kód RAL",
+            hint: "Sem zadejte přesný čtyřmístný kód z barevného vzorníku RAL (např. 1015, 7016).",
             type: "text",
             condition: {
               dependsOnParamId: "barva_profilu",
@@ -3686,6 +3691,7 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
           {
             id: "lakovani_profilu_1",
             name: "Lakování profilů",
+            hint: "Při volbě vlastní RAL barvy je nutné připočítat nástřik hliníkových profilů. Cena se odvíjí od šířky žaluzie.",
             type: "select",
             condition: {
               dependsOnParamId: "model",
@@ -3699,6 +3705,7 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
           {
             id: "lakovani_profilu_2",
             name: "Lakování profilů",
+            hint: "Při volbě vlastní RAL barvy je nutné připočítat nástřik hliníkových profilů. U tohoto modelu jsou profily dva, proto je příplatek vyšší.",
             type: "select",
             condition: {
               dependsOnParamId: "model",
@@ -3726,6 +3733,7 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
           {
             id: "lakovani_vodici_listy_ps3",
             name: "Lakování vodící lišty",
+            hint: "Pokud jste vybrali lakování rámu do vlastní barvy RAL, musíme do stejné barvy nalakovat i postranní vodící lišty.",
             type: "select",
             condition: {
               dependsOnParamId: "vodici_lista_ps3",
@@ -3834,6 +3842,7 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
           {
             id: "barva_profilu",
             name: "Barva rámu",
+            hint: "Vyberte povrchovou úpravu okenní sítě. U dřevěných a hliníkových oken je k dispozici širší škála příplatkových dekorů.",
             type: "color_array",
             options: [
               // LAKOVANÉ STANDARD
@@ -3906,6 +3915,7 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
           {
             id: "uchyceni_hlinik",
             name: "Výška Z držáku nerez",
+            hint: "Z držáky fixují síť na hliníkové okno bez vrtání. Změřte šuplerou tloušťku venkovní hrany rámu a podle toho vyberte odpovídající držák.",
             type: "select",
             condition: { dependsOnParamId: "typ_okna", allowedValues: ["hlinik"] },
             options: [
@@ -3918,6 +3928,7 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
           {
             id: "posuvny_z_drzak",
             name: "Posuvný Z držák (pro hliníková okna)",
+            hint: "Volitelný posuvný systém uchycení místo pevných Z držáků. Ideální, pokud potřebujete síť častěji manipulovat.",
             type: "select",
             condition: { dependsOnParamId: "typ_okna", allowedValues: ["hlinik"] },
             options: [
@@ -3939,6 +3950,7 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
           {
             id: "provedeni_rohu_euro",
             name: "Provedení rohů (pro EURO okna)",
+            hint: "U vnějších rohů jsou vidět plastové spojky, zatímco u vnitřních rohů je rám elegantně skrytě slícovaný, což působí mnohem lepším dojmem.",
             type: "select",
             condition: { dependsOnParamId: "typ_okna", allowedValues: ["euro"] },
             options: [
@@ -3949,6 +3961,7 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
           {
             id: "provedeni_sikmina",
             name: "Provedení šikmina (pro plastová okna)",
+            hint: "Umožňuje vyrobit síť přesně na míru do atypických, např. podkrovních oken se zkoseným rohem.",
             type: "select",
             condition: { dependsOnParamId: "typ_okna", allowedValues: ["pvc"] },
             options: [
@@ -4058,10 +4071,25 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             ]
           },
           {
-            id: "barva_profilu",
-            name: "Barva profilu",
-            hint: "Vyberte povrchovou úpravu.",
+            id: "barva_profilu_de50",
+            name: "Barva profilu (Základní profil DE 50x20)",
+            hint: "Základní profil DE 50x20 se dodává pouze v základních matných barvách. Nelze na něj aplikovat renolit, imitace ani strukturované laky.",
             type: "color_array",
+            condition: { dependsOnParamId: "typ_dveri", allowedValues: ["bez_ramu_de50"] },
+            options: [
+              { label: "Bílá RAL 9016 mat", value: "zaklad_bila", hex: "#ffffff", qapiRecommended: true },
+              { label: "Hnědá RAL 8019 mat", value: "zaklad_hneda", hex: "#45322e" },
+              { label: "RAL 7016 mat (Antracit)", value: "zaklad_7016", hex: "#383e42" },
+              { label: "RAL 8003 mat (Zlatý dub)", value: "zaklad_8003", hex: "#8b5a2b" },
+              { label: "RAL 9006 mat (Stříbrná)", value: "zaklad_9006", hex: "#a5a5a5" }
+            ]
+          },
+          {
+            id: "barva_profilu_lux",
+            name: "Barva profilu (Prémiové LUX profily)",
+            hint: "U luxusních profilů můžete vybírat ze všech prémiových povrchových úprav včetně imitace dřeva, struktury a renolitu.",
+            type: "color_array",
+            condition: { dependsOnParamId: "typ_dveri", allowedValues: ["bez_ramu_de50_lux", "bez_ramu_de40", "bez_ramu_de40_dvou", "ram_r3_de40", "ram_r4_de40", "ram_r3_de40_dvou", "ram_r4_de40_dvou"] },
             options: [
               { label: "Bílá RAL 9016 mat", value: "zaklad_bila", hex: "#ffffff", qapiRecommended: true },
               { label: "Hnědá RAL 8019 mat", value: "zaklad_hneda", hex: "#45322e" },
@@ -4119,8 +4147,9 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
           {
             id: "panty_material",
             name: "Materiál pantů",
-            hint: "Dveřní sítě se otevírají na pantech. Hliníkové (Al) panty mají delší životnost.",
+            hint: "Základní profil DE 50x20 se dodává pouze s PVC panty. Hliníkové panty lze zvolit pouze u prémiových LUX profilů.",
             type: "select",
+            condition: { dependsOnParamId: "typ_dveri", allowedValues: ["bez_ramu_de50_lux", "bez_ramu_de40", "bez_ramu_de40_dvou", "ram_r3_de40", "ram_r4_de40", "ram_r3_de40_dvou", "ram_r4_de40_dvou"] },
             options: [
               { label: "PVC (plastové)", value: "pvc" },
               { label: "Al (hliníkové) (+ 73 Kč/ks)", value: "al", qapiRecommended: true }
@@ -4156,7 +4185,10 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
           },
           {
             id: "nytovani_pantu",
-options: [
+            name: "Nýtování pantů z výroby",
+            hint: "Pokud zvolíte 'Ano', panty k síti rovnou z výroby přinýtujeme. V opačném případě vám je zašleme nenamontované. Služba je zdarma.",
+            type: "select",
+            options: [
               { label: "Ne", value: "ne" },
               { label: "Ano (zdarma)", value: "ano" }
             ]
@@ -4164,6 +4196,7 @@ options: [
           {
             id: "strana_pantu_exterier",
             name: "Strana pantů (při pohledu z exteriéru)",
+            hint: "Zvolte stranu, na které mají být panty umístěny, z pohledu, když stojíte venku před dveřmi.",
             type: "select",
             condition: { dependsOnParamId: "nytovani_pantu", allowedValues: ["ano"] },
             options: [
@@ -4184,6 +4217,7 @@ options: [
           {
             id: "dverni_pricka_typ",
             name: "Dveřní příčka",
+            hint: "Hliníková příčka síť zpevní a zároveň slouží jako madlo pro otevírání. Standardně se dává do 1/3 výšky sítě, ale můžete si zvolit i vlastní rozměr, pokud máte například příčku i na samotných dveřích a chcete to sladit.",
             type: "select",
             options: [
               { label: "Bez příčky", value: "bez_pricky" },
@@ -4196,19 +4230,23 @@ options: [
           {
             id: "pricka_poloha_1",
             name: "Poloha 1. příčky (mm odspodu)",
+            hint: "Napište číselný údaj v milimetrech (např. 800), který určuje výšku středu příčky od spodního okraje sítě.",
             type: "number",
             condition: { dependsOnParamId: "dverni_pricka_typ", allowedValues: ["1ks_vlastni", "2ks_vlastni"] }
           },
           {
             id: "pricka_poloha_2",
             name: "Poloha 2. příčky (mm odspodu)",
+            hint: "Napište číselný údaj v milimetrech pro střed druhé příčky (měřeno od spodního okraje sítě).",
             type: "number",
             condition: { dependsOnParamId: "dverni_pricka_typ", allowedValues: ["2ks_vlastni"] }
           },
           {
             id: "magnet",
             name: "Magnet",
+            hint: "Volitelně můžete klasický magnetický zámek vyměnit za magnetickou gumu/pásek po celé výšce.",
             type: "select",
+            condition: { dependsOnParamId: "typ_dveri", allowedValues: ["bez_ramu_de50_lux", "bez_ramu_de40", "bez_ramu_de40_dvou", "ram_r3_de40", "ram_r4_de40", "ram_r3_de40_dvou", "ram_r4_de40_dvou"] },
             options: [
               { label: "Standardní magnet (v ceně)", value: "standard" },
               { label: "Magnetická guma / pásek po celé výšce (od + 71 Kč/bm)", value: "cely_profil" }
@@ -4217,6 +4255,7 @@ options: [
           {
             id: "madlo_navic",
             name: "Madlo navíc (ks)",
+            hint: "Kromě příčky, která funguje jako hlavní madlo, si můžete pořídit další malá madélka pro snazší otevírání z různých výšek (např. pro děti).",
             type: "select",
             options: [
               { label: "0 ks", value: "0" },
@@ -4230,6 +4269,7 @@ options: [
             name: "Okopová příčka ve spodní části",
             hint: "Okopová příčka je širší hliníkový profil umístěný úplně dole. Zabraňuje tomu, abyste do sítě omylem kopli nohou při otevírání.",
             type: "select",
+            condition: { dependsOnParamId: "typ_dveri", allowedValues: ["bez_ramu_de50_lux", "bez_ramu_de40", "bez_ramu_de40_dvou", "ram_r3_de40", "ram_r4_de40", "ram_r3_de40_dvou", "ram_r4_de40_dvou"] },
             options: [
               { label: "Ne", value: "ne" },
               { label: "Ano (od + 169 Kč/bm šířky)", value: "ano", qapiRecommended: true, hint: "Velmi doporučujeme, zvláště pokud máte doma děti. Cena se přesně odvíjí od barvy a šířky dveří." }
@@ -4238,7 +4278,9 @@ options: [
           {
             id: "prulez_zvire",
             name: "Průlez pro zvířata (černá)",
+            hint: "Integrovaná klapka pro vašeho domácího mazlíčka.",
             type: "select",
+            condition: { dependsOnParamId: "typ_dveri", allowedValues: ["bez_ramu_de50_lux", "bez_ramu_de40", "bez_ramu_de40_dvou", "ram_r3_de40", "ram_r4_de40", "ram_r3_de40_dvou", "ram_r4_de40_dvou"] },
             options: [
               { label: "Ne", value: "ne" },
               { label: "Pro kočku 210x250 (+ 1199 Kč)", value: "kocka", priceVariant: 1199, priceType: "fixed" },
@@ -4248,7 +4290,9 @@ options: [
           {
             id: "profil_s_kartackem",
             name: "Profil s kartáčkem (vodorovně/svisle)",
+            hint: "U luxusních profilů můžete přidat přídavný těsnící kartáček.",
             type: "select",
+            condition: { dependsOnParamId: "typ_dveri", allowedValues: ["bez_ramu_de50_lux", "bez_ramu_de40", "bez_ramu_de40_dvou", "ram_r3_de40", "ram_r4_de40", "ram_r3_de40_dvou", "ram_r4_de40_dvou"] },
             options: [
               { label: "Ne", value: "ne" },
               { label: "Ano (+ 63 Kč/bm šířky)", value: "ano" }
