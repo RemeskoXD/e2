@@ -637,8 +637,8 @@ export async function computeProductQuote(
       return { ok: false, status: 400, body: { error: `Pro černý Pet screen musí být alespoň jeden z rozměrů max 1500 mm.` } };
     }
     if (sitovina === 'nano') {
-      if (typOkna === 'pvc' || typOkna === 'euro') {
-        return { ok: false, status: 400, body: { error: `Síťovina s nanovláknem nelze použít pro PVC nebo EURO okenní sítě.` } };
+      if (typOkna === 'pvc') {
+        return { ok: false, status: 400, body: { error: `Síťovina s nanovláknem nelze použít pro plastová PVC okna.` } };
       }
       if (wR > 1500 && hR > 1500) {
         return { ok: false, status: 400, body: { error: `Pro síťovinu s nanovláknem musí být alespoň jeden z rozměrů max 1500 mm.` } };
@@ -704,7 +704,7 @@ export async function computeProductQuote(
     // Base prices
     const prices: Record<string, number> = {
       'bez_ramu_de50': 1474,
-      'bez_ramu_de50_lux': 1494,
+      'bez_ramu_de50_lux': 1665,
       'bez_ramu_de40': 1494,
       'bez_ramu_de40_dvou': 1608,
       'ram_r3_de40': 1782,

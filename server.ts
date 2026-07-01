@@ -3858,10 +3858,10 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
           },
           {
             id: "sitovina_standard",
-            name: "Typ síťoviny (PVC a EURO okna)",
+            name: "Typ síťoviny (Plastová okna)",
             hint: "Vyberte si materiál síťoviny podle vašich potřeb. Skelné vlákno je zlatý standard. Pet screen je silnější verze odolná proti drápkům. Protipylová síťovina uleví alergikům a transparentní zase zajistí maximální neviditelnost.",
             type: "color_array",
-            condition: { dependsOnParamId: "typ_okna", allowedValues: ["pvc", "euro"] },
+            condition: { dependsOnParamId: "typ_okna", allowedValues: ["pvc"] },
             options: [
               { label: "Skelné vlákno - šedá", value: "zaklad_seda", qapiRecommended: true, hint: "Nejuniverzálnější volba. Šedá barva dokonale splyne s oknem a propouští nejvíce světla.", img: "/images/icon_sit_seda.png" },
               { label: "Skelné vlákno - černá", value: "zaklad_cerna", hint: "Klasické černé vlákno. Zevnitř je lépe průhledné.", img: "/images/icon_sit_cerna.png" },
@@ -3873,10 +3873,10 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
           },
           {
             id: "sitovina_lux",
-            name: "Typ síťoviny (Hliníková okna)",
+            name: "Typ síťoviny (Hliníková a Dřevěná EURO okna)",
             hint: "Vyberte si materiál síťoviny podle vašich potřeb. Skelné vlákno je zlatý standard. Pet screen je silnější verze odolná proti drápkům. Protipylová síťovina uleví alergikům a transparentní zase zajistí maximální neviditelnost.",
             type: "color_array",
-            condition: { dependsOnParamId: "typ_okna", allowedValues: ["hlinik"] },
+            condition: { dependsOnParamId: "typ_okna", allowedValues: ["hlinik", "euro"] },
             options: [
               { label: "Skelné vlákno - šedá", value: "zaklad_seda", qapiRecommended: true, hint: "Nejuniverzálnější volba. Šedá barva dokonale splyne s oknem a propouští nejvíce světla.", img: "/images/icon_sit_seda.png" },
               { label: "Skelné vlákno - černá", value: "zaklad_cerna", hint: "Klasické černé vlákno. Zevnitř je lépe průhledné.", img: "/images/icon_sit_cerna.png" },
