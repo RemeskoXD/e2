@@ -704,6 +704,7 @@ export async function computeProductQuote(
     // Base prices
     const prices: Record<string, number> = {
       'bez_ramu_de50': 1474,
+      'bez_ramu_de50_lux': 1494,
       'bez_ramu_de40': 1494,
       'bez_ramu_de40_dvou': 1608,
       'ram_r3_de40': 1782,
@@ -719,6 +720,7 @@ export async function computeProductQuote(
     const isDvou = typDveri.includes('_dvou');
     const isRam = typDveri.includes('ram_');
     const isDe50 = typDveri === 'bez_ramu_de50';
+    const isDe50Lux = typDveri === 'bez_ramu_de50_lux';
 
     // Limits checking
     const lim = { maxW: isDvou ? 2000 : 1000, maxH: 2500, maxArea: isDvou ? 5.00 : 2.50 };
@@ -759,7 +761,7 @@ export async function computeProductQuote(
 
       // Al rohy checks (fixed price per net)
       if (rohy === 'al_rohy') {
-        if (isDe50) return { ok: false, status: 400, body: { error: `Hliníkové rohy nejsou dostupné pro základní profil DE 50x20.` } };
+        if (isDe50 || isDe50Lux) return { ok: false, status: 400, body: { error: `Hliníkové rohy nejsou pro profily DE 50x20 dostupné.` } };
         const rohyPrice = isDvou ? 813 : 407;
         baseCatalogCzk += rohyPrice;
         screenUnionCatalogNotes.push(`Provedení s Al rohy: ${rohyPrice} Kč.`);
@@ -812,6 +814,7 @@ export async function computeProductQuote(
 
     // Dynamic checks for magnet
     if (p.magnet === 'cely_profil') {
+      if (isDe50) return { ok: false, status: 400, body: { error: `Základní profil DE 50x20 neumožňuje instalaci magnetického pásku po celé výšce.` } };
       const magnetPriceBm = isRam ? 113.50 : 71;
       const multiply = isRam ? 2 : 1;
       const calcHeightM = hR / 1000;

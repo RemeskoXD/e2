@@ -1940,7 +1940,8 @@ async function startServer() {
           
           let typDveri = params.typ_dveri || '';
           let profilLabel = '';
-          if (typDveri.includes('de50')) profilLabel = 'DE 50x20';
+          if (typDveri === 'bez_ramu_de50_lux') profilLabel = 'DE 50x20 LUX';
+          else if (typDveri.includes('de50')) profilLabel = 'DE 50x20';
           else if (typDveri.includes('de40')) {
             if (typDveri.includes('ram_r3')) profilLabel = 'DE 40x20 Lux + R3';
             else if (typDveri.includes('ram_r4')) profilLabel = 'DE 40x20 Lux + R4';
@@ -4044,7 +4045,8 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             hint: "Bez rámu se síť montuje přímo na rám dveří pomocí pantů. Verze 's rámem' obsahuje vlastní obvodový rám sítě, který se instaluje do otvoru (je tak stabilnější a vypadá velmi elegantně).",
             type: "color_array",
             options: [
-              { label: "Jednokřídlé bez rámu (DE 50x20)", value: "bez_ramu_de50", img: "/images/icon_bez_ramu.png" },
+              { label: "Jednokřídlé bez rámu (DE 50x20)", value: "bez_ramu_de50", hint: "Základní profil bez těsnicího kartáčku. Při zaměření je nutné počítat 25 mm na místo pro panty a 20 mm pro magnet.", img: "/images/icon_bez_ramu.png" },
+              { label: "Jednokřídlé bez rámu (DE 50x20 LUX)", value: "bez_ramu_de50_lux", hint: "Vylepšená verze DE 50x20 s těsnicím kartáčkem. Při zaměření počítat 25 mm na panty a 20 mm pro magnet.", img: "/images/icon_bez_ramu.png" },
               { label: "Jednokřídlé bez rámu (DE 40x20 Lux)", value: "bez_ramu_de40", qapiRecommended: true, hint: "Oblíbená volba, pevnější profil 40x20. Poznámka: U provedení bez rámu je nutné při zaměření počítat 20 mm navíc pro panty a 15 mm pro magnet.", img: "/images/icon_bez_ramu.png" },
               { label: "Dvoukřídlé bez rámu (DE 40x20 Lux)", value: "bez_ramu_de40_dvou", hint: "U provedení bez rámu je nutné při zaměření počítat 20 mm navíc pro panty a 15 mm pro magnet.", img: "/images/icon_dvoukridla.png" },
               { label: "Jednokřídlé s rámem R3 (DE 40x20 Lux + R3)", value: "ram_r3_de40", hint: "Vlastní rám R3 je vhodný, pokud nechcete vrtat panty do rámu vlastních dveří.", img: "/images/icon_s_ramem.png" },
@@ -4101,7 +4103,7 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             name: "Typ síťoviny (Prémiové LUX profily)",
             hint: "Vyberte si materiál síťoviny podle vašich potřeb. Skelné vlákno je zlatý standard. Pet screen je silnější verze odolná proti drápkům. Protipylová síťovina uleví alergikům a transparentní zase zajistí maximální neviditelnost.",
             type: "color_array",
-            condition: { dependsOnParamId: "typ_dveri", allowedValues: ["bez_ramu_de40", "bez_ramu_de40_dvou", "ram_r3_de40", "ram_r4_de40", "ram_r3_de40_dvou", "ram_r4_de40_dvou"] },
+            condition: { dependsOnParamId: "typ_dveri", allowedValues: ["bez_ramu_de50_lux", "bez_ramu_de40", "bez_ramu_de40_dvou", "ram_r3_de40", "ram_r4_de40", "ram_r3_de40_dvou", "ram_r4_de40_dvou"] },
             options: [
               { label: "Skelné vlákno - šedá", value: "zaklad_seda", qapiRecommended: true, hint: "Nejuniverzálnější volba. Šedá barva dokonale splyne s oknem a propouští nejvíce světla.", img: "/images/icon_sit_seda.png" },
               { label: "Skelné vlákno - černá", value: "zaklad_cerna", hint: "Klasické černé vlákno. Zevnitř je lépe průhledné.", img: "/images/icon_sit_cerna.png" },
