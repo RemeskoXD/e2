@@ -817,18 +817,31 @@ export async function computeProductQuote(
     }
 
     // Panty
-    if (p.panty && p.panty !== 'pvc_standard') {
-      let pantPrice = 0;
-      if (p.panty === 'pvc_samozaviraci') pantPrice = 56;
-      else if (p.panty === 'al_standard') pantPrice = 73;
-      else if (p.panty === 'al_samozaviraci') pantPrice = 84;
+    const material = p.panty_material || 'pvc';
+    const numStd = Number(p.panty_pocet_standard) || 0;
+    const numSam = Number(p.panty_pocet_samozaviraci) || 0;
+    
+    let pantPriceStd = 0;
+    let pantPriceSam = 0;
+    let numStdPaid = numStd;
 
-      if (pantPrice > 0) {
-        const pantCount = isDvou ? 4 : 2; // 2 per wing
-        const extraPant = pantPrice * pantCount;
-        baseCatalogCzk += extraPant;
-        screenUnionCatalogNotes.push(`Příplatek za panty: ${pantPrice} Kč/ks × ${pantCount} ks = ${extraPant} Kč.`);
-      }
+    if (material === 'pvc') {
+      const freeStdPants = isDvou ? 4 : 2;
+      numStdPaid = Math.max(0, numStd - freeStdPants);
+      pantPriceStd = 0; 
+      pantPriceSam = 56;
+    } else {
+      pantPriceStd = 73;
+      pantPriceSam = 84;
+    }
+
+    const extraPantStd = pantPriceStd * numStdPaid;
+    const extraPantSam = pantPriceSam * numSam;
+    const extraPantTotal = extraPantStd + extraPantSam;
+
+    if (extraPantTotal > 0) {
+      baseCatalogCzk += extraPantTotal;
+      screenUnionCatalogNotes.push(`Příplatek za panty: ${numStdPaid}x standard (${pantPriceStd} Kč) + ${numSam}x samozav. (${pantPriceSam} Kč) = ${extraPantTotal} Kč.`);
     }
 
     // Profil s kartáčkem (63 kč/m)
@@ -838,14 +851,6 @@ export async function computeProductQuote(
       const extraKart = 63 * calcWidthM;
       baseCatalogCzk += extraKart;
       screenUnionCatalogNotes.push(`Profil s kartáčkem: 63 Kč/bm × ${calcWidthM.toFixed(2)} bm = ${Math.round(extraKart)} Kč.`);
-    }
-
-    // Madlo navíc (24 Kč/ks)
-    if (p.madlo_navic === 'ano') {
-      const madloCount = isDvou ? 2 : 1;
-      const extraMadlo = 24 * madloCount;
-      baseCatalogCzk += extraMadlo;
-      screenUnionCatalogNotes.push(`Madlo navíc: 24 Kč/ks × ${madloCount} ks = ${extraMadlo} Kč.`);
     }
   }
   // --- KONEC DVEŘNÍ SÍTĚ PROTI HMYZU ---

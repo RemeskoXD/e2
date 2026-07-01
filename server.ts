@@ -3931,16 +3931,85 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             ]
           },
           {
-            id: "panty",
-            name: "Panty",
-            hint: "Dveřní sítě se otevírají na pantech. Samozavírací panty obsahují pružinu, díky které se dveře samy zaklapnou.",
+            id: "panty_material",
+            name: "Materiál pantů",
+            hint: "Dveřní sítě se otevírají na pantech. Hliníkové (Al) panty mají delší životnost.",
             type: "select",
             options: [
-              { label: "PVC Standard panty (v ceně)", value: "pvc_standard" },
-              { label: "PVC Samozavírací panty (56 Kč/ks)", value: "pvc_samozaviraci" },
-              { label: "Al Standard panty (73 Kč/ks)", value: "al_standard" },
-              { label: "Al Samozavírací panty (84 Kč/ks)", value: "al_samozaviraci", qapiRecommended: true, hint: "Hliníkové (Al) panty mají delší životnost a samozavírací mechanismus zaručí, že nezůstane otevřeno." }
+              { label: "PVC (plastové)", value: "pvc" },
+              { label: "Al (hliníkové)", value: "al", qapiRecommended: true }
             ]
+          },
+          {
+            id: "panty_pocet_standard",
+            name: "Počet ks standardních pantů",
+            hint: "Výrobce doporučuje mít na dveřích celkem minimálně 3 panty (standardní + samozavírací). První 2 ks PVC pantů jsou zdarma.",
+            type: "select",
+            options: [
+              { label: "0 ks", value: "0" },
+              { label: "1 ks", value: "1" },
+              { label: "2 ks", value: "2", qapiRecommended: true },
+              { label: "3 ks", value: "3" },
+              { label: "4 ks", value: "4" },
+              { label: "5 ks", value: "5" }
+            ]
+          },
+          {
+            id: "panty_pocet_samozaviraci",
+            name: "Počet ks samozavíracích pantů",
+            hint: "Samozavírací panty obsahují pružinu, díky které se dveře samy zaklapnou.",
+            type: "select",
+            options: [
+              { label: "0 ks", value: "0", qapiRecommended: true },
+              { label: "1 ks", value: "1" },
+              { label: "2 ks", value: "2" },
+              { label: "3 ks", value: "3" },
+              { label: "4 ks", value: "4" },
+              { label: "5 ks", value: "5" }
+            ]
+          },
+          {
+            id: "nytovani_pantu",
+            name: "Nýtování pantů z výroby",
+            type: "select",
+            options: [
+              { label: "Ne", value: "ne" },
+              { label: "Ano (zdarma)", value: "ano" }
+            ]
+          },
+          {
+            id: "strana_pantu_exterier",
+            name: "Strana pantů (při pohledu z exteriéru)",
+            type: "select",
+            condition: { dependsOnParamId: "nytovani_pantu", allowedValues: ["ano"] },
+            options: [
+              { label: "Levá", value: "leva" },
+              { label: "Pravá", value: "prava" }
+            ]
+          },
+          {
+            id: "dverni_pricka_typ",
+            name: "Dveřní příčka",
+            type: "select",
+            options: [
+              { label: "Bez příčky", value: "bez_pricky" },
+              { label: "1 ks - v 1/3 (standard)", value: "1ks_standard", qapiRecommended: true },
+              { label: "1 ks - vlastní poloha", value: "1ks_vlastni" },
+              { label: "2 ks - v 1/3 a ve 2/3 (standard)", value: "2ks_standard" },
+              { label: "2 ks - vlastní polohy", value: "2ks_vlastni" }
+            ]
+          },
+          {
+            id: "pricka_poloha_1",
+            name: "Poloha 1. příčky (mm odspodu)",
+            type: "number",
+            condition: { dependsOnParamId: "dverni_pricka_typ", allowedValues: ["1ks_vlastni", "2ks_vlastni"] }
+          },
+          {
+            id: "pricka_poloha_2",
+            name: "Poloha 2. příčky (mm odspodu)",
+            type: "number",
+            condition: { dependsOnParamId: "dverni_pricka_typ", allowedValues: ["2ks_vlastni"] }
           },
           {
             id: "magnet",
@@ -3953,11 +4022,13 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
           },
           {
             id: "madlo_navic",
-            name: "Madlo navíc",
+            name: "Madlo navíc (ks)",
             type: "select",
             options: [
-              { label: "Ne", value: "ne" },
-              { label: "Ano (24 Kč/ks)", value: "ano" }
+              { label: "0 ks", value: "0" },
+              { label: "1 ks (+24 Kč)", value: "1", priceVariant: 24, priceType: "fixed" },
+              { label: "2 ks (+48 Kč)", value: "2", priceVariant: 48, priceType: "fixed" },
+              { label: "3 ks (+72 Kč)", value: "3", priceVariant: 72, priceType: "fixed" }
             ]
           },
           {
