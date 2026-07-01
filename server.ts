@@ -1883,6 +1883,157 @@ async function startServer() {
     });
   });
 
+  app.get("/api/admin/orders/:id/export-site-dverni", requireAdmin, async (req, res) => {
+    await withDb(res, async (db) => {
+      try {
+        const id = Number(req.params.id);
+        if (!Number.isFinite(id) || id < 1) {
+          res.status(400).json({ error: "Neplatné ID" });
+          return;
+        }
+        const o = await db.query('SELECT * FROM "Order" WHERE id = $1', [id]);
+        if (!o.rows[0]) {
+          res.status(404).json({ error: "Nenalezeno" });
+          return;
+        }
+        const order = o.rows[0];
+        const items = await db.query(
+          'SELECT * FROM "OrderItem" WHERE order_id = $1 ORDER BY id ASC',
+          [id]
+        );
+
+        const dverniItems = items.rows.filter((item: any) => 
+          item.product_slug === 'dverni-site-proti-hmyzu' || (item.product_title || '').toLowerCase().includes('dveřní sítě proti hmyzu')
+        );
+
+        if (dverniItems.length === 0) {
+          res.status(404).json({ error: "Objednávka neobsahuje Dveřní sítě proti hmyzu" });
+          return;
+        }
+
+        const templatePath = path.join(process.cwd(), 'public', 'formular', '07_formular_pevne_site_proti_hmyzu_dverni.xlsx');
+        if (!fs.existsSync(templatePath)) {
+           res.status(404).json({ error: "Šablona formuláře nebyla nalezena." });
+           return;
+        }
+
+        const ExcelJS = require('exceljs');
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.readFile(templatePath);
+        const sheet = workbook.worksheets[0];
+
+        const addr = [order.delivery_street, order.delivery_city, order.delivery_zip].filter(Boolean).join(', ');
+        sheet.getCell('D1').value = "Ropemi s.r.o., Varšavská 715/36, Vinohrady, 120 00 Praha 2";
+        sheet.getCell('D3').value = addr;
+        sheet.getCell('D5').value = "+420 774 060 193";
+        sheet.getCell('H3').value = new Date(order.date).toLocaleDateString('cs-CZ');
+        sheet.getCell('N1').value = order.order_no; 
+        sheet.getCell('N3').value = order.order_no;
+        sheet.getCell('N5').value = order.order_no;
+
+        let currentRow = 9; // Data starts at row 9
+        dverniItems.forEach((item: any, index: number) => {
+          const params = item.options?.selected_parameters || {};
+          const w = item.width_mm || 0;
+          const h = item.height_mm || 0;
+          const qty = item.quantity;
+          
+          let typDveri = params.typ_dveri || '';
+          let profilLabel = '';
+          if (typDveri.includes('de50')) profilLabel = 'DE 50x20';
+          else if (typDveri.includes('de40')) {
+            if (typDveri.includes('ram_r3')) profilLabel = 'DE 40x20 Lux + R3';
+            else if (typDveri.includes('ram_r4')) profilLabel = 'DE 40x20 Lux + R4';
+            else profilLabel = 'DE 40x20 Lux';
+          }
+          
+          const barvaMap: Record<string, string> = {
+            zaklad_bila: 'Bílá RAL 9016',
+            zaklad_hneda: 'Hnědá RAL 8019',
+            zaklad_7016: 'RAL 7016',
+            zaklad_8003: 'RAL 8003',
+            zaklad_9006: 'RAL 9006',
+            ral_struktura: 'RAL 7016 STR / DB 703',
+            ral_nestandard: 'RAL (Nestandard)',
+            imitace_dreva: 'Imitace dřeva',
+            renolit_jedno: 'Renolit jednostr.',
+            renolit_obou: 'Renolit oboustr.'
+          };
+          let barvaProfilu = barvaMap[params.barva_profilu] || params.barva_profilu || '';
+          
+          let sitovina = params.sitovina_lux || params.sitovina_de50 || params.sitovina || '';
+          if (sitovina.includes('seda')) sitovina = 'Š - šedá';
+          else if (sitovina.includes('cerna')) sitovina = 'Č - černá';
+          else if (sitovina === 'protipylova') sitovina = 'P - Protipylová';
+          else if (sitovina === 'nano') sitovina = 'N - s nanovláknem';
+          else if (sitovina === 'transparentni') sitovina = 'Transparentní';
+
+          let nytovaniText = params.nytovani_pantu === 'ano' ? `ANO (${params.strana_pantu_exterier})` : 'NE';
+          let pocetStandard = params.panty_pocet_standard || '0';
+          let pocetSamozav = params.panty_pocet_samozaviraci || '0';
+          
+          let okopova = params.okopova_pricka === 'ano' ? 'ANO' : 'NE';
+          
+          let madloMagnet = '';
+          if (params.madlo_navic && params.madlo_navic !== '0') madloMagnet += `${params.madlo_navic}ks madlo navíc `;
+          if (params.magnet === 'cely_profil') madloMagnet += `Magnet celá výška`;
+
+          let profilKartacek = params.profil_s_kartackem === 'ano' ? 'X' : '';
+
+          let dverniPricka = '';
+          let dverniV1 = '';
+          let dverniV2 = '';
+          if (params.dverni_pricka_typ !== 'bez_pricky') {
+            if (params.dverni_pricka_typ === '1ks_standard') {
+              dverniPricka = '1';
+              dverniV1 = '1/3';
+            } else if (params.dverni_pricka_typ === '1ks_vlastni') {
+              dverniPricka = '1';
+              dverniV1 = params.pricka_poloha_1 || '';
+            } else if (params.dverni_pricka_typ === '2ks_standard') {
+              dverniPricka = '2';
+              dverniV1 = '1/3';
+              dverniV2 = '2/3';
+            } else if (params.dverni_pricka_typ === '2ks_vlastni') {
+              dverniPricka = '2';
+              dverniV1 = params.pricka_poloha_1 || '';
+              dverniV2 = params.pricka_poloha_2 || '';
+            }
+          }
+          
+          sheet.getCell(`A${currentRow}`).value = index + 1 + '.';
+          sheet.getCell(`C${currentRow}`).value = profilLabel;
+          sheet.getCell(`E${currentRow}`).value = qty;
+          sheet.getCell(`F${currentRow}`).value = w;
+          sheet.getCell(`G${currentRow}`).value = h;
+          sheet.getCell(`H${currentRow}`).value = barvaProfilu;
+          sheet.getCell(`I${currentRow}`).value = sitovina;
+          sheet.getCell(`J${currentRow}`).value = nytovaniText;
+          sheet.getCell(`K${currentRow}`).value = pocetStandard;
+          sheet.getCell(`L${currentRow}`).value = pocetSamozav;
+          sheet.getCell(`M${currentRow}`).value = okopova;
+          sheet.getCell(`N${currentRow}`).value = madloMagnet;
+          sheet.getCell(`O${currentRow}`).value = profilKartacek;
+          sheet.getCell(`P${currentRow}`).value = dverniPricka;
+          sheet.getCell(`Q${currentRow}`).value = dverniV1;
+          sheet.getCell(`R${currentRow}`).value = dverniV2;
+          
+          currentRow++;
+        });
+
+        res.setHeader('Content-Disposition', `attachment; filename="Objednavka_SiteDverni_${order.order_no}.xlsx"`);
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        
+        await workbook.xlsx.write(res);
+        res.end();
+
+      } catch (err) {
+        console.error('Dverni site export error:', err);
+        res.status(500).json({ error: "Server error při generování Excelu" });
+      }
+    });
+  });
+
   app.patch("/api/admin/orders/:id", requireAdmin, async (req, res) => {
     await withDb(res, async (db) => {
       const client = await db.connect();

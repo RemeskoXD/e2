@@ -239,6 +239,19 @@ export default function AdminOrderDetail({ orderId }: { orderId: number }) {
               Exportovat Okenní sítě Excel
             </button>
           )}
+          {items.some(it => (it.product_title || '').toLowerCase().includes('dveřní sítě proti hmyzu') || it.product_slug === 'dverni-site-proti-hmyzu') && (
+            <button
+              type="button"
+              onClick={() => {
+                const t = token();
+                window.open(`/api/admin/orders/${order.id}/export-site-dverni?token=${t}`, '_blank');
+              }}
+              className="bg-white text-orange-800 border border-orange-300 font-bold px-4 py-2 rounded-lg hover:bg-orange-50 flex items-center gap-2"
+            >
+              <FileSpreadsheet size={18} />
+              Exportovat Dveřní sítě Excel
+            </button>
+          )}
         </div>
       </div>
 
