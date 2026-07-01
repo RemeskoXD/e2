@@ -900,7 +900,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                               setSelectedParameters(prev => ({ ...prev, [param.id]: val }));
                               setQuote(null);
                             }}
-                            options={param.options.filter(opt => !opt.hidden && (!opt.excludedModels || !opt.excludedModels.includes(selectedParameters['model'] || selectedParameters['typ_profilu'] || ''))).map(opt => ({
+                            options={param.options.filter(opt => !opt.hidden && (!opt.excludedModels || !opt.excludedModels.some(m => Object.values(selectedParameters).includes(m)))).map(opt => ({
                               value: opt.value,
                               label: (
                                 <span className="flex items-center">
@@ -913,7 +913,7 @@ export default function ProductDetail({ productId }: { productId: string }) {
                         </div>
                       ) : param.type === 'color_array' ? (
                         <div className="flex flex-wrap gap-4 items-start">
-                          {param.options.filter(opt => !opt.hidden && (!opt.excludedModels || !opt.excludedModels.includes(selectedParameters['model'] || selectedParameters['typ_profilu'] || ''))).map(opt => {
+                          {param.options.filter(opt => !opt.hidden && (!opt.excludedModels || !opt.excludedModels.some(m => Object.values(selectedParameters).includes(m)))).map(opt => {
                             const isSelected = selectedParameters[param.id] === opt.value;
                             const bgColor = opt.hex || opt.colorCode;
                             const isColorParam = param.id.includes('barva');

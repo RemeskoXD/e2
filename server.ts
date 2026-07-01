@@ -3851,20 +3851,20 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
               { label: "RAL 7016", value: "ral_7016", img: "/barva/site/5851-10.jpg" },
               { label: "RAL 8003", value: "ral_8003", img: "/barva/site/5850-10.jpg" },
               { label: "RAL 9006", value: "ral_9006", img: "/barva/site/5848-10.jpg" },
-              { label: "DB-703 (od + 57 Kč/m²)", value: "db_703", img: "/barva/site/5846-10.jpg" },
-              { label: "RAL 7016 STRUCTURE (od + 57 Kč/m²)", value: "ral_7016_structure", img: "/barva/site/5847-10.jpg" },
+              { label: "DB-703 (od + 57 Kč/m²)", value: "db_703", img: "/barva/site/5846-10.jpg", excludedModels: ["euro"] },
+              { label: "RAL 7016 STRUCTURE (od + 57 Kč/m²)", value: "ral_7016_structure", img: "/barva/site/5847-10.jpg", excludedModels: ["euro"] },
 
               // LAKOVANÉ IMITACE
-              { label: "WALNUT (od + 162 Kč/m²)", value: "walnut", img: "/barva/site/5752-10.jpg" },
-              { label: "NATURAL OAK (od + 162 Kč/m²)", value: "natural_oak", img: "/barva/site/přírodni dub.jpg" },
-              { label: "GOLD OAK (od + 162 Kč/m²)", value: "gold_oak", img: "/barva/site/5750-10.jpg" },
-              { label: "AMARETTO CHERRY (od + 162 Kč/m²)", value: "amaretto_cherry", img: "/barva/site/5751-10.jpg" },
+              { label: "WALNUT (od + 162 Kč/m²)", value: "walnut", img: "/barva/site/5752-10.jpg", excludedModels: ["euro"] },
+              { label: "NATURAL OAK (od + 162 Kč/m²)", value: "natural_oak", img: "/barva/site/přírodni dub.jpg", excludedModels: ["euro"] },
+              { label: "GOLD OAK (od + 162 Kč/m²)", value: "gold_oak", img: "/barva/site/5750-10.jpg", excludedModels: ["euro"] },
+              { label: "AMARETTO CHERRY (od + 162 Kč/m²)", value: "amaretto_cherry", img: "/barva/site/5751-10.jpg", excludedModels: ["euro"] },
 
               // RENOLITOVÁ FÓLIE
-              { label: "DOUGLAS (od + 282 Kč/m²)", value: "douglas", img: "/barva/site/5745-10.jpg" },
-              { label: "PINE (od + 282 Kč/m²)", value: "pine", img: "/barva/site/5746-10.jpg" },
-              { label: "DARK NUT (od + 282 Kč/m²)", value: "dark_nut", img: "/barva/site/5747-10.jpg" },
-              { label: "SAPELI (od + 282 Kč/m²)", value: "sapeli", img: "/barva/site/5744-10.jpg" }
+              { label: "DOUGLAS (od + 282 Kč/m²)", value: "douglas", img: "/barva/site/5745-10.jpg", excludedModels: ["hlinik"] },
+              { label: "PINE (od + 282 Kč/m²)", value: "pine", img: "/barva/site/5746-10.jpg", excludedModels: ["hlinik"] },
+              { label: "DARK NUT (od + 282 Kč/m²)", value: "dark_nut", img: "/barva/site/5747-10.jpg", excludedModels: ["hlinik"] },
+              { label: "SAPELI (od + 282 Kč/m²)", value: "sapeli", img: "/barva/site/5744-10.jpg", excludedModels: ["hlinik"] }
             ]
           },
           {
@@ -4073,7 +4073,7 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
           {
             id: "barva_profilu_de50",
             name: "Barva profilu (Základní profil DE 50x20)",
-            hint: "Základní profil DE 50x20 se dodává pouze v základních matných barvách. Nelze na něj aplikovat renolit, imitace ani strukturované laky.",
+            hint: "Základní profil DE 50x20 se dodává v základních matných barvách. Lze zvolit i vlastní RAL lakování nebo potažení renolit fólií.",
             type: "color_array",
             condition: { dependsOnParamId: "typ_dveri", allowedValues: ["bez_ramu_de50"] },
             options: [
@@ -4081,7 +4081,10 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
               { label: "Hnědá RAL 8019 mat", value: "zaklad_hneda", hex: "#45322e" },
               { label: "RAL 7016 mat (Antracit)", value: "zaklad_7016", hex: "#383e42" },
               { label: "RAL 8003 mat (Zlatý dub)", value: "zaklad_8003", hex: "#8b5a2b" },
-              { label: "RAL 9006 mat (Stříbrná)", value: "zaklad_9006", hex: "#a5a5a5" }
+              { label: "RAL 9006 mat (Stříbrná)", value: "zaklad_9006", hex: "#a5a5a5" },
+              { label: "Nestandardní lakování RAL (+ 1035 Kč/m²)", value: "ral_nestandard" },
+              { label: "Renolit jednostranně (od + 478 Kč/m²)", value: "renolit_jedno", hex: "#8b5a2b" },
+              { label: "Renolit oboustranně (od + 641 Kč/m²)", value: "renolit_obou", hex: "#8b5a2b" }
             ]
           },
           {
@@ -4269,7 +4272,6 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             name: "Okopová příčka ve spodní části",
             hint: "Okopová příčka je širší hliníkový profil umístěný úplně dole. Zabraňuje tomu, abyste do sítě omylem kopli nohou při otevírání.",
             type: "select",
-            condition: { dependsOnParamId: "typ_dveri", allowedValues: ["bez_ramu_de50_lux", "bez_ramu_de40", "bez_ramu_de40_dvou", "ram_r3_de40", "ram_r4_de40", "ram_r3_de40_dvou", "ram_r4_de40_dvou"] },
             options: [
               { label: "Ne", value: "ne" },
               { label: "Ano (od + 169 Kč/bm šířky)", value: "ano", qapiRecommended: true, hint: "Velmi doporučujeme, zvláště pokud máte doma děti. Cena se přesně odvíjí od barvy a šířky dveří." }
@@ -4280,7 +4282,6 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             name: "Průlez pro zvířata (černá)",
             hint: "Integrovaná klapka pro vašeho domácího mazlíčka.",
             type: "select",
-            condition: { dependsOnParamId: "typ_dveri", allowedValues: ["bez_ramu_de50_lux", "bez_ramu_de40", "bez_ramu_de40_dvou", "ram_r3_de40", "ram_r4_de40", "ram_r3_de40_dvou", "ram_r4_de40_dvou"] },
             options: [
               { label: "Ne", value: "ne" },
               { label: "Pro kočku 210x250 (+ 1199 Kč)", value: "kocka", priceVariant: 1199, priceType: "fixed" },
