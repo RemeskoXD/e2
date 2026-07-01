@@ -3705,10 +3705,26 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             ]
           },
           {
-            id: "sitovina",
-            name: "Typ síťoviny",
+            id: "sitovina_standard",
+            name: "Typ síťoviny (PVC a EURO okna)",
             hint: "Vyberte si materiál síťoviny podle vašich potřeb. Skelné vlákno je zlatý standard. Pet screen je silnější verze odolná proti drápkům. Protipylová síťovina uleví alergikům a transparentní zase zajistí maximální neviditelnost.",
             type: "color_array",
+            condition: { dependsOnParamId: "typ_okna", allowedValues: ["pvc", "euro"] },
+            options: [
+              { label: "Skelné vlákno - šedá", value: "zaklad_seda", qapiRecommended: true, hint: "Nejuniverzálnější volba. Šedá barva dokonale splyne s oknem a propouští nejvíce světla.", img: "/images/icon_sit_seda.png" },
+              { label: "Skelné vlákno - černá", value: "zaklad_cerna", hint: "Klasické černé vlákno. Zevnitř je lépe průhledné.", img: "/images/icon_sit_cerna.png" },
+              { label: "Transparentní síťovina - černá", value: "transparentni", priceVariant: 142, priceType: "per_m2", hint: "Extrémně tenké vlákno. Zevnitř i zvenku je síť téměř nepostřehnutelná.", img: "/images/icon_sit_transparent.png" },
+              { label: "Protipylová síťovina - černá", value: "protipylova", priceVariant: 431, priceType: "per_m2", hint: "Hustší tkaní zachytí většinu pylu a prachu. Ideální do ložnice alergiků.", img: "/images/icon_sit_protipylova.png" },
+              { label: "Pet screen (odolná) - šedá", value: "petscreen_seda", priceVariant: 475, priceType: "per_m2", hint: "Vysoce odolná proti protržení kočkou nebo psem. Mírně snižuje světelnost.", img: "/images/icon_sit_petscreen.png" },
+              { label: "Pet screen (odolná) - černá", value: "petscreen_cerna", priceVariant: 475, priceType: "per_m2", hint: "Vysoce odolná černá varianta proti drápkům.", img: "/images/icon_sit_petscreen.png" }
+            ]
+          },
+          {
+            id: "sitovina_lux",
+            name: "Typ síťoviny (Hliníková okna)",
+            hint: "Vyberte si materiál síťoviny podle vašich potřeb. Skelné vlákno je zlatý standard. Pet screen je silnější verze odolná proti drápkům. Protipylová síťovina uleví alergikům a transparentní zase zajistí maximální neviditelnost.",
+            type: "color_array",
+            condition: { dependsOnParamId: "typ_okna", allowedValues: ["hlinik"] },
             options: [
               { label: "Skelné vlákno - šedá", value: "zaklad_seda", qapiRecommended: true, hint: "Nejuniverzálnější volba. Šedá barva dokonale splyne s oknem a propouští nejvíce světla.", img: "/images/icon_sit_seda.png" },
               { label: "Skelné vlákno - černá", value: "zaklad_cerna", hint: "Klasické černé vlákno. Zevnitř je lépe průhledné.", img: "/images/icon_sit_cerna.png" },
@@ -3716,7 +3732,7 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
               { label: "Protipylová síťovina - černá", value: "protipylova", priceVariant: 431, priceType: "per_m2", hint: "Hustší tkaní zachytí většinu pylu a prachu. Ideální do ložnice alergiků.", img: "/images/icon_sit_protipylova.png" },
               { label: "Pet screen (odolná) - šedá", value: "petscreen_seda", priceVariant: 475, priceType: "per_m2", hint: "Vysoce odolná proti protržení kočkou nebo psem. Mírně snižuje světelnost.", img: "/images/icon_sit_petscreen.png" },
               { label: "Pet screen (odolná) - černá", value: "petscreen_cerna", priceVariant: 475, priceType: "per_m2", hint: "Vysoce odolná černá varianta proti drápkům.", img: "/images/icon_sit_petscreen.png" },
-              { label: "Síťovina s nanovláknem - černá (jen pro EURO a Hliníková okna)", value: "nano", priceVariant: 1078, priceType: "per_m2", hint: "Revoluční nanovlákno zachytí i ty nejmenší částice smogu. Nejvyšší možná ochrana.", img: "/images/icon_sit_nano.png" }
+              { label: "Síťovina s nanovláknem - černá", value: "nano", priceVariant: 1078, priceType: "per_m2", hint: "Revoluční nanovlákno zachytí i ty nejmenší částice smogu. Nejvyšší možná ochrana.", img: "/images/icon_sit_nano.png" }
             ]
           },
           {
@@ -3742,8 +3758,7 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
               { label: "8 mm", value: "8" }, { label: "10 mm", value: "10" }, { label: "12 mm", value: "12" },
               { label: "14 mm", value: "14" }, { label: "16 mm", value: "16" }, { label: "18 mm", value: "18" },
               { label: "20 mm", value: "20" }, { label: "22 mm", value: "22" }, { label: "24 mm", value: "24" },
-              { label: "26 mm", value: "26" }, { label: "28 mm", value: "28" }, { label: "30 mm", value: "30" },
-              { label: "32 mm", value: "32" }, { label: "34 mm", value: "34" }
+              { label: "30 mm", value: "30" }
             ]
           },
           {
@@ -3916,10 +3931,26 @@ app.post("/api/admin/import-plise-lagarta", requireAdmin, async (req, res) => {
             ]
           },
           {
-            id: "sitovina",
-            name: "Typ síťoviny",
+            id: "sitovina_de50",
+            name: "Typ síťoviny (Základní profil DE 50x20)",
             hint: "Vyberte si materiál síťoviny podle vašich potřeb. Skelné vlákno je zlatý standard. Pet screen je silnější verze odolná proti drápkům. Protipylová síťovina uleví alergikům a transparentní zase zajistí maximální neviditelnost.",
             type: "color_array",
+            condition: { dependsOnParamId: "typ_dveri", allowedValues: ["bez_ramu_de50"] },
+            options: [
+              { label: "Skelné vlákno - šedá", value: "zaklad_seda", qapiRecommended: true, hint: "Nejuniverzálnější volba. Šedá barva dokonale splyne s oknem a propouští nejvíce světla.", img: "/images/icon_sit_seda.png" },
+              { label: "Skelné vlákno - černá", value: "zaklad_cerna", hint: "Klasické černé vlákno. Zevnitř je lépe průhledné.", img: "/images/icon_sit_cerna.png" },
+              { label: "Transparentní síťovina - černá", value: "transparentni", hint: "Extrémně tenké vlákno. Zevnitř i zvenku je síť téměř nepostřehnutelná.", img: "/images/icon_sit_transparent.png" },
+              { label: "Protipylová síťovina - černá", value: "protipylova", hint: "Hustší tkaní zachytí většinu pylu a prachu. Ideální do ložnice alergiků.", img: "/images/icon_sit_protipylova.png" },
+              { label: "Pet screen (odolná) - šedá", value: "petscreen_seda", hint: "Vysoce odolná proti protržení kočkou nebo psem. Mírně snižuje světelnost.", img: "/images/icon_sit_petscreen.png" },
+              { label: "Pet screen (odolná) - černá", value: "petscreen_cerna", hint: "Vysoce odolná černá varianta proti drápkům.", img: "/images/icon_sit_petscreen.png" }
+            ]
+          },
+          {
+            id: "sitovina_lux",
+            name: "Typ síťoviny (Prémiové LUX profily)",
+            hint: "Vyberte si materiál síťoviny podle vašich potřeb. Skelné vlákno je zlatý standard. Pet screen je silnější verze odolná proti drápkům. Protipylová síťovina uleví alergikům a transparentní zase zajistí maximální neviditelnost.",
+            type: "color_array",
+            condition: { dependsOnParamId: "typ_dveri", allowedValues: ["bez_ramu_de40", "bez_ramu_de40_dvou", "ram_r3_de40", "ram_r4_de40", "ram_r3_de40_dvou", "ram_r4_de40_dvou"] },
             options: [
               { label: "Skelné vlákno - šedá", value: "zaklad_seda", qapiRecommended: true, hint: "Nejuniverzálnější volba. Šedá barva dokonale splyne s oknem a propouští nejvíce světla.", img: "/images/icon_sit_seda.png" },
               { label: "Skelné vlákno - černá", value: "zaklad_cerna", hint: "Klasické černé vlákno. Zevnitř je lépe průhledné.", img: "/images/icon_sit_cerna.png" },

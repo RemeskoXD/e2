@@ -626,7 +626,7 @@ export async function computeProductQuote(
     }
 
     // Site checks
-    const sitovina = p.sitovina;
+    const sitovina = p.sitovina_lux || p.sitovina_standard || p.sitovina || '';
     if (sitovina === 'transparentni' && wR > 1400 && hR > 1400) {
       return { ok: false, status: 400, body: { error: `Pro transparentní síťovinu musí být alespoň jeden z rozměrů max 1400 mm.` } };
     }
@@ -637,8 +637,8 @@ export async function computeProductQuote(
       return { ok: false, status: 400, body: { error: `Pro černý Pet screen musí být alespoň jeden z rozměrů max 1500 mm.` } };
     }
     if (sitovina === 'nano') {
-      if (typOkna === 'pvc') {
-        return { ok: false, status: 400, body: { error: `Síťovina s nanovláknem nelze použít pro PVC okenní sítě (profil ISSO OE 19x8).` } };
+      if (typOkna === 'pvc' || typOkna === 'euro') {
+        return { ok: false, status: 400, body: { error: `Síťovina s nanovláknem nelze použít pro PVC nebo EURO okenní sítě.` } };
       }
       if (wR > 1500 && hR > 1500) {
         return { ok: false, status: 400, body: { error: `Pro síťovinu s nanovláknem musí být alespoň jeden z rozměrů max 1500 mm.` } };
@@ -731,7 +731,7 @@ export async function computeProductQuote(
     }
 
     // Site checks
-    const sitovina = p.sitovina;
+    const sitovina = p.sitovina_lux || p.sitovina_de50 || p.sitovina || '';
     if (sitovina === 'transparentni' && (wR > 1400 && hR > 1400)) {
       return { ok: false, status: 400, body: { error: `Pro transparentní síťovinu musí být alespoň jeden z rozměrů max 1400 mm.` } };
     }
